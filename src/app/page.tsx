@@ -1,4 +1,4 @@
-import LongURLInput from "@/components/Inputs";
+import LongURLInput from "@/components/LongURLInput";
 
 export default function Home() {
   return (
