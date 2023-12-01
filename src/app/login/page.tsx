@@ -1,15 +1,10 @@
-export default function Home() {
-  return (
-    <>
-      {/*
-        This example requires updating your template:
+import NavBar from "@/components/NavBar";
 
-        ```
-        <html class="h-full bg-white">
-        <body class="h-full">
-        ```
-      */}
-      <div className='flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8'>
+export default function LoginPage() {
+  return (
+    <main className='min-h-screen flex flex-col'>
+      <NavBar />
+      <div className='flex-1 justify-center px-6 py-12 lg:px-8'>
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
           <img
             className='mx-auto h-10 w-auto'
@@ -73,6 +68,6 @@ export default function Home() {
           </form>
         </div>
       </div>
-    </>
+    </main>
   );
 }
