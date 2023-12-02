@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { navBarLinks } from "../lib/constants";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-
+import Link from "next/link";
 function NavBar() {
   const pathname = usePathname();
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
@@ -63,7 +63,7 @@ function NavBar() {
               <div className='flex space-x-4'>
                 {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
                 {navBarLinks.map((item) => (
-                  <a
+                  <Link
                     key={item.title}
                     href={item.path}
                     className={
@@ -74,13 +74,13 @@ function NavBar() {
                     aria-current='page'
                   >
                     {item.title}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
           </div>
           <div className='absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0'>
-            <a
+            <Link
               href='/login'
               className={
                 pathname === "/login"
@@ -90,7 +90,7 @@ function NavBar() {
               aria-current='page'
             >
               Login
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -99,7 +99,7 @@ function NavBar() {
       <div className={clsx("sm:hidden", { hidden: !mobileMenuOpened })} id='mobile-menu'>
         <div className='space-y-1 px-2 pb-3 pt-2'>
           {navBarLinks.map((item) => (
-            <a
+            <Link
               key={item.title}
               href={item.path}
               className={
@@ -110,7 +110,7 @@ function NavBar() {
               aria-current='page'
             >
               {item.title}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
