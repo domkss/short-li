@@ -1,10 +1,8 @@
 import LongURLInput from "@/components/LongURLInput";
-import NavBar from "@/components/NavBar";
 
 export default function Home() {
   return (
-    <main className='flex flex-col h-screen'>
-      <NavBar />
+    <main>
       <div className='flex flex-col items-center flex-grow'>
         {/*Main URL input layout*/}
         <div className='absolute sm:top-[15%] max-sm:top-[35%] container max-w-2xl shadow-sm sm:rounded-md'>

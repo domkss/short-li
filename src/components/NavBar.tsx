@@ -1,6 +1,13 @@
 "use client";
+import clsx from "clsx";
+import { navBarLinks } from "../lib/constants";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 function NavBar() {
+  const pathname = usePathname();
+  const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
+
   return (
     <nav className='bg-gray-800'>
       <div className='mx-auto max-w-7xl px-2 sm:px-6 lg:px-8'>
@@ -12,16 +19,16 @@ function NavBar() {
               className='relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'
               aria-controls='mobile-menu'
               aria-expanded='false'
+              onClick={() => {
+                setMobileMenuOpened(!mobileMenuOpened);
+              }}
             >
               <span className='absolute -inset-0.5'></span>
               <span className='sr-only'>Open main menu</span>
-              {/*
-            Icon when menu is closed.
-
-            Menu open: "hidden", Menu closed: "block"
-          */}
+              {/* Icon when menu is closed.
+               Menu open: "hidden", Menu closed: "block" */}
               <svg
-                className='block h-6 w-6'
+                className={clsx("h-6 w-6", mobileMenuOpened ? "hidden" : "block")}
                 fill='none'
                 viewBox='0 0 24 24'
                 strokeWidth='1.5'
@@ -30,13 +37,10 @@ function NavBar() {
               >
                 <path strokeLinecap='round' strokeLinejoin='round' d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5' />
               </svg>
-              {/*
-            Icon when menu is open.
-
-            Menu open: "block", Menu closed: "hidden"
-          */}
+              {/* Icon when menu is open.
+              Menu open: "block", Menu closed: "hidden" */}
               <svg
-                className='hidden h-6 w-6'
+                className={clsx("hh-6 w-6", mobileMenuOpened ? "block" : "hidden")}
                 fill='none'
                 viewBox='0 0 24 24'
                 strokeWidth='1.5'
@@ -58,26 +62,32 @@ function NavBar() {
             <div className='hidden sm:ml-6 sm:block'>
               <div className='flex space-x-4'>
                 {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
-                <a
-                  href='/'
-                  className='bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium'
-                  aria-current='page'
-                >
-                  URL Shortener
-                </a>
-                <a
-                  href='#'
-                  className='text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium'
-                >
-                  Statistics
-                </a>
+                {navBarLinks.map((item) => (
+                  <a
+                    key={item.title}
+                    href={item.path}
+                    className={
+                      pathname === item.path
+                        ? "bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium"
+                        : "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                    }
+                    aria-current='page'
+                  >
+                    {item.title}
+                  </a>
+                ))}
               </div>
             </div>
           </div>
           <div className='absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0'>
             <a
               href='/login'
-              className='text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium'
+              className={
+                pathname === "/login"
+                  ? "bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+              }
+              aria-current='page'
             >
               Login
             </a>
@@ -86,28 +96,22 @@ function NavBar() {
       </div>
 
       {/* Mobile menu, show/hide based on menu state. */}
-      <div className='sm:hidden' id='mobile-menu'>
+      <div className={clsx("sm:hidden", { hidden: !mobileMenuOpened })} id='mobile-menu'>
         <div className='space-y-1 px-2 pb-3 pt-2'>
-          {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
-          <a
-            href='/'
-            className='bg-gray-900 text-white block rounded-md px-3 py-2 text-base font-medium'
-            aria-current='page'
-          >
-            URL Shortener
-          </a>
-          <a
-            href='#'
-            className='text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium'
-          >
-            Statistics
-          </a>
-          <a
-            href='/login'
-            className='text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium'
-          >
-            Login
-          </a>
+          {navBarLinks.map((item) => (
+            <a
+              key={item.title}
+              href={item.path}
+              className={
+                pathname === item.path
+                  ? "bg-gray-900 text-white block rounded-md px-3 py-2 text-base font-medium"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium"
+              }
+              aria-current='page'
+            >
+              {item.title}
+            </a>
+          ))}
         </div>
       </div>
     </nav>
