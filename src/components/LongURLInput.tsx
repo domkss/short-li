@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import clsx from "clsx";
+import { createShortURL } from "@/lib/readis-api";
 
 enum ProgressState {
   NotStarted,
@@ -9,12 +10,13 @@ enum ProgressState {
 }
 
 export default function LongURLInput() {
-  const [shortedURL, setShortedURL] = useState("");
+  const [urlInputContent, setUrlInputContent] = useState("");
   const [progressStatus, setProgressStatus] = useState<ProgressState>(0);
 
-  function onSubmitClick() {
+  async function onSubmitClick() {
     setProgressStatus(ProgressState.Loading);
-    setShortedURL("Dummy");
+    setUrlInputContent(await createShortURL(urlInputContent).catch((error) => error));
+    setProgressStatus(ProgressState.Finished);
   }
 
   return (
@@ -26,6 +28,10 @@ export default function LongURLInput() {
           className='md:pr-[125px] block w-full rounded-lg border border-gray-300 bg-gray-50 p-5 ps-5 text-sm
              text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-md'
           placeholder='example.com/long?url'
+          value={urlInputContent}
+          onChange={(event) => {
+            setUrlInputContent(event.target.value);
+          }}
           disabled={progressStatus == ProgressState.Loading}
         />
         {/*Inline submit button for large screens*/}
