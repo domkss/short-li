@@ -2,6 +2,9 @@
 import { useState } from "react";
 import clsx from "clsx";
 import { createShortURL } from "@/lib/readis-api";
+import { RedisClientError } from "../lib/errorCodes";
+import { isValidHttpURL, addHttpstoURL } from "../lib/helperFunctions";
+import Image from "next/image";
 
 enum ProgressState {
   NotStarted,
@@ -12,18 +15,41 @@ enum ProgressState {
 export default function LongURLInput() {
   const [urlInputContent, setUrlInputContent] = useState("");
   const [progressStatus, setProgressStatus] = useState<ProgressState>(0);
+  const [inputChanged, setInputChanged] = useState<Boolean>(true);
 
   async function onSubmitClick() {
+    if (urlInputContent.trim().length < 1) return;
+
+    if (!inputChanged) {
+      //URL is already shorted, copy the content to clipboard
+
+      return;
+    }
+
+    var constructedUrl = addHttpstoURL(urlInputContent);
+    if (!isValidHttpURL(constructedUrl)) return;
+
     setProgressStatus(ProgressState.Loading);
-    setUrlInputContent(await createShortURL(urlInputContent).catch((error) => error));
+    setUrlInputContent(await createShortURL(constructedUrl).catch((error: RedisClientError) => error));
+    setInputChanged(false);
     setProgressStatus(ProgressState.Finished);
+  }
+
+  function validateInput(target: HTMLInputElement) {
+    if (target.value.trim().length < 1) return;
+    var constructedUrl = addHttpstoURL(target.value.trim());
+
+    if (!isValidHttpURL(constructedUrl)) {
+      target.setCustomValidity("Invalid URL");
+    } else target.setCustomValidity("");
+    target.reportValidity();
   }
 
   return (
     <div className='p-4'>
       <div className='relative'>
         <input
-          type='url'
+          type='text'
           id='url-input'
           className='md:pr-[125px] block w-full rounded-lg border border-gray-300 bg-gray-50 p-5 ps-5 text-sm
              text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-md'
@@ -31,6 +57,11 @@ export default function LongURLInput() {
           value={urlInputContent}
           onChange={(event) => {
             setUrlInputContent(event.target.value);
+            setInputChanged(true);
+            validateInput(event.target);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") onSubmitClick();
           }}
           disabled={progressStatus == ProgressState.Loading}
         />
@@ -47,7 +78,11 @@ export default function LongURLInput() {
             )}
             disabled={progressStatus == ProgressState.Loading}
           >
-            <div className={clsx("inline-block mr-2 text-xl")}>Short it</div>
+            <div className={clsx("inline-block mr-2 text-xl", { hidden: !inputChanged })}>Short it</div>
+            <div className={clsx("inline-block mr-2 text-xl", { hidden: inputChanged })}>
+              Copy
+              <Image className='inline-block w-6 ml-2' src='./copy.svg' width={32} height={32} alt='copy-icon' />
+            </div>
             <div
               className={clsx(
                 "inline-block h-5 w-5 animate-spin rounded-full border-2 border-solid border-current",
@@ -72,7 +107,11 @@ export default function LongURLInput() {
           )}
           disabled={progressStatus == ProgressState.Loading}
         >
-          <div className={clsx("inline-block mr-2 text-xl")}>Short it</div>
+          <div className={clsx("inline-block mr-2 text-xl", { hidden: !inputChanged })}>Short it</div>
+          <div className={clsx("inline-block mr-2 text-xl", { hidden: inputChanged })}>
+            Copy
+            <Image className='inline-block w-6 ml-2' src='./copy.svg' width={32} height={32} alt='copy-icon' />
+          </div>
           <div
             className={clsx(
               "inline-block h-5 w-5 animate-spin rounded-full border-2 border-solid border-current",

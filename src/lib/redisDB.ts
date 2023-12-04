@@ -2,7 +2,9 @@ import { createClient, RedisClientType } from "redis";
 
 class RedisDB {
   private static client: RedisClientType;
+  private static errorCounter = 0;
   static async getClient() {
+    this.errorCounter = 0;
     if (this.client && this.client.isOpen) {
       return this.client;
     }
@@ -15,7 +17,11 @@ class RedisDB {
       },
     });
 
-    this.client.on("error", (err: any) => console.log(err));
+    this.client.on("error", async (err: any) => {
+      this.errorCounter++;
+      console.log(err);
+      if (this.errorCounter > 5) await this.client.disconnect();
+    });
 
     await this.client.connect();
 
