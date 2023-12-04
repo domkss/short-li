@@ -2,21 +2,27 @@
 
 import { stat } from "fs";
 import { RedisDB } from "./redisDB";
+import { RedisClientError } from "../lib/errorCodes";
+import { isValidHttpURL } from "../lib/helperFunctions";
 
 export async function createShortURL(longURL: string) {
+  if (longURL.length < 5 || !isValidHttpURL(longURL)) return RedisClientError.DATA_VALIDATION_ERROR;
+
   const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(RedisClientError.REDIS_CLIENT_ERROR);
+
   var status = false;
   var shortURL: string;
-  var lenght = 5;
-  var numberOfRetrys = 0;
+  var lenght = 7;
+  var numberOfRetries = 0;
 
   do {
-    shortURL = makeid(lenght + Math.floor(numberOfRetrys / 3));
+    shortURL = makeid(lenght + Math.floor(numberOfRetries / 3));
     status = await redisClient.SETNX(shortURL, longURL);
-    numberOfRetrys++;
-  } while (status !== true && numberOfRetrys <= 20);
+    numberOfRetries++;
+  } while (status !== true && numberOfRetries <= 6);
 
-  if (numberOfRetrys > 20) throw Error("Can't save the URL to the database");
+  if (numberOfRetries > 6) throw Error(RedisClientError.REDIS_DB_WRITE_ERROR);
 
   return "https://" + process.env.SERVER_DOMAIN_NAME + "/" + shortURL;
 }

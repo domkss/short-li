@@ -4,6 +4,8 @@ import { navBarLinks } from "../lib/constants";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+
 function NavBar() {
   const pathname = usePathname();
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
@@ -53,11 +55,7 @@ function NavBar() {
           </div>
           <div className='flex flex-1 items-center justify-center sm:items-stretch sm:justify-start'>
             <div className='flex flex-shrink-0 items-center'>
-              <img
-                className='h-8 w-auto'
-                src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500'
-                alt='Your Company'
-              />
+              <Image className='h-8 w-auto' src='/mark.svg' alt='Your Company' width={32} height={32} />
             </div>
             <div className='hidden sm:ml-6 sm:block'>
               <div className='flex space-x-4'>
