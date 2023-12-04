@@ -22,7 +22,7 @@ export default function LongURLInput() {
 
     if (!inputChanged) {
       //URL is already shorted, copy the content to clipboard
-
+      navigator.clipboard.writeText(urlInputContent.trim());
       return;
     }
 
@@ -56,14 +56,18 @@ export default function LongURLInput() {
           placeholder='example.com/long?url'
           value={urlInputContent}
           onChange={(event) => {
+            if (progressStatus === ProgressState.Loading) return;
             setUrlInputContent(event.target.value);
             setInputChanged(true);
             validateInput(event.target);
           }}
           onKeyDown={(event) => {
-            if (event.key === "Enter") onSubmitClick();
+            if (progressStatus === ProgressState.Loading) return;
+            if (event.key === "Enter") {
+              event.preventDefault();
+              onSubmitClick();
+            }
           }}
-          disabled={progressStatus == ProgressState.Loading}
         />
         {/*Inline submit button for large screens*/}
         <div className='max-md:hidden'>
