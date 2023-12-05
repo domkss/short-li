@@ -1,6 +1,5 @@
 "use server";
 
-import { stat } from "fs";
 import { RedisDB } from "./redisDB";
 import { RedisClientError } from "../lib/errorCodes";
 import { isValidHttpURL } from "../lib/helperFunctions";
