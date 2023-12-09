@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import clsx from "clsx";
-import { createShortURL } from "@/lib/readis-api";
+import { createShortURL } from "@/lib/redis-api";
 import { RedisClientError } from "../lib/errorCodes";
 import { isValidHttpURL, addHttpstoURL } from "../lib/helperFunctions";
 import Image from "next/image";

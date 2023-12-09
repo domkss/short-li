@@ -1,8 +1,7 @@
 "use server";
-
 import { RedisDB } from "./redisDB";
-import { RedisClientError } from "../lib/errorCodes";
-import { isValidHttpURL } from "../lib/helperFunctions";
+import { RedisClientError } from "./errorCodes";
+import { isValidHttpURL } from "./helperFunctions";
 
 export async function createShortURL(longURL: string) {
   if (longURL.length < 5 || !isValidHttpURL(longURL)) return RedisClientError.DATA_VALIDATION_ERROR;
