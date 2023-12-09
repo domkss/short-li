@@ -5,6 +5,7 @@ import { createShortURL } from "@/lib/redis-api";
 import { RedisClientError } from "../lib/errorCodes";
 import { isValidHttpURL, addHttpstoURL } from "../lib/helperFunctions";
 import Image from "next/image";
+import copyToClypboard from "copy-to-clipboard";
 
 enum ProgressState {
   NotStarted,
@@ -22,7 +23,8 @@ export default function LongURLInput() {
 
     if (!inputChanged) {
       //URL is already shorted, copy the content to clipboard
-      navigator.clipboard.writeText(urlInputContent.trim());
+      copyToClypboard(urlInputContent.trim());
+
       return;
     }
 
