@@ -8,7 +8,7 @@ export default function Home() {
         {/*Main URL input layout*/}
         <div className='sm:mt-14 container max-w-2xl shadow-sm sm:rounded-md'>
           <div className='p-4 max-sm:pt-36 max-sm:pb-24 shadow-md bg-slate-400 bg-opacity-20 sm:rounded-md'>
-            <h3 className='font-medium text-xl text-center'>Short any long URL for Free</h3>
+            <h3 className='text-xl font-bold text-gray-900 text-center'>Short any long URL for Free</h3>
             <LongURLInput />
           </div>
         </div>
