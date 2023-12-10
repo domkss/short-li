@@ -6,14 +6,14 @@ export default function Home() {
     <main>
       <div className='flex flex-col items-center'>
         {/*Main URL input layout*/}
-        <div className='mt-14 max-sm:mt-48 container max-w-2xl shadow-sm sm:rounded-md'>
-          <div className='p-4 shadow-md bg-slate-400 bg-opacity-20 sm:rounded-md'>
+        <div className='sm:mt-14 container max-w-2xl shadow-sm sm:rounded-md'>
+          <div className='p-4 max-sm:pt-36 max-sm:pb-24 shadow-md bg-slate-400 bg-opacity-20 sm:rounded-md'>
             <h3 className='font-medium text-xl text-center'>Short any long URL for Free</h3>
             <LongURLInput />
           </div>
         </div>
         {/*Description section*/}
-        <div className='flex flex-row max-sm:flex-col min-w-full mt-14 p-4 justify-evenly'>
+        <div className='flex flex-row max-lg:flex-col min-w-full mt-14 mb-3 p-4 justify-evenly'>
           <div className='flex flex-col flex-wrap basis-1/4 p-6 border border-gray-200 rounded-lg shadow'>
             <div className='flex flex-row justify-center'>
               <Image className='h-14' src='share_link_undraw.svg' width={56} height={56} alt='Link share logo' />
@@ -29,7 +29,7 @@ export default function Home() {
               trackable statistics.
             </p>
           </div>
-          <div className='flex flex-col flex-wrap basis-1/4 p-6 border border-gray-200 rounded-lg shadow'>
+          <div className='flex flex-col flex-wrap basis-1/4 my-3 p-6 border border-gray-200 rounded-lg shadow'>
             <div className='flex flex-row justify-center'>
               <Image className='h-14' src='expiry_time_undraw.svg' width={56} height={56} alt='Expiry time logo' />
               <span className='ml-3 flex flex-1 flex-col justify-center'>
@@ -43,7 +43,7 @@ export default function Home() {
               However, with a simple registration, this feature can be customized or even turned off.
             </p>
           </div>
-          <div className='flex flex-col flex-wrap basis-1/4 p-6 border border-gray-200 rounded-lg shadow'>
+          <div className='flex flex-col flex-wrap basis-1/4 my-3 p-6 border border-gray-200 rounded-lg shadow'>
             <div className='flex flex-row justify-center'>
               <Image className='h-14' src='charts_undraw.svg' width={56} height={56} alt='Expiry time logo' />
               <span className='ml-3 flex flex-1 flex-col justify-center'>
