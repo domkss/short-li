@@ -22,7 +22,13 @@ export async function createShortURL(longURL: string) {
 
   if (numberOfRetries > 6) throw Error(RedisClientError.REDIS_DB_WRITE_ERROR);
 
-  return "https://" + process.env.SERVER_DOMAIN_NAME + "/" + shortURL;
+  const envType = process.env.NODE_ENV;
+
+  if (envType === "development") {
+    return "http://" + process.env.SERVER_DOMAIN_NAME + ":" + process.env.SERVER_PORT + "/" + shortURL;
+  } else {
+    return "https://" + process.env.SERVER_DOMAIN_NAME + "/" + shortURL;
+  }
 }
 
 function makeid(length: number) {
