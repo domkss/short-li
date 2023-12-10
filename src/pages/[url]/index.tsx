@@ -16,11 +16,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     shortURL = shortURL.substring(1);
 
     let apiResponse = await fetch(
-      "http://" +
-        process.env.SERVER_DOMAIN_NAME +
-        (process.env.NODE_ENV === "development" ? ":" + process.env.SERVER_PORT : "") +
-        "/api/redirect-url?inputurl=" +
-        shortURL
+      "http://localhost:" + process.env.SERVER_PORT + "/api/redirect-url?inputurl=" + shortURL
     );
     if (apiResponse.status === 200) {
       let responseBody = await apiResponse.json();
