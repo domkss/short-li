@@ -8,7 +8,7 @@ export default function LoginPage() {
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
           <Image
             className='mx-auto h-14 pl-8 w-auto rounded-lg'
-            src='/logo-no-background.svg'
+            src='shortli_logo.svg'
             alt='ShortLi logo'
             width={56}
             height={56}
