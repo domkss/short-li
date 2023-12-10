@@ -9,7 +9,7 @@ export default function LoginPage() {
           <Image
             className='mx-auto h-14 pl-8 w-auto rounded-lg'
             src='/logo-no-background.svg'
-            alt='Your Company'
+            alt='ShortLi logo'
             width={56}
             height={56}
           />
