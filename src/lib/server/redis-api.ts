@@ -26,7 +26,7 @@ export async function createShortURL(longURL: string) {
 
   const includeHTTPProtocol = process.env.SHORT_URL_INCLUDE_HTTP_PROTOCOL === "true";
 
-  if (envType === "development") {
+  if (envType !== "production") {
     return (
       (includeHTTPProtocol ? "http://" : "") +
       (process.env.SERVER_DOMAIN_NAME + ":" + process.env.SERVER_PORT + "/") +
