@@ -77,7 +77,7 @@ export default function LongURLInput() {
             type='submit'
             onClick={() => onSubmitClick()}
             className={clsx(
-              "absolute bottom-2.5 end-2.5 rounded-lg bg-lime-600 px-4 py-2 text-md text-white",
+              "absolute bottom-2.5 end-2.5 rounded-lg bg-lime-600 px-4 py-2 text-md text-white font-semibold",
               progressStatus == ProgressState.Loading
                 ? ""
                 : "hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-blue-300 flex items-center"
@@ -106,7 +106,7 @@ export default function LongURLInput() {
           type='submit'
           onClick={() => onSubmitClick()}
           className={clsx(
-            "rounded-lg bg-lime-600 py-2 text-sm text-white min-w-[50%]",
+            "rounded-lg bg-lime-600 py-2 text-sm text-white min-w-[50%] font-semibold",
             progressStatus == ProgressState.Loading
               ? ""
               : "hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
