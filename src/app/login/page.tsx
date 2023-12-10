@@ -6,7 +6,13 @@ export default function LoginPage() {
     <main className='flex flex-col'>
       <div className='flex-1 justify-center px-6 py-12 lg:px-8'>
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
-          <Image className='mx-auto h-10 w-auto' src='/mark.svg' alt='Your Company' width={40} height={40} />
+          <Image
+            className='mx-auto h-14 pl-8 w-auto rounded-lg'
+            src='/logo-no-background.svg'
+            alt='Your Company'
+            width={56}
+            height={56}
+          />
           <h2 className='mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900'>
             Sign in to your account
           </h2>
