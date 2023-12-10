@@ -12,21 +12,33 @@ export default function Home() {
           </div>
         </div>
         {/*Description section*/}
-        <div className='flex flex-row min-w-full mt-16 p-4 justify-around'>
-          <div className='flex flex-col flex-wrap basis-1/3 justify-center p-3'>
-            <h1 className='ms-4'>Header</h1>
+        <div className='flex flex-row max-sm:flex-col min-w-full mt-16 p-4 justify-around'>
+          <div className='flex flex-col flex-wrap basis-1/4 justify-center p-3'>
+            <h1 className='ms-4'>What is ShortLi</h1>
             <hr className='block border-b-2 border-t-neutral-100 max-w-full' />
             <p>
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-              industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
-              scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release
-              of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
-              like Aldus PageMaker including versions of Lorem Ipsum.
+              ShortLi is an easy to use Free web link shortener tool.
+              <br />
+              Create short links, QR codes and custom Link-in-bio pages with trackable statistics.
             </p>
           </div>
-          <div className='flex flex-wrap basis-1/3 justify-center'>B</div>
-          <div className='flex flex-wrap basis-1/3 justify-center'>C</div>
+          <div className='flex flex-col flex-wrap basis-1/4 justify-center p-3'>
+            <h1 className='ms-4'>Default Link Expiry Time</h1>
+            <hr className='block border-b-2 border-t-neutral-100 max-w-full' />
+            <p>
+              By default the links expire after 180 days.
+              <br />
+              However, with a simple registration, this feature can be customized or even turned off.
+            </p>
+          </div>
+          <div className='flex flex-col flex-wrap basis-1/4 justify-center p-3'>
+            <h1 className='ms-4'>Redirection statistics</h1>
+            <hr className='block border-b-2 border-t-neutral-100 max-w-full' />
+            <p>
+              Track the performance of your shortened links in real-time, monitoring key metrics such as click-through
+              rates, geographic locations of visitors, and device types used to access your links.
+            </p>
+          </div>
         </div>
       </div>
     </main>

@@ -1,3 +1,4 @@
+"use server";
 import { createClient, RedisClientType } from "redis";
 
 class RedisDB {

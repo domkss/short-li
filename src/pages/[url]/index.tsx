@@ -1,4 +1,3 @@
-import { RedisDB } from "../../lib/redisDB";
 import type { GetServerSidePropsContext } from "next";
 
 type ErrorProps = {
@@ -10,23 +9,30 @@ export default function RedirectPage(props: ErrorProps) {
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  var destionationURL: string | null = ctx.resolvedUrl;
+  let shortURL: string | null = ctx.resolvedUrl;
+  let destinationURL: string = "/";
 
-  try {
-    if (destionationURL) {
-      destionationURL = destionationURL.substring(1);
-      const redisClient = await RedisDB.getClient();
-      if (!(redisClient && redisClient.isOpen))
-        return { props: { message: "Failed to conncet to redirection dataabse. Please try again later." } };
-      destionationURL = await redisClient.GET(destionationURL);
+  if (shortURL) {
+    shortURL = shortURL.substring(1);
+
+    let apiResponse = await fetch(
+      "http://" +
+        process.env.SERVER_DOMAIN_NAME +
+        (process.env.NODE_ENV === "development" ? ":" + process.env.SERVER_PORT : "") +
+        "/api/redirect-url?inputurl=" +
+        shortURL
+    );
+    if (apiResponse.status === 200) {
+      let responseBody = await apiResponse.json();
+      destinationURL = responseBody.message;
+    } else {
+      return { props: { message: "Redirection failed. Internal server error" } };
     }
-  } catch (e) {
-    return { props: { message: "Redirection failed. Internal server error" } };
   }
 
   return {
     redirect: {
-      destination: destionationURL ? destionationURL : "/",
+      destination: destinationURL,
       permanent: true,
     },
   };

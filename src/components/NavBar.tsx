@@ -1,6 +1,6 @@
 "use client";
 import clsx from "clsx";
-import { navBarLinks } from "../lib/constants";
+import { navBarLinks } from "../lib/client/clientConstants";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";

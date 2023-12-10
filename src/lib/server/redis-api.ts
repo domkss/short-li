@@ -1,7 +1,7 @@
 "use server";
 import { RedisDB } from "./redisDB";
 import { RedisClientError } from "./errorCodes";
-import { isValidHttpURL } from "./helperFunctions";
+import { isValidHttpURL } from "../helperFunctions";
 
 export async function createShortURL(longURL: string) {
   if (longURL.length < 5 || !isValidHttpURL(longURL)) return RedisClientError.DATA_VALIDATION_ERROR;
@@ -24,10 +24,29 @@ export async function createShortURL(longURL: string) {
 
   const envType = process.env.NODE_ENV;
 
+  const includeHTTPProtocol = process.env.SHORT_URL_INCLUDE_HTTP_PROTOCOL === "true";
+
   if (envType === "development") {
-    return "http://" + process.env.SERVER_DOMAIN_NAME + ":" + process.env.SERVER_PORT + "/" + shortURL;
+    return (
+      (includeHTTPProtocol ? "http://" : "") +
+      (process.env.SERVER_DOMAIN_NAME + ":" + process.env.SERVER_PORT + "/") +
+      shortURL
+    );
   } else {
-    return "https://" + process.env.SERVER_DOMAIN_NAME + "/" + shortURL;
+    return (includeHTTPProtocol ? "https://" : "") + process.env.SERVER_DOMAIN_NAME + "/" + shortURL;
+  }
+}
+
+export async function getDestinationURL(inputURL: string) {
+  try {
+    const redisClient = await RedisDB.getClient();
+    if (!(redisClient && redisClient.isOpen)) throw Error(RedisClientError.REDIS_CLIENT_ERROR);
+
+    let dbResponse = await redisClient.GET(inputURL);
+    let destionationURL = dbResponse ? dbResponse : "/";
+    return destionationURL;
+  } catch (e) {
+    throw Error(RedisClientError.REDIS_CLIENT_ERROR);
   }
 }
 
