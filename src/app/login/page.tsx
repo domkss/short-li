@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const submitDisabled = loading || (registerView && password.length < 8) || password !== confirmPassword;
 
   async function handleSubmit(e: React.FormEvent) {
     if (email.length < 2 || password.length < 8) return;
@@ -218,11 +219,14 @@ export default function LoginPage() {
             <div>
               <button
                 type='submit'
-                disabled={loading || password.length < 8 || password !== confirmPassword}
+                disabled={submitDisabled}
                 className={clsx(
                   "flex w-full justify-center rounded-md text-white shadow-sm px-3 py-1.5 text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
-                  { "bg-indigo-600  hover:bg-indigo-500  focus-visible:outline-indigo-600": !registerView },
-                  { "bg-emerald-500  hover:bg-green-500  focus-visible:outline-green-500": registerView }
+                  { "bg-indigo-600": !registerView },
+                  { "hover:bg-indigo-500  focus-visible:outline-indigo-600": !registerView && !submitDisabled },
+                  { "bg-emerald-500": registerView },
+                  { "hover:bg-green-500 focus-visible:outline-green-500": !submitDisabled && registerView },
+                  { "hover:bg-red-400 bounce-and-shake": registerView && submitDisabled }
                 )}
               >
                 {registerView ? "Sign up" : "Sign in"}
