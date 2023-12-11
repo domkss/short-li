@@ -8,6 +8,7 @@ type ResponseData = {
 
 type RequestData = {
   inputurl: string;
+  ip?: string;
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
@@ -17,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     let querryData = req.query as RequestData;
 
     try {
-      let destinationURL = await getDestinationURL(querryData.inputurl);
+      let destinationURL = await getDestinationURL(querryData.inputurl, querryData.ip);
 
       res.status(200).json({ message: destinationURL });
     } catch (e) {

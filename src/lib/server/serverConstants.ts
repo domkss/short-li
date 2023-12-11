@@ -1,5 +1,12 @@
 export enum REDIS_NAME_PATTERNS {
-  WEB_LINK_PRETAG = "link:",
+  LINK_PRETAG = "link:",
+  USER_PRETAG = "user:",
+  STATISTICAL_IP_ADDRESSES = "statistical:ips:",
+}
+
+export enum LINK_FIELDS {
+  TARGET = "target_url",
+  REDIRECT_COUNTER = "redirect_counter",
 }
 
 export enum REDIS_ERRORS {
