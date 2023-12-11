@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import clsx from "clsx";
-import { createShortURL } from "@/lib/server/redis-api";
+import { createShortURL } from "@/lib/server/api-functions";
 import { REDIS_ERRORS } from "@/lib/server/serverConstants";
-import { isValidHttpURL, addHttpstoURL } from "../lib/helperFunctions";
+import { isValidHttpURL, addHttpstoURL } from "@/lib/helperFunctions";
 import Image from "next/image";
 import copyToClypboard from "copy-to-clipboard";
 

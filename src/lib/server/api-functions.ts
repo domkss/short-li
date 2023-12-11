@@ -1,6 +1,6 @@
 "use server";
 import { RedisDB } from "./redisDB";
-import { REDIS_ERRORS, REDIS_NAME_PATTERNS, LINK_FIELDS } from "./serverConstants";
+import { REDIS_ERRORS, REDIS_NAME_PATTERNS, REDIS_LINK_FIELDS } from "./serverConstants";
 import { isValidHttpURL } from "../helperFunctions";
 import { randomBytes } from "crypto";
 
@@ -18,8 +18,9 @@ export async function createShortURL(longURL: string) {
 
   do {
     shortURL = makeid(lenght + Math.floor(numberOfRetries / 3));
-    status = await redisClient.HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, LINK_FIELDS.TARGET, longURL);
-    if (status) await redisClient.HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, LINK_FIELDS.REDIRECT_COUNTER, "0");
+    status = await redisClient.HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TARGET, longURL);
+    if (status)
+      await redisClient.HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.REDIRECT_COUNTER, "0");
     numberOfRetries++;
   } while (status !== true && numberOfRetries <= 6);
 
@@ -45,9 +46,10 @@ export async function getDestinationURL(inputURL: string, ip?: string) {
     const redisClient = await RedisDB.getClient();
     if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
-    let targetURL = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, LINK_FIELDS.TARGET);
-    if (targetURL) redisClient.HINCRBY(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, LINK_FIELDS.REDIRECT_COUNTER, 1);
-    if (targetURL && ip) redisClient.SADD(REDIS_NAME_PATTERNS.STATISTICAL_IP_ADDRESSES + targetURL, ip);
+    let targetURL = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.TARGET);
+    if (targetURL)
+      redisClient.HINCRBY(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.REDIRECT_COUNTER, 1);
+    if (targetURL && ip) await redisClient.SADD(REDIS_NAME_PATTERNS.STATISTICAL_IP_ADDRESSES + targetURL, ip);
 
     let destionationURL = targetURL ? targetURL : "/";
     return destionationURL;
