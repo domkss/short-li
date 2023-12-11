@@ -18,8 +18,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     let apiResponse = await fetch(
       "http://localhost:" +
         process.env.SERVER_PORT +
-        "/api/redirect-url?" +
-        (ip ? "source-ip=" + ip : "") +
+        "/api/redirect/url?" +
+        (ip ? "source-ip=" + ip + "&" : "") +
         "inputurl=" +
         shortURL
     );

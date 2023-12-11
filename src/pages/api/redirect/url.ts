@@ -1,6 +1,6 @@
 "use server";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getDestinationURL } from "../../lib/server/redis-api";
+import { getDestinationURL } from "@/lib/server/api-functions";
 
 type ResponseData = {
   message: string;
@@ -11,7 +11,7 @@ type RequestData = {
   ip?: string;
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
+export default async function getRedirectURLHandler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   if (!Object.keys(req.query).includes("inputurl") || typeof req.query.inputurl !== "string")
     res.status(400).json({ message: "Bad request" });
   else {
@@ -22,6 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
       res.status(200).json({ message: destinationURL });
     } catch (e) {
+      console.log(e);
       res.status(500).json({ message: "Redirection failed. Internal server error" });
     }
   }
