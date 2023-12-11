@@ -19,7 +19,7 @@ async function passwordIsValid(email: string, password: string) {
 }
 
 export async function createUser(email: string, password: string) {
-  if (password.length < 6) throw Error(AUTHENTICATION_ERRORS.WEEK_PASSWORD_ERROR);
+  if (password.length < 8) throw Error(AUTHENTICATION_ERRORS.WEEK_PASSWORD_ERROR);
   let status;
   try {
     const redisClient = await RedisDB.getClient();

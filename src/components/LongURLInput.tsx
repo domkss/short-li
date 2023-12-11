@@ -92,8 +92,8 @@ export default function LongURLInput() {
             <div
               className={clsx(
                 "inline-block h-5 w-5 animate-spin rounded-full border-2 border-solid border-current",
-                "border-r-transparent align-[-0.175em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite] border-white",
-                progressStatus !== ProgressState.Loading ? "hidden" : ""
+                "border-r-transparent text-primary motion-reduce:animate-[spin_1.5s_linear_infinite] border-white",
+                { hidden: progressStatus !== ProgressState.Loading }
               )}
               role='status'
             />
