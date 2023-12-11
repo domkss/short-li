@@ -1,7 +1,32 @@
-import NavBar from "@/components/NavBar";
+"use client";
+import clsx from "clsx";
 import Image from "next/image";
+import { useState } from "react";
+import { createUser } from "@/lib/server/user/register";
 
 export default function LoginPage() {
+  const [registerView, setRegisterView] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    if (email.length < 2 || password.length < 8) return;
+    e.preventDefault();
+    setLoading(true);
+
+    if (registerView) {
+      try {
+        let status = await createUser(email, password);
+        console.log(status);
+      } catch (e) {}
+      //setLoading(false);
+    } else {
+      //Login
+    }
+  }
+
   return (
     <main className='flex flex-col'>
       <div className='flex-1 justify-center px-6 py-12 lg:px-8'>
@@ -14,12 +39,12 @@ export default function LoginPage() {
             height={56}
           />
           <h2 className='mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900'>
-            Sign in to your account
+            {registerView ? "Create your account" : "Sign in to your account"}
           </h2>
         </div>
 
         <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
-          <form className='space-y-6' action='#' method='POST'>
+          <form className='space-y-6' onSubmit={handleSubmit}>
             <div>
               <label htmlFor='email' className='block text-sm font-medium leading-6 text-gray-900'>
                 Email address
@@ -31,7 +56,8 @@ export default function LoginPage() {
                   type='email'
                   autoComplete='email'
                   required
-                  className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                  onChange={(input) => setEmail(input.target.value)}
+                  className='block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                 />
               </div>
             </div>
@@ -41,7 +67,7 @@ export default function LoginPage() {
                 <label htmlFor='password' className='block text-sm font-medium leading-6 text-gray-900'>
                   Password
                 </label>
-                <div className='text-sm'>
+                <div className={clsx("text-sm", { hidden: registerView })}>
                   <a href='#' className='font-semibold text-indigo-600 hover:text-indigo-500'>
                     Forgot password?
                   </a>
@@ -52,22 +78,176 @@ export default function LoginPage() {
                   id='password'
                   name='password'
                   type='password'
-                  autoComplete='current-password'
+                  autoComplete={registerView ? "new-password" : "current-password"}
                   required
-                  className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                  onChange={(input) => setPassword(input.target.value)}
+                  className='block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                 />
+              </div>
+            </div>
+            <div className={clsx({ hidden: !registerView })}>
+              <div className='flex items-center justify-between'>
+                <label htmlFor='password' className='block text-sm font-medium leading-6 text-gray-900'>
+                  Confirm Password
+                </label>
+              </div>
+              <div className='mt-2'>
+                <input
+                  id='password-confirm'
+                  name='confirm-password'
+                  type='password'
+                  autoComplete='new-password'
+                  required={registerView}
+                  onChange={(input) => {
+                    setConfirmPassword(input.target.value);
+                  }}
+                  className='block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                />
+              </div>
+            </div>
+            <div className={clsx({ hidden: !registerView })}>
+              <div id='hs-strong-password-hints'>
+                <h4 className='mb-2 text-sm font-semibold text-gray-800 dark:text-white'>
+                  Your password must contain:
+                </h4>
+                <ul className='space-y-1 text-sm text-gray-500'>
+                  {/*Min lenght*/}
+                  <li
+                    className={clsx(
+                      "hs-strong-password-active:text-teal-500 flex items-center gap-x-2",
+                      {
+                        "text-green-400": password.length >= 8,
+                      },
+                      {
+                        "text-red-500": password === confirmPassword && password.length < 8 && password.length > 0,
+                      }
+                    )}
+                  >
+                    <span className={clsx({ hidden: password.length < 8 })} data-check>
+                      <svg
+                        className='flex-shrink-0 w-4 h-4'
+                        xmlns='http://www.w3.org/2000/svg'
+                        width='24'
+                        height='24'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke='currentColor'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      >
+                        <polyline points='20 6 9 17 4 12' />
+                      </svg>
+                    </span>
+                    <span className={clsx({ hidden: password.length >= 8 })} data-uncheck>
+                      <svg
+                        className='flex-shrink-0 w-4 h-4'
+                        xmlns='http://www.w3.org/2000/svg'
+                        width='24'
+                        height='24'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke='currentColor'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      >
+                        <path d='M18 6 6 18' />
+                        <path d='m6 6 12 12' />
+                      </svg>
+                    </span>
+                    Minimum number of characters is 8.
+                  </li>
+                  {/*Confirmation password*/}
+                  <li
+                    className={clsx(
+                      "hs-strong-password-active:text-teal-500 flex items-center gap-x-2",
+                      {
+                        "text-green-400": password === confirmPassword && confirmPassword.length > 0,
+                      },
+                      {
+                        "text-red-500": password !== confirmPassword && confirmPassword.length > 0,
+                      }
+                    )}
+                  >
+                    <span
+                      className={clsx({ hidden: password !== confirmPassword || confirmPassword.length < 1 })}
+                      data-check
+                    >
+                      <svg
+                        className='flex-shrink-0 w-4 h-4'
+                        xmlns='http://www.w3.org/2000/svg'
+                        width='24'
+                        height='24'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke='currentColor'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      >
+                        <polyline points='20 6 9 17 4 12' />
+                      </svg>
+                    </span>
+                    <span
+                      className={clsx({ hidden: password === confirmPassword && confirmPassword.length > 0 })}
+                      data-uncheck
+                    >
+                      <svg
+                        className='flex-shrink-0 w-4 h-4'
+                        xmlns='http://www.w3.org/2000/svg'
+                        width='24'
+                        height='24'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke='currentColor'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      >
+                        <path d='M18 6 6 18' />
+                        <path d='m6 6 12 12' />
+                      </svg>
+                    </span>
+                    The confirmation password must match.
+                  </li>
+                </ul>
               </div>
             </div>
 
             <div>
               <button
                 type='submit'
-                className='flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+                disabled={loading || password.length < 8 || password !== confirmPassword}
+                className={clsx(
+                  "flex w-full justify-center rounded-md text-white shadow-sm px-3 py-1.5 text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
+                  { "bg-indigo-600  hover:bg-indigo-500  focus-visible:outline-indigo-600": !registerView },
+                  { "bg-emerald-500  hover:bg-green-500  focus-visible:outline-green-500": registerView }
+                )}
               >
-                Sign in
+                {registerView ? "Sign up" : "Sign in"}
+                <div
+                  className={clsx(
+                    "inline-block h-4 w-4 ml-2 self-center animate-spin rounded-full border-2 border-solid border-current",
+                    "border-r-transparent text-primary motion-reduce:animate-[spin_1.5s_linear_infinite] border-white",
+                    { hidden: !loading }
+                  )}
+                  role='status'
+                />
               </button>
             </div>
           </form>
+          <p className='mt-10 text-center text-sm text-gray-500'>
+            Don&apos;t have an account yet?
+            <button
+              className='ml-1 font-semibold leading-6 text-indigo-600 hover:text-indigo-500'
+              onClick={() => {
+                setRegisterView(!registerView);
+              }}
+            >
+              Get Started
+            </button>
+          </p>
         </div>
       </div>
     </main>
