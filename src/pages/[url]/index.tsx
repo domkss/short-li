@@ -11,12 +11,17 @@ export default function RedirectPage(props: ErrorProps) {
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   let shortURL: string | null = ctx.resolvedUrl;
   let destinationURL: string = "/";
-
+  const ip = ctx.req.headers["x-real-ip"] || ctx.req.socket.remoteAddress;
   if (shortURL) {
     shortURL = shortURL.substring(1);
 
     let apiResponse = await fetch(
-      "http://localhost:" + process.env.SERVER_PORT + "/api/redirect-url?inputurl=" + shortURL
+      "http://localhost:" +
+        process.env.SERVER_PORT +
+        "/api/redirect-url?" +
+        (ip ? "source-ip=" + ip : "") +
+        "inputurl=" +
+        shortURL
     );
     if (apiResponse.status === 200) {
       let responseBody = await apiResponse.json();
