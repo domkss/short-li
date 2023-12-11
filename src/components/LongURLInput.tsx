@@ -2,7 +2,7 @@
 import { useState } from "react";
 import clsx from "clsx";
 import { createShortURL } from "@/lib/server/redis-api";
-import { RedisClientError } from "../lib/server/errorCodes";
+import { REDIS_ERRORS } from "@/lib/server/serverConstants";
 import { isValidHttpURL, addHttpstoURL } from "../lib/helperFunctions";
 import Image from "next/image";
 import copyToClypboard from "copy-to-clipboard";
@@ -32,7 +32,7 @@ export default function LongURLInput() {
     if (!isValidHttpURL(constructedUrl)) return;
 
     setProgressStatus(ProgressState.Loading);
-    setUrlInputContent(await createShortURL(constructedUrl).catch((error: RedisClientError) => error));
+    setUrlInputContent(await createShortURL(constructedUrl).catch((error: REDIS_ERRORS) => error));
     setInputChanged(false);
     setProgressStatus(ProgressState.Finished);
   }
