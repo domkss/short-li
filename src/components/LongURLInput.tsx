@@ -77,10 +77,11 @@ export default function LongURLInput() {
             type='submit'
             onClick={() => onSubmitClick()}
             className={clsx(
-              "absolute bottom-2.5 end-2.5 rounded-lg bg-lime-600 px-4 py-2 text-md text-white font-semibold",
-              progressStatus == ProgressState.Loading
-                ? ""
-                : "hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-blue-300 flex items-center"
+              "absolute bottom-2.5 end-2.5 rounded-lg bg-lime-600 px-4 py-2 text-md font-[500] text-white",
+              {
+                "hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-blue-300 flex items-center":
+                  progressStatus != ProgressState.Loading,
+              }
             )}
             disabled={progressStatus == ProgressState.Loading}
           >
@@ -105,12 +106,10 @@ export default function LongURLInput() {
         <button
           type='submit'
           onClick={() => onSubmitClick()}
-          className={clsx(
-            "rounded-lg bg-lime-600 py-2 text-sm text-white min-w-[50%] font-semibold",
-            progressStatus == ProgressState.Loading
-              ? ""
-              : "hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-          )}
+          className={clsx("rounded-lg bg-lime-600 py-2 text-sm text-white min-w-[50%] font-[500]", {
+            "hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-blue-300":
+              progressStatus != ProgressState.Loading,
+          })}
           disabled={progressStatus == ProgressState.Loading}
         >
           <div className={clsx("inline-block mr-2 text-xl", { hidden: !inputChanged })}>Short it</div>
