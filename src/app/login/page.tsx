@@ -3,6 +3,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { loginUserSchema } from "@/lib/helperFunctions";
 
 export default function LoginPage() {
   const [registerView, setRegisterView] = useState(false);
@@ -14,7 +15,7 @@ export default function LoginPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (email.length < 2 || password.length < 8) return;
+    if (!loginUserSchema.safeParse({ email: email, password: password }).success) return;
 
     setLoading(true);
 

@@ -7,8 +7,7 @@ export async function loginUser(email: string, password: string) {
   try {
     const redisClient = await RedisDB.getClient();
     let salt = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.PASSWORD_SALT);
-    let hash = await redisClient.HGET(REDIS_NAME_PATTERNS + email, REDIS_USER_FIELDS.PASSWORD_HASH);
-
+    let hash = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.PASSWORD_HASH);
     if (!salt || !hash) return false;
     return passwordIsValid(password, salt, hash);
   } catch (e) {

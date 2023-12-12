@@ -17,15 +17,13 @@ export const authOptions: AuthOptions = {
 
           let succes = await loginUser(email, password);
           if (succes) {
-            console.log("succesfull login");
             return { email: email, id: email };
           } else {
-            console.log("Invalid password");
+            //Todo: Invalid Password
             return null;
           }
         } catch (e) {
-          //Todo handle error
-          console.log(e);
+          //Todo: Handle DB errors
           return null;
         }
       },
@@ -35,21 +33,6 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXT_AUTH_SECRET,
-
-  callbacks: {
-    async session({ session, token }) {
-      session.user.email = token.email;
-      return session;
-    },
-    async jwt({ token, account, user }) {
-      if (account) {
-        token.accessToken = account.access_token;
-        token.email = user.email;
-      }
-      console.log(token);
-      return token;
-    },
-  },
 
   pages: {
     signIn: "/login",
