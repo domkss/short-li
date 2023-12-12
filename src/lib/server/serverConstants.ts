@@ -22,6 +22,5 @@ export enum REDIS_ERRORS {
 
 /*Login constants*/
 export enum AUTHENTICATION_ERRORS {
-  WEEK_PASSWORD_ERROR = "The password is not strong enough",
   USER_ALREADY_EXISTS = "This email address is already registered",
 }

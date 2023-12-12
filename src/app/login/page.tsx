@@ -2,7 +2,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 import { useState } from "react";
-import { createUser } from "@/lib/server/user/register";
+import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
   const [registerView, setRegisterView] = useState(false);
@@ -10,21 +10,46 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const submitDisabled = loading || (registerView && password.length < 8) || password !== confirmPassword;
+  const submitDisabled = loading || (registerView && (password.length < 8 || password !== confirmPassword));
 
   async function handleSubmit(e: React.FormEvent) {
-    if (email.length < 2 || password.length < 8) return;
     e.preventDefault();
+    if (email.length < 2 || password.length < 8) return;
+
     setLoading(true);
 
     if (registerView) {
       try {
-        let status = await createUser(email, password);
-        console.log(status);
-      } catch (e) {}
-      //setLoading(false);
+        //let status = await createUser(email, password);
+        let result = await fetch("/api/auth/register", {
+          method: "POST",
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        });
+
+        let data = await result.json();
+
+        if (!data.user) {
+          //Todo: handle error
+          setLoading(false);
+          return null;
+        }
+
+        signIn("credentials", { email: email, password: password, callbackUrl: "/" });
+      } catch (e) {
+        //Todo: Handle registration error
+        setLoading(false);
+      }
+      //
     } else {
       //Login
+      try {
+        signIn("credentials", { email: email, password: password, callbackUrl: "/" });
+      } catch (e) {
+        //Todo: handle error
+      }
     }
   }
 
@@ -34,7 +59,7 @@ export default function LoginPage() {
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
           <Image
             className='mx-auto h-14 pl-8 w-auto rounded-lg'
-            src='shortli_logo.svg'
+            src='/shortli_logo.svg'
             alt='ShortLi logo'
             width={56}
             height={56}

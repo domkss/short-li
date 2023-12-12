@@ -1,6 +1,6 @@
 "use client";
 import clsx from "clsx";
-import { navBarLinks } from "../lib/client/clientConstants";
+import { navBarLinks } from "@/lib/client/clientConstants";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
@@ -55,7 +55,7 @@ function NavBar() {
           </div>
           <div className='flex flex-1 items-center justify-center sm:items-stretch sm:justify-start'>
             <div className='flex flex-shrink-0 items-center'>
-              <Image className='h-8 w-auto pl-8' src='shortli_logo.svg' alt='ShortLi logo' width={32} height={32} />
+              <Image className='h-8 w-auto pl-8' src='/shortli_logo.svg' alt='ShortLi logo' width={32} height={32} />
             </div>
             <div className='hidden sm:ml-6 sm:block'>
               <div className='flex space-x-4'>
