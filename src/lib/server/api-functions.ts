@@ -49,7 +49,7 @@ export async function getDestinationURL(inputURL: string, ip?: string) {
     let targetURL = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.TARGET);
     if (targetURL)
       redisClient.HINCRBY(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.REDIRECT_COUNTER, 1);
-    if (targetURL && ip) await redisClient.SADD(REDIS_NAME_PATTERNS.STATISTICAL_IP_ADDRESSES + targetURL, ip);
+    if (targetURL && ip) await redisClient.SADD(REDIS_NAME_PATTERNS.STATISTICAL_IP_ADDRESSES + inputURL, ip);
 
     let destionationURL = targetURL ? targetURL : "/";
     return destionationURL;
