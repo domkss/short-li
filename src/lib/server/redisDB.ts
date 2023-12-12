@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 import { createClient, RedisClientType } from "redis";
 
 class RedisDB {

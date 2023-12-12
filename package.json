@@ -12,9 +12,11 @@
     "clsx": "^2.0.0",
     "copy-to-clipboard": "^3.3.3",
     "next": "14.0.3",
+    "next-auth": "^4.24.5",
     "react": "^18",
     "react-dom": "^18",
-    "redis": "^4.6.11"
+    "redis": "^4.6.11",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20",
