@@ -1,7 +1,7 @@
 "use client";
 import clsx from "clsx";
 import { navBarLinks } from "@/lib/client/clientConstants";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,6 +10,7 @@ import { signOut, useSession } from "next-auth/react";
 function NavBar() {
   const pathname = usePathname();
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
+  const { replace } = useRouter();
 
   return (
     <nav className='bg-gray-800'>
@@ -95,7 +96,7 @@ function NavBar() {
               <button
                 className='text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium cursor-pointer'
                 onClick={() => {
-                  signOut({ redirect: false });
+                  signOut({ redirect: false }).then(() => replace("/"));
                 }}
               >
                 Logout
