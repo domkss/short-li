@@ -4,15 +4,16 @@ import { registerNewUser } from "@/lib/server/user/authenticate";
 
 export async function POST(req: NextRequest) {
   const content = await req.json();
+  const parsedContent = registerUserSchema.safeParse(content);
+  if (!parsedContent.success)
+    return Response.json({ succes: false, error: "Invalid email and password format" }, { status: 400 });
   try {
-    const { email, password } = registerUserSchema.parse(content);
-    try {
-      await registerNewUser(email, password);
-      return Response.json({ user: { email: email } });
-    } catch (e) {
-      return Response.json({ error: e }, { status: 400 });
-    }
-  } catch (e) {
-    return Response.json({ error: "Unable to create user" }, { status: 400 });
+    await registerNewUser(parsedContent.data.email, parsedContent.data.password);
+    return Response.json({ succes: true, user: { email: parsedContent.data.email } }, { status: 200 });
+  } catch (_) {
+    return Response.json(
+      { succes: false, error: "This email is already in use.\n Please choose another." },
+      { status: 200 }
+    );
   }
 }
