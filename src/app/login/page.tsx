@@ -2,7 +2,8 @@
 import clsx from "clsx";
 import Image from "next/image";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { loginUserSchema, emailSchema } from "@/lib/helperFunctions";
 
 export default function LoginPage() {
@@ -16,6 +17,8 @@ export default function LoginPage() {
     loading ||
     !loginUserSchema.safeParse({ email: email, password: password }).success ||
     (registerView && password !== confirmPassword);
+  const { replace } = useRouter();
+  if (useSession().status === "authenticated") replace("/user/dashboard");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -45,13 +48,16 @@ export default function LoginPage() {
       let loginResult = await signIn("credentials", {
         email: email,
         password: password,
-        callbackUrl: "/user/dashboard",
+        redirect: false,
       });
+      setLoading(false);
+
       if (!loginResult?.ok) {
-        let error = loginResult?.error ? loginResult.error : "Unable to login.";
+        let error = loginResult?.error || "";
         setErrorText(error);
-        setLoading(false);
         return;
+      } else {
+        replace("/user/dashboard");
       }
     } else {
       //Login
@@ -61,12 +67,13 @@ export default function LoginPage() {
         redirect: false,
       });
       setLoading(false);
-      console.log(loginResult);
 
       if (!loginResult?.ok) {
-        let error = loginResult?.error ? loginResult.error : "Unable to login.";
+        let error = loginResult?.error || "";
         setErrorText(error);
         return;
+      } else {
+        replace("/user/dashboard");
       }
     }
   }

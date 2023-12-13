@@ -1,10 +1,11 @@
 "use client";
 import clsx from "clsx";
 import { navBarLinks } from "@/lib/client/clientConstants";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { signOut, useSession } from "next-auth/react";
 
 function NavBar() {
   const pathname = usePathname();
@@ -78,17 +79,28 @@ function NavBar() {
             </div>
           </div>
           <div className='absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0'>
-            <Link
-              href='/login'
-              className={
-                pathname === "/login"
-                  ? "bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium"
-                  : "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
-              }
-              aria-current='page'
-            >
-              Login
-            </Link>
+            {useSession().status !== "authenticated" ? (
+              <Link
+                href='/login'
+                className={
+                  pathname === "/login"
+                    ? "bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium"
+                    : "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                }
+                aria-current='page'
+              >
+                Login
+              </Link>
+            ) : (
+              <button
+                className='text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium cursor-pointer'
+                onClick={() => {
+                  signOut({ redirect: false });
+                }}
+              >
+                Logout
+              </button>
+            )}
           </div>
         </div>
       </div>
