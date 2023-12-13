@@ -3,7 +3,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { loginUserSchema } from "@/lib/helperFunctions";
+import { loginUserSchema, emailSchema } from "@/lib/helperFunctions";
 
 export default function LoginPage() {
   const [registerView, setRegisterView] = useState(false);
@@ -11,7 +11,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const submitDisabled = loading || (registerView && (password.length < 8 || password !== confirmPassword));
+  const [errorText, setErrorText] = useState("");
+  const submitDisabled =
+    loading ||
+    !loginUserSchema.safeParse({ email: email, password: password }).success ||
+    (registerView && password !== confirmPassword);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -20,36 +24,49 @@ export default function LoginPage() {
     setLoading(true);
 
     if (registerView) {
-      try {
-        //let status = await createUser(email, password);
-        let result = await fetch("/api/auth/register", {
-          method: "POST",
-          body: JSON.stringify({
-            email: email,
-            password: password,
-          }),
-        });
+      //let status = await createUser(email, password);
+      let result = await fetch("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
 
-        let data = await result.json();
+      let data = await result.json();
 
-        if (!data.user) {
-          //Todo: handle error
-          setLoading(false);
-          return null;
-        }
-
-        signIn("credentials", { email: email, password: password, callbackUrl: "/" });
-      } catch (e) {
-        //Todo: Handle registration error
+      if (!data.succes || !data.user) {
+        //Todo: handle error
+        setErrorText(data.error);
         setLoading(false);
+        return;
       }
-      //
+
+      let loginResult = await signIn("credentials", {
+        email: email,
+        password: password,
+        callbackUrl: "/user/dashboard",
+      });
+      if (!loginResult?.ok) {
+        let error = loginResult?.error ? loginResult.error : "Unable to login.";
+        setErrorText(error);
+        setLoading(false);
+        return;
+      }
     } else {
       //Login
-      try {
-        signIn("credentials", { email: email, password: password, callbackUrl: "/" });
-      } catch (e) {
-        //Todo: handle error
+      let loginResult = await signIn("credentials", {
+        email: email,
+        password: password,
+        redirect: false,
+      });
+      setLoading(false);
+      console.log(loginResult);
+
+      if (!loginResult?.ok) {
+        let error = loginResult?.error ? loginResult.error : "Unable to login.";
+        setErrorText(error);
+        return;
       }
     }
   }
@@ -68,9 +85,24 @@ export default function LoginPage() {
           <h2 className='mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900'>
             {registerView ? "Create your account" : "Sign in to your account"}
           </h2>
+          <div
+            className={clsx(
+              "flex flex-row align-middle justify-stretch bg-red-200 rounded-md  mt-2 mx-4 py-2 border-[1px] border-red-300",
+              { invisible: errorText.length === 0 }
+            )}
+          >
+            <Image
+              className='my-auto h-6 ml-2 mr-1'
+              src='/circle_user_error.svg'
+              alt='Error icon'
+              width={24}
+              height={24}
+            />
+            <span className='font-[500px] tracking-tight whitespace-pre-line'>{errorText}</span>
+          </div>
         </div>
 
-        <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
+        <div className='mt-6 sm:mx-auto sm:w-full sm:max-w-sm'>
           <form className='space-y-6' onSubmit={handleSubmit}>
             <div>
               <label htmlFor='email' className='block text-sm font-medium leading-6 text-gray-900'>
@@ -134,19 +166,64 @@ export default function LoginPage() {
             </div>
             <div className={clsx({ hidden: !registerView })}>
               <div id='hs-strong-password-hints'>
-                <h4 className='mb-2 text-sm font-semibold text-gray-800 dark:text-white'>
-                  Your password must contain:
-                </h4>
+                <h4 className='mb-2 text-sm font-semibold text-gray-800 dark:text-white'>Sign up data validation:</h4>
                 <ul className='space-y-1 text-sm text-gray-500'>
-                  {/*Min lenght*/}
+                  {/*Email format invalid*/}
                   <li
                     className={clsx(
-                      "hs-strong-password-active:text-teal-500 flex items-center gap-x-2",
+                      "flex items-center gap-x-2",
+                      {
+                        "text-green-400": emailSchema.safeParse(email).success,
+                      },
+                      {
+                        "text-red-500": !emailSchema.safeParse(email).success && email.length > 0,
+                      }
+                    )}
+                  >
+                    <span className={clsx({ hidden: !emailSchema.safeParse(email).success })} data-check>
+                      <svg
+                        className='flex-shrink-0 w-4 h-4'
+                        xmlns='http://www.w3.org/2000/svg'
+                        width='24'
+                        height='24'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke='currentColor'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      >
+                        <polyline points='20 6 9 17 4 12' />
+                      </svg>
+                    </span>
+                    <span className={clsx({ hidden: emailSchema.safeParse(email).success })} data-uncheck>
+                      <svg
+                        className='flex-shrink-0 w-4 h-4'
+                        xmlns='http://www.w3.org/2000/svg'
+                        width='24'
+                        height='24'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke='currentColor'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      >
+                        <path d='M18 6 6 18' />
+                        <path d='m6 6 12 12' />
+                      </svg>
+                    </span>
+                    Valid email address is required.
+                  </li>
+                  {/*Min password lenght*/}
+                  <li
+                    className={clsx(
+                      "flex items-center gap-x-2",
                       {
                         "text-green-400": password.length >= 8,
                       },
                       {
-                        "text-red-500": password === confirmPassword && password.length < 8 && password.length > 0,
+                        "text-red-500": password.length < 8 && password.length > 0,
                       }
                     )}
                   >
@@ -183,12 +260,12 @@ export default function LoginPage() {
                         <path d='m6 6 12 12' />
                       </svg>
                     </span>
-                    Minimum number of characters is 8.
+                    Minimum password length is 8 character.
                   </li>
                   {/*Confirmation password*/}
                   <li
                     className={clsx(
-                      "hs-strong-password-active:text-teal-500 flex items-center gap-x-2",
+                      "flex items-center gap-x-2",
                       {
                         "text-green-400": password === confirmPassword && confirmPassword.length > 0,
                       },
@@ -252,7 +329,7 @@ export default function LoginPage() {
                   { "hover:bg-indigo-500  focus-visible:outline-indigo-600": !registerView && !submitDisabled },
                   { "bg-emerald-500": registerView },
                   { "hover:bg-green-500 focus-visible:outline-green-500": !submitDisabled && registerView },
-                  { "hover:bg-red-400 bounce-and-shake": registerView && submitDisabled }
+                  { "hover:bg-red-400 bounce-and-shake": submitDisabled && !loading }
                 )}
               >
                 {registerView ? "Sign up" : "Sign in"}

@@ -14,22 +14,21 @@ export function addHttpstoURL(input: string): string {
   return input;
 }
 
+export const emailSchema = z
+  .string()
+  .regex(
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    "Invalid email address"
+  );
+
+const passwordSchema = z.string().min(8, "Password should be minimum 8 character");
+
 export const loginUserSchema = z.object({
-  email: z
-    .string()
-    .regex(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-      "Invalid email address"
-    ),
-  password: z.string().min(8, "Password should be minimum 8 character"),
+  email: emailSchema,
+  password: passwordSchema,
 });
 
 export const registerUserSchema = z.object({
-  email: z
-    .string()
-    .regex(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-      "Invalid email address"
-    ),
-  password: z.string().min(8, "Password should be minimum 8 character"),
+  email: emailSchema,
+  password: passwordSchema,
 });

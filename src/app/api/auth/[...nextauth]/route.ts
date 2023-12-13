@@ -17,7 +17,7 @@ export const authOptions: AuthOptions = {
 
           let succes = await loginUser(email, password);
           if (succes) {
-            return { email: email, id: email };
+            return { id: email, email: email };
           } else {
             //Todo: Invalid Password
             return null;
