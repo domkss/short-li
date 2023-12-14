@@ -25,7 +25,7 @@ const passwordSchema = z.string().min(8, "Password should be minimum 8 character
 
 export const loginUserSchema = z.object({
   email: emailSchema,
-  password: passwordSchema,
+  password: z.string().min(1, "Empty password is not allowed"),
 });
 
 export const registerUserSchema = z.object({
