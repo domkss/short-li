@@ -32,7 +32,21 @@ export default function LongURLInput() {
     if (!isValidHttpURL(constructedUrl)) return;
 
     setProgressStatus(ProgressState.Loading);
-    setUrlInputContent(await createShortURL(constructedUrl).catch((error: REDIS_ERRORS) => error));
+
+    let result = await fetch("/api/url", {
+      method: "POST",
+      body: JSON.stringify({
+        url: constructedUrl,
+      }),
+    });
+
+    const data = await result.json();
+    if (data.success && data.url) {
+      setUrlInputContent(data.url);
+    } else {
+      setUrlInputContent("Unable to construct the short URL. Please try again later.");
+    }
+
     setInputChanged(false);
     setProgressStatus(ProgressState.Finished);
   }
