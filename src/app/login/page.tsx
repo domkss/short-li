@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { loginUserSchema, emailSchema } from "@/lib/helperFunctions";
+import { registerUserSchema, loginUserSchema, emailSchema } from "@/lib/helperFunctions";
 
 export default function LoginPage() {
   const [registerView, setRegisterView] = useState(false);
@@ -15,14 +15,18 @@ export default function LoginPage() {
   const [errorText, setErrorText] = useState("");
   const submitDisabled =
     loading ||
-    !loginUserSchema.safeParse({ email: email, password: password }).success ||
-    (registerView && password !== confirmPassword);
+    (registerView &&
+      (!registerUserSchema.safeParse({ email: email, password: password }).success || password !== confirmPassword));
   const { replace } = useRouter();
   if (useSession().status === "authenticated") replace("/user/dashboard");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!loginUserSchema.safeParse({ email: email, password: password }).success) return;
+    if (
+      (!registerUserSchema.safeParse({ email: email, password: password }).success && registerView) ||
+      (!loginUserSchema.safeParse({ email: email, password: password }).success && !registerView)
+    )
+      return;
 
     setLoading(true);
 
