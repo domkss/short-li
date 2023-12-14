@@ -1,9 +1,21 @@
-import { getServerSession } from "next-auth";
-import authOptions from "@/app/api/auth/[...nextauth]/authOptions";
-export default async function Dashboard() {
-  const session = await getServerSession(authOptions);
+"use client";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-  if (session && session.user) {
-    return <div> Welcome: {session.user?.email}</div>;
-  } else return <div>Unauthorized</div>;
+export default function Dashboard() {
+  const session = useSession();
+  const { replace } = useRouter();
+  if (session.status !== "authenticated" || !session.data || !session.data.user) replace("/login");
+  if (session.data?.user) {
+    return (
+      <div className='flex flex-col container min-h-screen'>
+        <div> Welcome: {session.data.user?.email}</div>
+        <div className='flex '>
+          <div>links:</div>
+        </div>
+      </div>
+    );
+  } else {
+    return <div>Unathorized</div>;
+  }
 }

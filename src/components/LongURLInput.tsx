@@ -1,11 +1,10 @@
 "use client";
 import { useState } from "react";
 import clsx from "clsx";
-import { createShortURL } from "@/lib/server/api-functions";
-import { REDIS_ERRORS } from "@/lib/server/serverConstants";
 import { isValidHttpURL, addHttpstoURL } from "@/lib/helperFunctions";
 import Image from "next/image";
 import copyToClypboard from "copy-to-clipboard";
+import { useSession } from "next-auth/react";
 
 enum ProgressState {
   NotStarted,
@@ -17,6 +16,7 @@ export default function LongURLInput() {
   const [urlInputContent, setUrlInputContent] = useState("");
   const [progressStatus, setProgressStatus] = useState<ProgressState>(0);
   const [inputChanged, setInputChanged] = useState<Boolean>(true);
+  const session = useSession();
 
   async function onSubmitClick() {
     if (urlInputContent.trim().length < 1) return;
@@ -37,6 +37,7 @@ export default function LongURLInput() {
       method: "POST",
       body: JSON.stringify({
         url: constructedUrl,
+        user: session.data?.user,
       }),
     });
 

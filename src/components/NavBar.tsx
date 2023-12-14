@@ -11,6 +11,7 @@ function NavBar() {
   const pathname = usePathname();
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const { replace } = useRouter();
+  const session = useSession();
 
   return (
     <nav className='bg-gray-800'>
@@ -66,11 +67,12 @@ function NavBar() {
                   <Link
                     key={item.title}
                     href={item.path}
-                    className={
+                    className={clsx(
                       pathname === item.path
                         ? "bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
-                    }
+                        : "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium",
+                      { hidden: item.authRequired && session.status !== "authenticated" }
+                    )}
                     aria-current='page'
                   >
                     {item.title}
@@ -80,7 +82,7 @@ function NavBar() {
             </div>
           </div>
           <div className='absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0'>
-            {useSession().status !== "authenticated" ? (
+            {session.status !== "authenticated" ? (
               <Link
                 href='/login'
                 className={

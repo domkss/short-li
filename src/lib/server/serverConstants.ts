@@ -8,6 +8,7 @@ export enum REDIS_NAME_PATTERNS {
 export enum REDIS_LINK_FIELDS {
   TARGET = "target_url",
   REDIRECT_COUNTER = "redirect_counter",
+  USER_ID = "user_id",
 }
 export enum REDIS_USER_FIELDS {
   PASSWORD_HASH = "password",
