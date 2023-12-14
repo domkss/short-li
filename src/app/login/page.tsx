@@ -38,7 +38,7 @@ export default function LoginPage() {
 
       let data = await result.json();
 
-      if (!data.succes || !data.user) {
+      if (!data.success || !data.user) {
         //Todo: handle error
         setErrorText(data.error);
         setLoading(false);
@@ -69,7 +69,7 @@ export default function LoginPage() {
       setLoading(false);
 
       if (!loginResult?.ok) {
-        let error = loginResult?.error || "";
+        let error = loginResult?.error || "The authentication server is not available\nPlease try again later.";
         setErrorText(error);
         return;
       } else {

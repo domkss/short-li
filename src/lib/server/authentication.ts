@@ -1,7 +1,7 @@
 import "server-only";
 import crypto from "crypto";
-import { RedisDB } from "../redisDB";
-import { REDIS_NAME_PATTERNS, REDIS_USER_FIELDS, AUTHENTICATION_ERRORS, REDIS_ERRORS } from "../serverConstants";
+import { RedisDB } from "./redisDB";
+import { REDIS_NAME_PATTERNS, REDIS_USER_FIELDS, AUTHENTICATION_ERRORS, REDIS_ERRORS } from "./serverConstants";
 
 export async function loginUser(email: string, password: string) {
   try {
@@ -14,7 +14,6 @@ export async function loginUser(email: string, password: string) {
     throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   }
 }
-
 export async function registerNewUser(email: string, password: string) {
   let status;
   try {
@@ -36,13 +35,11 @@ export async function registerNewUser(email: string, password: string) {
       }
     });
 }
-
 function createPasswordHash(password: string) {
   let salt = crypto.randomBytes(16).toString("hex");
   let hash = crypto.pbkdf2Sync(password, salt, 1000, 64, `sha512`).toString(`hex`);
   return { hash: hash, salt: salt };
 }
-
 function passwordIsValid(password: string, salt: string, hash: string) {
   return hash === crypto.pbkdf2Sync(password, salt, 1000, 64, `sha512`).toString(`hex`);
 }

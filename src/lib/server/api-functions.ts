@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 import { RedisDB } from "./redisDB";
 import { REDIS_ERRORS, REDIS_NAME_PATTERNS, REDIS_LINK_FIELDS } from "./serverConstants";
 import { isValidHttpURL } from "../helperFunctions";
