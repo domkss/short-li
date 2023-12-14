@@ -3,8 +3,13 @@ import { RedisDB } from "./redisDB";
 import { REDIS_ERRORS, REDIS_NAME_PATTERNS, REDIS_LINK_FIELDS } from "./serverConstants";
 import { isValidHttpURL } from "../helperFunctions";
 import { randomBytes } from "crypto";
+import { DefaultSession } from "next-auth";
 
-export async function createShortURL(longURL: string) {
+type URLCreatorOptions = {
+  session: DefaultSession | null;
+};
+
+export async function createShortURL(longURL: string, options: URLCreatorOptions) {
   if (longURL.length < 5 || longURL.length > 2048 || !isValidHttpURL(longURL))
     return REDIS_ERRORS.DATA_VALIDATION_ERROR;
 
@@ -19,8 +24,15 @@ export async function createShortURL(longURL: string) {
   do {
     shortURL = makeid(lenght + Math.floor(numberOfRetries / 3));
     status = await redisClient.HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TARGET, longURL);
-    if (status)
-      await redisClient.HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.REDIRECT_COUNTER, "0");
+    if (status && options.session && options.session.user?.email) {
+      redisClient.HSETNX(
+        REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL,
+        REDIS_LINK_FIELDS.USER_ID,
+        options.session.user?.email
+      );
+    } else {
+      redisClient.EXPIRE(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, 15552000);
+    }
     numberOfRetries++;
   } while (status !== true && numberOfRetries <= 6);
 
@@ -47,10 +59,11 @@ export async function getDestinationURL(inputURL: string, ip?: string) {
     if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
     let targetURL = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.TARGET);
-    if (targetURL)
+    let userID = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.USER_ID);
+    if (targetURL && userID) {
       redisClient.HINCRBY(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.REDIRECT_COUNTER, 1);
-    if (targetURL && ip) await redisClient.SADD(REDIS_NAME_PATTERNS.STATISTICAL_IP_ADDRESSES + inputURL, ip);
-
+      if (targetURL && ip) redisClient.SADD(REDIS_NAME_PATTERNS.STATISTICAL_IP_ADDRESSES + inputURL, ip);
+    }
     let destionationURL = targetURL ? targetURL : "/";
     return destionationURL;
   } catch (e) {
