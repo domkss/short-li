@@ -4,12 +4,14 @@ import Image from "next/image";
 export default function Home() {
   return (
     <main>
-      <div className='flex flex-col items-center'>
+      <div>
         {/*Main URL input layout*/}
-        <div className='sm:mt-14 container max-w-2xl shadow-sm sm:rounded-md'>
-          <div className='p-4 max-sm:pt-36 max-sm:pb-24 shadow-md bg-slate-300 bg-opacity-25 sm:border-2 sm:rounded-md'>
-            <h3 className='text-xl font-bold text-gray-900 text-center'>Short any long URL for Free</h3>
-            <LongURLInput />
+        <div className='inline-block w-full shadow-md bg-slate-100 border-b-2 border-slate-300'>
+          <div className='mx-auto sm:mt-14 max-w-2xl '>
+            <div className='p-4 max-sm:pt-28  pb-14 '>
+              <h3 className='text-xl font-bold text-gray-900 text-center'>Short any long URL for Free</h3>
+              <LongURLInput />
+            </div>
           </div>
         </div>
         {/*Description section*/}
