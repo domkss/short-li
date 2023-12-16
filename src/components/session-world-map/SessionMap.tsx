@@ -6,7 +6,7 @@ export default function SessionMap() {
   let zoomx = 2000;
   let zoomy = zoomx * 0.4285;
   return (
-    <div className='bg-cyan-100'>
+    <div className=''>
       <svg
         className='inline-block'
         baseProfile='tiny'
@@ -22,7 +22,13 @@ export default function SessionMap() {
         xmlns='http://www.w3.org/2000/svg'
       >
         {WorldSVGData.map((item, key) => (
-          <path className='hover:stroke-1' key={key} name={item.name} id={item.id} d={item.d} />
+          <path
+            className='stroke-white stroke-[0.5]  hover:stroke-black hover:stroke-1 hover:cursor-pointer fill-gray-300'
+            key={key}
+            name={item.name}
+            id={item.id}
+            d={item.d}
+          />
         ))}
       </svg>
     </div>
