@@ -1,10 +1,21 @@
 "use client";
 
 import { WorldSVGData } from "./world-svg-data";
+import clsx from "clsx";
 
 export default function SessionMap() {
   let zoomx = 2000;
   let zoomy = zoomx * 0.4285;
+
+  const _devBgColors = [
+    "fill-gray-300",
+    "fill-gray-300",
+    "fill-blue-50",
+    "fill-blue-100",
+    "fill-blue-200",
+    "fill-blue-300",
+  ];
+
   return (
     <div className='p-3 border-2 mt-5 border-slate-300 shadow-md rounded-md max-sm:min-w-[350px] min-w-[50%]'>
       <div>
@@ -23,7 +34,10 @@ export default function SessionMap() {
         >
           {WorldSVGData.map((item, key) => (
             <path
-              className='stroke-white stroke-[0.5]  hover:stroke-gray-800 hover:stroke-2 hover:cursor-pointer fill-gray-300'
+              className={clsx(
+                "stroke-white stroke-[0.5]  hover:stroke-gray-800 hover:stroke-2 hover:cursor-pointer",
+                _devBgColors[Math.floor(Math.random() * _devBgColors.length)]
+              )}
               key={key}
               name={item.name}
               id={item.id}
