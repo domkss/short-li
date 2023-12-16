@@ -25,11 +25,8 @@ export async function createShortURL(longURL: string, options: URLCreatorOptions
     shortURL = makeid(lenght + Math.floor(numberOfRetries / 3));
     status = await redisClient.HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TARGET, longURL);
     if (status && options.session && options.session.user?.email) {
-      redisClient.HSETNX(
-        REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL,
-        REDIS_LINK_FIELDS.USER_ID,
-        options.session.user?.email
-      );
+      redisClient.HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TRACKED, "1");
+      redisClient.SADD(REDIS_NAME_PATTERNS.USER_LINKS + options.session.user?.email, shortURL);
     } else {
       redisClient.EXPIRE(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, 15552000);
     }
@@ -59,8 +56,8 @@ export async function getDestinationURL(inputURL: string, ip?: string) {
     if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
     let targetURL = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.TARGET);
-    let userID = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.USER_ID);
-    if (targetURL && userID) {
+    let tracked = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.TRACKED);
+    if (targetURL && tracked) {
       redisClient.HINCRBY(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.REDIRECT_COUNTER, 1);
       if (targetURL && ip) redisClient.SADD(REDIS_NAME_PATTERNS.STATISTICAL_IP_ADDRESSES + inputURL, ip);
     }
