@@ -18,7 +18,7 @@ export default function LoginPage() {
     (registerView &&
       (!registerUserSchema.safeParse({ email: email, password: password }).success || password !== confirmPassword));
   const { replace } = useRouter();
-  if (useSession().status === "authenticated") replace("/user/dashboard");
+  if (useSession().status === "authenticated") replace("/user/links");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
