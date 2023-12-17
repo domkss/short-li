@@ -59,14 +59,14 @@ export default function SessionMap() {
       </div>
       <div className='flex flex-row'>
         <div className='flex flex-col mx-1 w-9 h-9 border-[1px]  border-gray-400 rounded-full justify-center align-middle text-center'>
-          <span className='text-xl font-extrabold' onClick={() => handleZoom(1)}>
+          <button className='text-xl font-extrabold' onClick={() => handleZoom(1)}>
             -
-          </span>
+          </button>
         </div>
         <div className='flex flex-col mx-1 w-9 h-9 border-[1px]  border-gray-400 rounded-full justify-center align-middle text-center'>
-          <span className='text-lg font-bold' onClick={() => handleZoom(-1)}>
+          <button className='text-lg font-bold' onClick={() => handleZoom(-1)}>
             +
-          </span>
+          </button>
         </div>
       </div>
     </div>
