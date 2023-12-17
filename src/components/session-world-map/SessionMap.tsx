@@ -2,31 +2,26 @@
 
 import { WorldSVGData } from "./world-svg-data";
 import clsx from "clsx";
-import { useEffect, createRef } from "react";
+import { useEffect, createRef, useState } from "react";
 
 export default function SessionMap() {
-  let zoomx = 2000;
-  let zoomy = zoomx * 0.4285;
+  const [zoomx, setZoomx] = useState(2000);
 
-  const _devBgColors = [
-    "fill-gray-300",
-    "fill-gray-300",
-    "fill-blue-50",
-    "fill-blue-100",
-    "fill-blue-200",
-    "fill-blue-300",
-  ];
   const mapContainer = createRef<HTMLDivElement>();
 
-  const handleZoom = () => {};
+  const handleZoom = (zoomDirection: number) => {
+    let newZoom = zoomx + zoomDirection * 100;
+    if (newZoom > 200 && newZoom < 2000) setZoomx(newZoom);
+  };
 
   useEffect(() => {
     const container = mapContainer.current;
-    const handleWheel = (event: any) => {
+    const handleWheel = (event: WheelEvent) => {
       event.preventDefault();
+      event.stopPropagation();
       const { deltaY } = event;
-      let scrollDirection = deltaY > 0 ? -1 : 1;
-      console.log(scrollDirection);
+      let scrollDirection = deltaY > 0 ? 1 : -1;
+      handleZoom(scrollDirection);
     };
 
     if (container) {
@@ -48,15 +43,12 @@ export default function SessionMap() {
           strokeLinejoin='round'
           strokeWidth='.2'
           version='1.2'
-          viewBox={`${2000 / 2 - zoomx / 2} ${857 / 2 - zoomy / 2} ${zoomx} ${zoomy}`}
+          viewBox={`${2000 / 2 - zoomx / 2} ${857 / 2 - (zoomx * 0.4285) / 2} ${zoomx} ${zoomx * 0.4285}`}
           xmlns='http://www.w3.org/2000/svg'
         >
           {WorldSVGData.map((item, key) => (
             <path
-              className={clsx(
-                "stroke-white stroke-[0.5]  hover:stroke-gray-800 hover:stroke-2 hover:cursor-pointer",
-                _devBgColors[Math.floor(Math.random() * _devBgColors.length)]
-              )}
+              className={clsx("stroke-white stroke-[0.5]  hover:stroke-gray-800 hover:stroke-2 hover:cursor-pointer")}
               key={key}
               name={item.name}
               id={item.id}
@@ -65,13 +57,16 @@ export default function SessionMap() {
           ))}
         </svg>
       </div>
-
       <div className='flex flex-row'>
         <div className='flex flex-col mx-1 w-9 h-9 border-[1px]  border-gray-400 rounded-full justify-center align-middle text-center'>
-          <span className='text-xl font-extrabold'>-</span>
+          <span className='text-xl font-extrabold' onClick={() => handleZoom(1)}>
+            -
+          </span>
         </div>
         <div className='flex flex-col mx-1 w-9 h-9 border-[1px]  border-gray-400 rounded-full justify-center align-middle text-center'>
-          <span className='text-lg font-bold'>+</span>
+          <span className='text-lg font-bold' onClick={() => handleZoom(-1)}>
+            +
+          </span>
         </div>
       </div>
     </div>

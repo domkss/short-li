@@ -2,7 +2,7 @@
 import SessionMap from "@/components/session-world-map/SessionMap";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
+import Image from "next/image";
 import { DummyURLs } from "./_devConsts";
 
 export default function Dashboard() {
@@ -12,8 +12,7 @@ export default function Dashboard() {
   //if (session.data?.user) {
   return (
     <div className='flex flex-row max-sm:flex-col'>
-      {/*<SessionMap />*/}
-      <div className='flex-1 mt-2'>
+      <div className='basis-1/3 mt-2'>
         <ul>
           {DummyURLs.map((item, key) => (
             <li key={key}>
@@ -21,7 +20,7 @@ export default function Dashboard() {
                 <div className='flex flex-row  flex-wrap items-center'>
                   <span className='ml-4'>{key + "."}</span>
                   <div className='flex flex-col p-3'>
-                    <span className='mx-2'>{item.name}</span>
+                    <span className='mx-2 font-semibold'>{item.name}</span>
                     <span className='mx-2'>{item.url}</span>
                   </div>
                 </div>
@@ -30,8 +29,14 @@ export default function Dashboard() {
           ))}
         </ul>
       </div>
-      <div className='flex-1 p-2'>
-        <SessionMap />
+      <div className='flex flex-col basis-2/3 p-2 '>
+        <div className='flex flex-row p-3 '>
+          Name{" "}
+          <Image className='mx-2 cursor-pointer' src='/edit_pencil.svg' width={20} height={20} alt='Edit pencil icon' />
+        </div>
+
+        <div>short link</div>
+        <div>LongLink</div>
       </div>
     </div>
   );
