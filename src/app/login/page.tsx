@@ -61,7 +61,7 @@ export default function LoginPage() {
         setErrorText(error);
         return;
       } else {
-        replace("/user/dashboard");
+        replace("/user/links");
       }
     } else {
       //Login
@@ -77,7 +77,7 @@ export default function LoginPage() {
         setErrorText(error);
         return;
       } else {
-        replace("/user/dashboard");
+        replace("/user/links");
       }
     }
   }
