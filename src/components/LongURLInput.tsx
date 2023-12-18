@@ -16,6 +16,7 @@ export default function LongURLInput() {
   const [urlInputContent, setUrlInputContent] = useState("");
   const [progressStatus, setProgressStatus] = useState<ProgressState>(0);
   const [inputChanged, setInputChanged] = useState<Boolean>(true);
+  const [copied, setCopied] = useState(false);
   const session = useSession();
 
   async function onSubmitClick() {
@@ -24,7 +25,7 @@ export default function LongURLInput() {
     if (!inputChanged) {
       //URL is already shorted, copy the content to clipboard
       copyToClypboard(urlInputContent.trim());
-
+      setCopied(true);
       return;
     }
 
@@ -76,6 +77,7 @@ export default function LongURLInput() {
             if (progressStatus === ProgressState.Loading) return;
             setUrlInputContent(event.target.value);
             setInputChanged(true);
+            setCopied(false);
             validateInput(event.target);
           }}
           onKeyDown={(event) => {
@@ -103,7 +105,13 @@ export default function LongURLInput() {
             <div className={clsx("inline-block mr-2 text-xl", { hidden: !inputChanged })}>Short it</div>
             <div className={clsx("inline-block mr-2 text-xl", { hidden: inputChanged })}>
               Copy
-              <Image className='inline-block w-6 ml-2' src='./copy.svg' width={32} height={32} alt='copy-icon' />
+              <Image
+                className='inline-block w-6 ml-2'
+                src={copied ? "/done_icon.gif" : "/copy.svg"}
+                width={32}
+                height={32}
+                alt='copy-icon'
+              />
             </div>
             <div
               className={clsx(
@@ -130,7 +138,13 @@ export default function LongURLInput() {
           <div className={clsx("inline-block mr-2 text-xl", { hidden: !inputChanged })}>Short it</div>
           <div className={clsx("inline-block mr-2 text-xl", { hidden: inputChanged })}>
             Copy
-            <Image className='inline-block w-6 ml-2' src='./copy.svg' width={32} height={32} alt='copy-icon' />
+            <Image
+              className='inline-block w-6 ml-2'
+              src={copied ? "/done_icon.gif" : "/copy.svg"}
+              width={32}
+              height={32}
+              alt='copy-icon'
+            />
           </div>
           <div
             className={clsx(
