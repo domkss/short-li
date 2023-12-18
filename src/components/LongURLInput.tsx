@@ -89,12 +89,15 @@ export default function LongURLInput() {
         {/*Inline submit button for large screens*/}
         <div className='max-md:hidden'>
           <button
-            type='submit'
+            type='button'
             onClick={() => onSubmitClick()}
-            className={clsx("absolute bottom-2.5 end-2.5 rounded-lg bg-emerald-500 px-4 py-2 text-md text-white", {
-              "hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-blue-400 flex items-center":
-                progressStatus != ProgressState.Loading,
-            })}
+            className={clsx(
+              "flex items-center justify-center absolute bottom-2.5 end-2.5 rounded-lg bg-emerald-500 px-4 py-2 text-white",
+              {
+                "hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-blue-400 flex items-center":
+                  progressStatus != ProgressState.Loading,
+              }
+            )}
             disabled={progressStatus == ProgressState.Loading}
           >
             <div className={clsx("inline-block mr-2 text-xl", { hidden: !inputChanged })}>Short it</div>
@@ -116,9 +119,9 @@ export default function LongURLInput() {
       {/*Submit button for mobiles*/}
       <div className='md:hidden mt-3 flex items-center flex-col'>
         <button
-          type='submit'
+          type='button'
           onClick={() => onSubmitClick()}
-          className={clsx("rounded-lg bg-emerald-500 py-2 text-sm text-white min-w-[50%]", {
+          className={clsx("flex items-center justify-center rounded-lg bg-emerald-500 py-2 text-white min-w-[50%]", {
             "hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-blue-400":
               progressStatus != ProgressState.Loading,
           })}
