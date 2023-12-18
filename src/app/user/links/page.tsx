@@ -48,7 +48,7 @@ export default function Dashboard() {
             <span className='mr-8 text-lg font-semibold text-gray-700'>Short link:</span>
             <div className='flex flex-row mx-2 items-center'>
               <span className='mr-2'>shortli.click/abc2132</span>
-              <button>Copy</button>
+              <CopyButton />
             </div>
           </div>
           <div className='flex flex-row m-2'>
