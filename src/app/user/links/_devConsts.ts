@@ -91,5 +91,5 @@ export const DummyURLs = [
     url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
     shortURL: "shortli.click/def2345",
   },
-  { name: "LongURLEntry", url: "https://www.longurlentry-".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
+  { name: "LongURLEntry", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
 ];
