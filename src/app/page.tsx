@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main>
       <div>
-        {/*Main URL input layout*/}
+        {/*Main URL input layout */}
         <div className='inline-block w-full shadow-md bg-slate-100 border-b-2 border-slate-300'>
           <div className='mx-auto sm:mt-14 max-w-2xl '>
             <div className='p-4 max-sm:pt-28  pb-14 '>
@@ -14,7 +14,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        {/*Description section*/}
+        {/*Description section */}
         <div className='flex flex-row max-lg:flex-col min-w-full mt-14 mb-3 p-4 justify-evenly'>
           <div className='flex flex-col flex-wrap basis-1/4 my-3 p-6 border border-gray-200 rounded-lg shadow'>
             <div className='flex flex-row justify-center'>

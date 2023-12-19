@@ -18,8 +18,10 @@ export default function LoginPage() {
     (registerView &&
       (!registerUserSchema.safeParse({ email: email, password: password }).success || password !== confirmPassword));
   const { replace } = useRouter();
+  /*Redirect if the user already logged in */
   if (useSession().status === "authenticated") replace("/user/links");
 
+  /*Register and login form submit handler */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (
@@ -85,6 +87,7 @@ export default function LoginPage() {
   return (
     <main className='flex flex-col'>
       <div className='flex-1 justify-center px-6 py-12 lg:px-8'>
+        {/*Page Logo and Title */}
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
           <Image
             className='mx-auto h-14 pl-8 w-auto rounded-lg'
@@ -115,6 +118,7 @@ export default function LoginPage() {
 
         <div className='mt-6 sm:mx-auto sm:w-full sm:max-w-sm'>
           <form className='space-y-6' onSubmit={handleSubmit}>
+            {/*Email Input */}
             <div>
               <label htmlFor='email' className='block text-sm font-medium leading-6 text-gray-900'>
                 Email address
@@ -132,6 +136,7 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/*Password Input */}
             <div>
               <div className='flex items-center justify-between'>
                 <label htmlFor='password' className='block text-sm font-medium leading-6 text-gray-900'>
@@ -155,6 +160,8 @@ export default function LoginPage() {
                 />
               </div>
             </div>
+
+            {/*Password Confirmation input */}
             <div className={clsx({ hidden: !registerView })}>
               <div className='flex items-center justify-between'>
                 <label htmlFor='password' className='block text-sm font-medium leading-6 text-gray-900'>
@@ -175,6 +182,8 @@ export default function LoginPage() {
                 />
               </div>
             </div>
+
+            {/*Sign Up data validation view */}
             <div className={clsx({ hidden: !registerView })}>
               <div id='hs-strong-password-hints'>
                 <h4 className='mb-2 text-sm font-semibold text-gray-800 dark:text-white'>Sign up data validation:</h4>
@@ -330,6 +339,7 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/*Sumbit button */}
             <div>
               <button
                 type='submit'
@@ -355,6 +365,7 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
+          {/*Login/Register view switch */}
           <p className='mt-10 text-center text-sm text-gray-500'>
             Don&apos;t have an account yet?
             <button
