@@ -1,11 +1,12 @@
 "use client";
-import clsx from "clsx";
+
 import { navBarLinks } from "@/lib/client/clientConstants";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
+import {cn} from "@/lib/helperFunctions"
 
 function NavBar() {
   const pathname = usePathname();
@@ -33,7 +34,7 @@ function NavBar() {
               {/* Icon when menu is closed.
                Menu open: "hidden", Menu closed: "block" */}
               <svg
-                className={clsx("h-6 w-6", mobileMenuOpened ? "hidden" : "block")}
+                className={cn("h-6 w-6", mobileMenuOpened ? "hidden" : "block")}
                 fill='none'
                 viewBox='0 0 24 24'
                 strokeWidth='1.5'
@@ -45,7 +46,7 @@ function NavBar() {
               {/* Icon when menu is open.
               Menu open: "block", Menu closed: "hidden" */}
               <svg
-                className={clsx("hh-6 w-6", mobileMenuOpened ? "block" : "hidden")}
+                className={cn("hh-6 w-6", mobileMenuOpened ? "block" : "hidden")}
                 fill='none'
                 viewBox='0 0 24 24'
                 strokeWidth='1.5'
@@ -75,7 +76,7 @@ function NavBar() {
                   <Link
                     key={item.title}
                     href={item.path}
-                    className={clsx(
+                    className={cn(
                       pathname === item.path
                         ? "bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium"
                         : "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium",
@@ -117,7 +118,7 @@ function NavBar() {
       </div>
 
       {/* Mobile menu, show/hide based on menu state. */}
-      <div className={clsx("sm:hidden", { hidden: !mobileMenuOpened })} id='mobile-menu'>
+      <div className={cn("sm:hidden", { hidden: !mobileMenuOpened })} id='mobile-menu'>
         <div className='space-y-1 px-2 pb-3 pt-2'>
           {navBarLinks.map((item) => (
             <Link

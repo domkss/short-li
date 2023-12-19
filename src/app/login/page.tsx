@@ -1,10 +1,11 @@
 "use client";
-import clsx from "clsx";
+
 import Image from "next/image";
 import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { registerUserSchema, loginUserSchema, emailSchema } from "@/lib/helperFunctions";
+import {cn} from "@/lib/helperFunctions"
 
 export default function LoginPage() {
   const [registerView, setRegisterView] = useState(false);
@@ -100,7 +101,7 @@ export default function LoginPage() {
             {registerView ? "Create your account" : "Sign in to your account"}
           </h2>
           <div
-            className={clsx(
+            className={cn(
               "flex flex-row align-middle justify-stretch bg-red-200 rounded-md  mt-2 mx-4 py-2 border-[1px] border-red-300",
               { invisible: errorText.length === 0 }
             )}
@@ -142,7 +143,7 @@ export default function LoginPage() {
                 <label htmlFor='password' className='block text-sm font-medium leading-6 text-gray-900'>
                   Password
                 </label>
-                <div className={clsx("text-sm", { hidden: registerView })}>
+                <div className={cn("text-sm", { hidden: registerView })}>
                   <a href='#' className='font-semibold text-indigo-600 hover:text-indigo-500'>
                     Forgot password?
                   </a>
@@ -162,7 +163,7 @@ export default function LoginPage() {
             </div>
 
             {/*Password Confirmation input */}
-            <div className={clsx({ hidden: !registerView })}>
+            <div className={cn({ hidden: !registerView })}>
               <div className='flex items-center justify-between'>
                 <label htmlFor='password' className='block text-sm font-medium leading-6 text-gray-900'>
                   Confirm Password
@@ -184,13 +185,13 @@ export default function LoginPage() {
             </div>
 
             {/*Sign Up data validation view */}
-            <div className={clsx({ hidden: !registerView })}>
+            <div className={cn({ hidden: !registerView })}>
               <div id='hs-strong-password-hints'>
                 <h4 className='mb-2 text-sm font-semibold text-gray-800 dark:text-white'>Sign up data validation:</h4>
                 <ul className='space-y-1 text-sm text-gray-500'>
                   {/*Email format invalid*/}
                   <li
-                    className={clsx(
+                    className={cn(
                       "flex items-center gap-x-2",
                       {
                         "text-green-400": emailSchema.safeParse(email).success,
@@ -200,7 +201,7 @@ export default function LoginPage() {
                       }
                     )}
                   >
-                    <span className={clsx({ hidden: !emailSchema.safeParse(email).success })} data-check>
+                    <span className={cn({ hidden: !emailSchema.safeParse(email).success })} data-check>
                       <svg
                         className='flex-shrink-0 w-4 h-4'
                         xmlns='http://www.w3.org/2000/svg'
@@ -216,7 +217,7 @@ export default function LoginPage() {
                         <polyline points='20 6 9 17 4 12' />
                       </svg>
                     </span>
-                    <span className={clsx({ hidden: emailSchema.safeParse(email).success })} data-uncheck>
+                    <span className={cn({ hidden: emailSchema.safeParse(email).success })} data-uncheck>
                       <svg
                         className='flex-shrink-0 w-4 h-4'
                         xmlns='http://www.w3.org/2000/svg'
@@ -237,7 +238,7 @@ export default function LoginPage() {
                   </li>
                   {/*Min password lenght*/}
                   <li
-                    className={clsx(
+                    className={cn(
                       "flex items-center gap-x-2",
                       {
                         "text-green-400": password.length >= 8,
@@ -247,7 +248,7 @@ export default function LoginPage() {
                       }
                     )}
                   >
-                    <span className={clsx({ hidden: password.length < 8 })} data-check>
+                    <span className={cn({ hidden: password.length < 8 })} data-check>
                       <svg
                         className='flex-shrink-0 w-4 h-4'
                         xmlns='http://www.w3.org/2000/svg'
@@ -263,7 +264,7 @@ export default function LoginPage() {
                         <polyline points='20 6 9 17 4 12' />
                       </svg>
                     </span>
-                    <span className={clsx({ hidden: password.length >= 8 })} data-uncheck>
+                    <span className={cn({ hidden: password.length >= 8 })} data-uncheck>
                       <svg
                         className='flex-shrink-0 w-4 h-4'
                         xmlns='http://www.w3.org/2000/svg'
@@ -284,7 +285,7 @@ export default function LoginPage() {
                   </li>
                   {/*Confirmation password*/}
                   <li
-                    className={clsx(
+                    className={cn(
                       "flex items-center gap-x-2",
                       {
                         "text-green-400": password === confirmPassword && confirmPassword.length > 0,
@@ -295,7 +296,7 @@ export default function LoginPage() {
                     )}
                   >
                     <span
-                      className={clsx({ hidden: password !== confirmPassword || confirmPassword.length < 1 })}
+                      className={cn({ hidden: password !== confirmPassword || confirmPassword.length < 1 })}
                       data-check
                     >
                       <svg
@@ -314,7 +315,7 @@ export default function LoginPage() {
                       </svg>
                     </span>
                     <span
-                      className={clsx({ hidden: password === confirmPassword && confirmPassword.length > 0 })}
+                      className={cn({ hidden: password === confirmPassword && confirmPassword.length > 0 })}
                       data-uncheck
                     >
                       <svg
@@ -344,7 +345,7 @@ export default function LoginPage() {
               <button
                 type='submit'
                 disabled={submitDisabled}
-                className={clsx(
+                className={cn(
                   "flex w-full justify-center rounded-md text-white shadow-sm px-3 py-1.5 text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
                   { "bg-indigo-600": !registerView },
                   { "hover:bg-indigo-500  focus-visible:outline-indigo-600": !registerView && !submitDisabled },
@@ -355,7 +356,7 @@ export default function LoginPage() {
               >
                 {registerView ? "Sign up" : "Sign in"}
                 <div
-                  className={clsx(
+                  className={cn(
                     "inline-block h-4 w-4 ml-2 self-center animate-spin rounded-full border-2 border-solid border-current",
                     "border-r-transparent text-primary motion-reduce:animate-[spin_1.5s_linear_infinite] border-white",
                     { hidden: !loading }

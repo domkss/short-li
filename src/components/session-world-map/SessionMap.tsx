@@ -1,7 +1,7 @@
 "use client";
 
 import { WorldSVGData } from "./world-svg-data";
-import clsx from "clsx";
+import {cn} from "@/lib/helperFunctions"
 import { useEffect, createRef, useState } from "react";
 
 export default function SessionMap() {
@@ -48,7 +48,7 @@ export default function SessionMap() {
         >
           {WorldSVGData.map((item, key) => (
             <path
-              className={clsx("stroke-white stroke-[0.5]  hover:stroke-gray-800 hover:stroke-2 hover:cursor-pointer")}
+              className={cn("stroke-white stroke-[0.5]  hover:stroke-gray-800 hover:stroke-2 hover:cursor-pointer")}
               key={key}
               name={item.name}
               id={item.id}

@@ -16,6 +16,7 @@
     "react": "^18",
     "react-dom": "^18",
     "redis": "^4.6.11",
+    "tailwind-merge": "^2.1.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
