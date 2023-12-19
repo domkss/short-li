@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import clsx from "clsx";
 import { isValidHttpURL, addHttpstoURL } from "@/lib/helperFunctions";
 import Image from "next/image";
 import copyToClypboard from "copy-to-clipboard";
 import { useSession } from "next-auth/react";
+import {cn} from "@/lib/helperFunctions"
 
 enum ProgressState {
   NotStarted,
@@ -93,7 +93,7 @@ export default function LongURLInput() {
           <button
             type='button'
             onClick={() => onSubmitClick()}
-            className={clsx(
+            className={cn(
               "flex items-center justify-center absolute bottom-2.5 end-2.5 rounded-lg bg-emerald-500 px-4 py-2 text-white",
               {
                 "hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-blue-400 flex items-center":
@@ -102,8 +102,8 @@ export default function LongURLInput() {
             )}
             disabled={progressStatus == ProgressState.Loading}
           >
-            <div className={clsx("inline-block mr-2 text-xl", { hidden: !inputChanged })}>Short it</div>
-            <div className={clsx("inline-block mr-2 text-xl", { hidden: inputChanged })}>
+            <div className={cn("inline-block mr-2 text-xl", { hidden: !inputChanged })}>Short it</div>
+            <div className={cn("inline-block mr-2 text-xl", { hidden: inputChanged })}>
               Copy
               <Image
                 className='inline-block w-6 ml-2'
@@ -114,7 +114,7 @@ export default function LongURLInput() {
               />
             </div>
             <div
-              className={clsx(
+              className={cn(
                 "inline-block h-5 w-5 animate-spin rounded-full border-2 border-solid border-current",
                 "border-r-transparent text-primary motion-reduce:animate-[spin_1.5s_linear_infinite] border-white",
                 { hidden: progressStatus !== ProgressState.Loading }
@@ -129,14 +129,14 @@ export default function LongURLInput() {
         <button
           type='button'
           onClick={() => onSubmitClick()}
-          className={clsx("flex items-center justify-center rounded-lg bg-emerald-500 py-2 text-white min-w-[50%]", {
+          className={cn("flex items-center justify-center rounded-lg bg-emerald-500 py-2 text-white min-w-[50%]", {
             "hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-blue-400":
               progressStatus != ProgressState.Loading,
           })}
           disabled={progressStatus == ProgressState.Loading}
         >
-          <div className={clsx("inline-block mr-2 text-xl", { hidden: !inputChanged })}>Short it</div>
-          <div className={clsx("inline-block mr-2 text-xl", { hidden: inputChanged })}>
+          <div className={cn("inline-block mr-2 text-xl", { hidden: !inputChanged })}>Short it</div>
+          <div className={cn("inline-block mr-2 text-xl", { hidden: inputChanged })}>
             Copy
             <Image
               className='inline-block w-6 ml-2'
@@ -147,7 +147,7 @@ export default function LongURLInput() {
             />
           </div>
           <div
-            className={clsx(
+            className={cn(
               "inline-block h-5 w-5 animate-spin rounded-full border-2 border-solid border-current",
               "border-r-transparent align-[-0.175em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite] border-white",
               progressStatus !== ProgressState.Loading ? "hidden" : ""
