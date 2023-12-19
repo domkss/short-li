@@ -5,7 +5,7 @@ import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { registerUserSchema, loginUserSchema, emailSchema } from "@/lib/helperFunctions";
-import {cn} from "@/lib/helperFunctions"
+import { cn } from "@/lib/helperFunctions";
 
 export default function LoginPage() {
   const [registerView, setRegisterView] = useState(false);
@@ -86,109 +86,109 @@ export default function LoginPage() {
   }
 
   return (
-    <main className='flex flex-col'>
-      <div className='flex-1 justify-center px-6 py-12 lg:px-8'>
+    <main className="flex flex-col">
+      <div className="flex-1 justify-center px-6 py-12 lg:px-8">
         {/*Page Logo and Title */}
-        <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
+        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <Image
-            className='mx-auto h-14 pl-8 w-auto rounded-lg'
-            src='/shortli_logo.svg'
-            alt='ShortLi logo'
+            className="mx-auto h-14 w-auto rounded-lg pl-8"
+            src="/shortli_logo.svg"
+            alt="ShortLi logo"
             width={56}
             height={56}
           />
-          <h2 className='mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900'>
+          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             {registerView ? "Create your account" : "Sign in to your account"}
           </h2>
           <div
             className={cn(
-              "flex flex-row align-middle justify-stretch bg-red-200 rounded-md  mt-2 mx-4 py-2 border-[1px] border-red-300",
-              { invisible: errorText.length === 0 }
+              "mx-4 mt-2 flex flex-row justify-stretch rounded-md  border-[1px] border-red-300 bg-red-200 py-2 align-middle",
+              { invisible: errorText.length === 0 },
             )}
           >
             <Image
-              className='my-auto h-6 ml-2 mr-1'
-              src='/circle_user_error.svg'
-              alt='Error icon'
+              className="my-auto ml-2 mr-1 h-6"
+              src="/circle_user_error.svg"
+              alt="Error icon"
               width={24}
               height={24}
             />
-            <span className='font-[500px] tracking-tight whitespace-pre-line'>{errorText}</span>
+            <span className="whitespace-pre-line font-[500px] tracking-tight">{errorText}</span>
           </div>
         </div>
 
-        <div className='mt-6 sm:mx-auto sm:w-full sm:max-w-sm'>
-          <form className='space-y-6' onSubmit={handleSubmit}>
+        <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {/*Email Input */}
             <div>
-              <label htmlFor='email' className='block text-sm font-medium leading-6 text-gray-900'>
+              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Email address
               </label>
-              <div className='mt-2'>
+              <div className="mt-2">
                 <input
-                  id='email'
-                  name='email'
-                  type='email'
-                  autoComplete='email'
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
                   required
                   onChange={(input) => setEmail(input.target.value)}
-                  className='block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                  className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
 
             {/*Password Input */}
             <div>
-              <div className='flex items-center justify-between'>
-                <label htmlFor='password' className='block text-sm font-medium leading-6 text-gray-900'>
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                   Password
                 </label>
                 <div className={cn("text-sm", { hidden: registerView })}>
-                  <a href='#' className='font-semibold text-indigo-600 hover:text-indigo-500'>
+                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
                     Forgot password?
                   </a>
                 </div>
               </div>
-              <div className='mt-2'>
+              <div className="mt-2">
                 <input
-                  id='password'
-                  name='password'
-                  type='password'
+                  id="password"
+                  name="password"
+                  type="password"
                   autoComplete={registerView ? "new-password" : "current-password"}
                   required
                   onChange={(input) => setPassword(input.target.value)}
-                  className='block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                  className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
 
             {/*Password Confirmation input */}
             <div className={cn({ hidden: !registerView })}>
-              <div className='flex items-center justify-between'>
-                <label htmlFor='password' className='block text-sm font-medium leading-6 text-gray-900'>
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                   Confirm Password
                 </label>
               </div>
-              <div className='mt-2'>
+              <div className="mt-2">
                 <input
-                  id='password-confirm'
-                  name='confirm-password'
-                  type='password'
-                  autoComplete='new-password'
+                  id="password-confirm"
+                  name="confirm-password"
+                  type="password"
+                  autoComplete="new-password"
                   required={registerView}
                   onChange={(input) => {
                     setConfirmPassword(input.target.value);
                   }}
-                  className='block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                  className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
 
             {/*Sign Up data validation view */}
             <div className={cn({ hidden: !registerView })}>
-              <div id='hs-strong-password-hints'>
-                <h4 className='mb-2 text-sm font-semibold text-gray-800 dark:text-white'>Sign up data validation:</h4>
-                <ul className='space-y-1 text-sm text-gray-500'>
+              <div id="hs-strong-password-hints">
+                <h4 className="mb-2 text-sm font-semibold text-gray-800 dark:text-white">Sign up data validation:</h4>
+                <ul className="space-y-1 text-sm text-gray-500">
                   {/*Email format invalid*/}
                   <li
                     className={cn(
@@ -198,40 +198,50 @@ export default function LoginPage() {
                       },
                       {
                         "text-red-500": !emailSchema.safeParse(email).success && email.length > 0,
-                      }
+                      },
                     )}
                   >
-                    <span className={cn({ hidden: !emailSchema.safeParse(email).success })} data-check>
+                    <span
+                      className={cn({
+                        hidden: !emailSchema.safeParse(email).success,
+                      })}
+                      data-check
+                    >
                       <svg
-                        className='flex-shrink-0 w-4 h-4'
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='24'
-                        height='24'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
+                        className="h-4 w-4 flex-shrink-0"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        <polyline points='20 6 9 17 4 12' />
+                        <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </span>
-                    <span className={cn({ hidden: emailSchema.safeParse(email).success })} data-uncheck>
+                    <span
+                      className={cn({
+                        hidden: emailSchema.safeParse(email).success,
+                      })}
+                      data-uncheck
+                    >
                       <svg
-                        className='flex-shrink-0 w-4 h-4'
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='24'
-                        height='24'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
+                        className="h-4 w-4 flex-shrink-0"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        <path d='M18 6 6 18' />
-                        <path d='m6 6 12 12' />
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
                       </svg>
                     </span>
                     Valid email address is required.
@@ -245,40 +255,40 @@ export default function LoginPage() {
                       },
                       {
                         "text-red-500": password.length < 8 && password.length > 0,
-                      }
+                      },
                     )}
                   >
                     <span className={cn({ hidden: password.length < 8 })} data-check>
                       <svg
-                        className='flex-shrink-0 w-4 h-4'
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='24'
-                        height='24'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
+                        className="h-4 w-4 flex-shrink-0"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        <polyline points='20 6 9 17 4 12' />
+                        <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </span>
                     <span className={cn({ hidden: password.length >= 8 })} data-uncheck>
                       <svg
-                        className='flex-shrink-0 w-4 h-4'
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='24'
-                        height='24'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
+                        className="h-4 w-4 flex-shrink-0"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        <path d='M18 6 6 18' />
-                        <path d='m6 6 12 12' />
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
                       </svg>
                     </span>
                     Minimum password length is 8 character.
@@ -292,46 +302,50 @@ export default function LoginPage() {
                       },
                       {
                         "text-red-500": password !== confirmPassword && confirmPassword.length > 0,
-                      }
+                      },
                     )}
                   >
                     <span
-                      className={cn({ hidden: password !== confirmPassword || confirmPassword.length < 1 })}
+                      className={cn({
+                        hidden: password !== confirmPassword || confirmPassword.length < 1,
+                      })}
                       data-check
                     >
                       <svg
-                        className='flex-shrink-0 w-4 h-4'
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='24'
-                        height='24'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
+                        className="h-4 w-4 flex-shrink-0"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        <polyline points='20 6 9 17 4 12' />
+                        <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </span>
                     <span
-                      className={cn({ hidden: password === confirmPassword && confirmPassword.length > 0 })}
+                      className={cn({
+                        hidden: password === confirmPassword && confirmPassword.length > 0,
+                      })}
                       data-uncheck
                     >
                       <svg
-                        className='flex-shrink-0 w-4 h-4'
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='24'
-                        height='24'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
+                        className="h-4 w-4 flex-shrink-0"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        <path d='M18 6 6 18' />
-                        <path d='m6 6 12 12' />
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
                       </svg>
                     </span>
                     The confirmation password must match.
@@ -343,34 +357,40 @@ export default function LoginPage() {
             {/*Sumbit button */}
             <div>
               <button
-                type='submit'
+                type="submit"
                 disabled={submitDisabled}
                 className={cn(
-                  "flex w-full justify-center rounded-md text-white shadow-sm px-3 py-1.5 text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
+                  "flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
                   { "bg-indigo-600": !registerView },
-                  { "hover:bg-indigo-500  focus-visible:outline-indigo-600": !registerView && !submitDisabled },
+                  {
+                    "hover:bg-indigo-500  focus-visible:outline-indigo-600": !registerView && !submitDisabled,
+                  },
                   { "bg-emerald-500": registerView },
-                  { "hover:bg-green-500 focus-visible:outline-green-500": !submitDisabled && registerView },
-                  { "hover:bg-red-400 bounce-and-shake": submitDisabled && !loading }
+                  {
+                    "hover:bg-green-500 focus-visible:outline-green-500": !submitDisabled && registerView,
+                  },
+                  {
+                    "bounce-and-shake hover:bg-red-400": submitDisabled && !loading,
+                  },
                 )}
               >
                 {registerView ? "Sign up" : "Sign in"}
                 <div
                   className={cn(
-                    "inline-block h-4 w-4 ml-2 self-center animate-spin rounded-full border-2 border-solid border-current",
-                    "border-r-transparent text-primary motion-reduce:animate-[spin_1.5s_linear_infinite] border-white",
-                    { hidden: !loading }
+                    "ml-2 inline-block h-4 w-4 animate-spin self-center rounded-full border-2 border-solid border-current",
+                    "text-primary border-white border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]",
+                    { hidden: !loading },
                   )}
-                  role='status'
+                  role="status"
                 />
               </button>
             </div>
           </form>
           {/*Login/Register view switch */}
-          <p className='mt-10 text-center text-sm text-gray-500'>
+          <p className="mt-10 text-center text-sm text-gray-500">
             Don&apos;t have an account yet?
             <button
-              className='ml-1 font-semibold leading-6 text-indigo-600 hover:text-indigo-500'
+              className="ml-1 font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
               onClick={() => {
                 setRegisterView(!registerView);
               }}

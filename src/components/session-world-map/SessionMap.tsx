@@ -1,7 +1,7 @@
 "use client";
 
 import { WorldSVGData } from "./world-svg-data";
-import {cn} from "@/lib/helperFunctions"
+import { cn } from "@/lib/helperFunctions";
 import { useEffect, createRef, useState } from "react";
 
 export default function SessionMap() {
@@ -33,22 +33,26 @@ export default function SessionMap() {
   }, [mapContainer]);
 
   return (
-    <div className='p-3 border-2 mt-5 border-slate-300 shadow-md rounded-md max-sm:min-w-[350px] min-w-[50%]'>
+    <div className="mt-5 min-w-[50%] rounded-md border-2 border-slate-300 p-3 shadow-md max-sm:min-w-[350px]">
       <div ref={mapContainer}>
         <svg
-          baseProfile='tiny'
-          fill='#ececec'
-          stroke='black'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          strokeWidth='.2'
-          version='1.2'
-          viewBox={`${2000 / 2 - zoomx / 2} ${857 / 2 - (zoomx * 0.4285) / 2} ${zoomx} ${zoomx * 0.4285}`}
-          xmlns='http://www.w3.org/2000/svg'
+          baseProfile="tiny"
+          fill="#ececec"
+          stroke="black"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth=".2"
+          version="1.2"
+          viewBox={`${2000 / 2 - zoomx / 2} ${
+            857 / 2 - (zoomx * 0.4285) / 2
+          } ${zoomx} ${zoomx * 0.4285}`}
+          xmlns="http://www.w3.org/2000/svg"
         >
           {WorldSVGData.map((item, key) => (
             <path
-              className={cn("stroke-white stroke-[0.5]  hover:stroke-gray-800 hover:stroke-2 hover:cursor-pointer")}
+              className={cn(
+                "stroke-white stroke-[0.5]  hover:cursor-pointer hover:stroke-gray-800 hover:stroke-2",
+              )}
               key={key}
               name={item.name}
               id={item.id}
@@ -57,14 +61,17 @@ export default function SessionMap() {
           ))}
         </svg>
       </div>
-      <div className='flex flex-row'>
-        <div className='flex flex-col mx-1 w-9 h-9 border-[1px]  border-gray-400 rounded-full justify-center align-middle text-center'>
-          <button className='text-xl font-extrabold' onClick={() => handleZoom(1)}>
+      <div className="flex flex-row">
+        <div className="mx-1 flex h-9 w-9 flex-col justify-center  rounded-full border-[1px] border-gray-400 text-center align-middle">
+          <button
+            className="text-xl font-extrabold"
+            onClick={() => handleZoom(1)}
+          >
             -
           </button>
         </div>
-        <div className='flex flex-col mx-1 w-9 h-9 border-[1px]  border-gray-400 rounded-full justify-center align-middle text-center'>
-          <button className='text-lg font-bold' onClick={() => handleZoom(-1)}>
+        <div className="mx-1 flex h-9 w-9 flex-col justify-center  rounded-full border-[1px] border-gray-400 text-center align-middle">
+          <button className="text-lg font-bold" onClick={() => handleZoom(-1)}>
             +
           </button>
         </div>

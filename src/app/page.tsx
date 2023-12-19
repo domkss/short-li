@@ -6,57 +6,57 @@ export default function Home() {
     <main>
       <div>
         {/*Main URL input layout */}
-        <div className='inline-block w-full shadow-md bg-slate-100 border-b-2 border-slate-300'>
-          <div className='mx-auto sm:mt-14 max-w-2xl '>
-            <div className='p-4 max-sm:pt-28  pb-14 '>
-              <h3 className='text-xl font-bold text-gray-900 text-center'>Short any long URL for Free</h3>
+        <div className="inline-block w-full border-b-2 border-slate-300 bg-slate-100 shadow-md">
+          <div className="mx-auto max-w-2xl sm:mt-14 ">
+            <div className="p-4 pb-14  max-sm:pt-28 ">
+              <h3 className="text-center text-xl font-bold text-gray-900">Short any long URL for Free</h3>
               <LongURLInput />
             </div>
           </div>
         </div>
         {/*Description section */}
-        <div className='flex flex-row max-lg:flex-col min-w-full mt-14 mb-3 p-4 justify-evenly'>
-          <div className='flex flex-col flex-wrap basis-1/4 my-3 p-6 border border-gray-200 rounded-lg shadow'>
-            <div className='flex flex-row justify-center'>
-              <Image className='h-14' src='/share_link_undraw.svg' width={56} height={56} alt='Link share logo' />
-              <span className='ml-3 flex flex-1 flex-col justify-center'>
-                <h5 className='text-2xl font-bold tracking-tight text-gray-900'>What is ShortLi?</h5>
+        <div className="mb-3 mt-14 flex min-w-full flex-row justify-evenly p-4 max-lg:flex-col">
+          <div className="my-3 flex basis-1/4 flex-col flex-wrap rounded-lg border border-gray-200 p-6 shadow">
+            <div className="flex flex-row justify-center">
+              <Image className="h-14" src="/share_link_undraw.svg" width={56} height={56} alt="Link share logo" />
+              <span className="ml-3 flex flex-1 flex-col justify-center">
+                <h5 className="text-2xl font-bold tracking-tight text-gray-900">What is ShortLi?</h5>
               </span>
             </div>
-            <hr className='block border-b-1 border-t-neutral-200 max-w-full my-3' />
-            <p className='mb-3 font-normal text-gray-700'>
+            <hr className="border-b-1 my-3 block max-w-full border-t-neutral-200" />
+            <p className="mb-3 font-normal text-gray-700">
               ShortLi is an easy to use Free web link shortener tool.
-              <span className='block mb-2' />
-              Create <span className='font-bold'>short links, QR codes and custom Link-in-bio pages</span> with
+              <span className="mb-2 block" />
+              Create <span className="font-bold">short links, QR codes and custom Link-in-bio pages</span> with
               trackable statistics.
             </p>
           </div>
-          <div className='flex flex-col flex-wrap basis-1/4 my-3 p-6 border border-gray-200 rounded-lg shadow'>
-            <div className='flex flex-row justify-center'>
-              <Image className='h-14' src='/expiry_time_undraw.svg' width={56} height={56} alt='Expiry time logo' />
-              <span className='ml-3 flex flex-1 flex-col justify-center'>
-                <h5 className='text-2xl font-bold tracking-tight text-gray-900'>Default Link Expiry Time</h5>
+          <div className="my-3 flex basis-1/4 flex-col flex-wrap rounded-lg border border-gray-200 p-6 shadow">
+            <div className="flex flex-row justify-center">
+              <Image className="h-14" src="/expiry_time_undraw.svg" width={56} height={56} alt="Expiry time logo" />
+              <span className="ml-3 flex flex-1 flex-col justify-center">
+                <h5 className="text-2xl font-bold tracking-tight text-gray-900">Default Link Expiry Time</h5>
               </span>
             </div>
-            <hr className='block border-b-1 border-t-neutral-200 max-w-full my-3' />
-            <p className='mb-3 font-normal text-gray-700'>
-              By default the links expire after <span className='font-bold'>180</span> days.
-              <span className='block mb-2' />
+            <hr className="border-b-1 my-3 block max-w-full border-t-neutral-200" />
+            <p className="mb-3 font-normal text-gray-700">
+              By default the links expire after <span className="font-bold">180</span> days.
+              <span className="mb-2 block" />
               However, with a simple registration, this feature can be customized or even turned off.
             </p>
           </div>
-          <div className='flex flex-col flex-wrap basis-1/4 my-3 p-6 border border-gray-200 rounded-lg shadow'>
-            <div className='flex flex-row justify-center'>
-              <Image className='h-14' src='/charts_undraw.svg' width={56} height={56} alt='Expiry time logo' />
-              <span className='ml-3 flex flex-1 flex-col justify-center'>
-                <h5 className='text-2xl font-bold tracking-tight text-gray-900'>Redirection statistics</h5>
+          <div className="my-3 flex basis-1/4 flex-col flex-wrap rounded-lg border border-gray-200 p-6 shadow">
+            <div className="flex flex-row justify-center">
+              <Image className="h-14" src="/charts_undraw.svg" width={56} height={56} alt="Expiry time logo" />
+              <span className="ml-3 flex flex-1 flex-col justify-center">
+                <h5 className="text-2xl font-bold tracking-tight text-gray-900">Redirection statistics</h5>
               </span>
             </div>
 
-            <hr className='block border-b-1 border-t-neutral-200 max-w-full my-3' />
-            <p className='mb-3 font-normal text-gray-700'>
+            <hr className="border-b-1 my-3 block max-w-full border-t-neutral-200" />
+            <p className="mb-3 font-normal text-gray-700">
               Track the performance of your shortened links in real-time.
-              <span className='block mb-2' />
+              <span className="mb-2 block" />
               Monitor key metrics such as click-through rates, geographic locations of visitors, and device types used
               to access your links.
             </p>
