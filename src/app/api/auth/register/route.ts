@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   } catch (_) {
     return Response.json(
       { success: false, error: "This email is already in use.\n Please choose another." },
-      { status: 200 }
+      { status: 200 },
     );
   }
 }

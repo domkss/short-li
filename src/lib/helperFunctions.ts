@@ -21,7 +21,7 @@ export const emailSchema = z
   .string()
   .regex(
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-    "Invalid email address"
+    "Invalid email address",
   );
 
 const passwordSchema = z.string().min(8, "Password should be minimum 8 character");
@@ -35,3 +35,25 @@ export const registerUserSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
 });
+
+export function generateVisiblePaginationButtonKeys(originalArray: number[], currentPage: number) {
+  const quarterPoint = Math.floor(originalArray.length / 5);
+
+  const currentPageNumber = originalArray.indexOf(currentPage);
+
+  const newArray = [
+    originalArray[0],
+    originalArray[originalArray.length - 1],
+
+    originalArray[quarterPoint],
+    originalArray[quarterPoint * 2],
+    originalArray[quarterPoint * 3],
+    originalArray[quarterPoint * 4],
+
+    originalArray[currentPageNumber - 1],
+    originalArray[currentPageNumber],
+    originalArray[currentPageNumber + 1],
+  ];
+
+  return newArray;
+}

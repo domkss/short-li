@@ -14,10 +14,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='en'>
-      <body className={`${inter.className} antialiased min-h-screen`}>
+    <html lang="en">
+      <body className={`${inter.className} min-h-screen antialiased`}>
         <AuthProvider>
-          <div className='max-w-[2560px] mx-auto'>
+          <div className="mx-auto max-w-[2560px]">
             <NavBar />
             {children}
           </div>
