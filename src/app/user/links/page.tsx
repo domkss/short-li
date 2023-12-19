@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { DummyURLs } from "./_devConsts";
-import CopyButton from "@/components/CopyButton";
 
 export default function Dashboard() {
   //const session = useSession();
@@ -38,29 +37,36 @@ export default function Dashboard() {
           ))}
         </ul>
       </div>
-      <div className='flex flex-col basis-2/3 p-2 min-w-0'>
-        <div className='flex flex-row p-3 justify-center'>
-          <span className='mx-2 font-semibold text-2xl text-gray-900 font-serif'>Google Calendar Link</span>
-          <Image className='mx-2 cursor-pointer' src='/edit_pencil.svg' width={20} height={20} alt='Edit pencil icon' />
-        </div>
-        <div className='flex flex-col p-3'>
-          <div className='flex flex-row m-2'>
-            <span className='mr-8 text-lg font-semibold text-gray-700'>Short link:</span>
-            <div className='flex flex-row mx-2 items-center'>
-              <span className='mr-2'>shortli.click/abc2132</span>
-              <CopyButton />
+      <div className='flex flex-col basis-2/3'>
+        <div className='p-2'>
+          <div className='flex flex-row p-3 justify-center'>
+            <span className='mx-2 font-semibold text-2xl text-gray-900 font-serif'>Google Calendar Link</span>
+            <Image
+              className='mx-2 cursor-pointer'
+              src='/edit_pencil.svg'
+              width={20}
+              height={20}
+              alt='Edit pencil icon'
+            />
+          </div>
+          <div className='flex flex-col p-4'>
+            <div className='flex flex-col my-2'>
+              <span className='text-lg font-semibold text-gray-700'>Short link:</span>
+              <div className='flex flex-row items-center'>
+                <span className='block'>shortli.click/abc2132</span>
+              </div>
+            </div>
+            <div className='flex flex-col my-2'>
+              <div className='flex flex-row items-center'>
+                <span className='text-lg font-semibold text-gray-700 min-w-fit'>Original URL:</span>
+              </div>
+              <textarea className='flex-1 rounded-md p-2 bg-transparent' rows={4} readOnly={true}>
+                {DummyURLs.at(-2)?.url}
+              </textarea>
             </div>
           </div>
-          <div className='flex flex-row m-2'>
-            <div className='flex flex-col mr-3'>
-              <span className='text-lg font-semibold text-gray-700 min-w-fit'>Original URL:</span>
-              <CopyButton />
-            </div>
-            <textarea className='flex-1 rounded-md bg-slate-100 p-2' rows={4} readOnly={true}>
-              {DummyURLs.at(-2)?.url}
-            </textarea>
-          </div>
         </div>
+        <div className='flex p-2'>Total clicks</div>
       </div>
     </div>
   );

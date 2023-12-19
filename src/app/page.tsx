@@ -16,7 +16,7 @@ export default function Home() {
         </div>
         {/*Description section*/}
         <div className='flex flex-row max-lg:flex-col min-w-full mt-14 mb-3 p-4 justify-evenly'>
-          <div className='flex flex-col flex-wrap basis-1/4 p-6 border border-gray-200 rounded-lg shadow'>
+          <div className='flex flex-col flex-wrap basis-1/4 my-3 p-6 border border-gray-200 rounded-lg shadow'>
             <div className='flex flex-row justify-center'>
               <Image className='h-14' src='/share_link_undraw.svg' width={56} height={56} alt='Link share logo' />
               <span className='ml-3 flex flex-1 flex-col justify-center'>
