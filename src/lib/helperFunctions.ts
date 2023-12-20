@@ -34,6 +34,7 @@ export const loginUserSchema = z.object({
 export const registerUserSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
+  reCaptchaTokken: z.string().optional(),
 });
 
 export function generateVisiblePaginationButtonKeys(originalArray: number[], currentPage: number) {

@@ -43,16 +43,12 @@ export default function SessionMap() {
           strokeLinejoin="round"
           strokeWidth=".2"
           version="1.2"
-          viewBox={`${2000 / 2 - zoomx / 2} ${
-            857 / 2 - (zoomx * 0.4285) / 2
-          } ${zoomx} ${zoomx * 0.4285}`}
+          viewBox={`${2000 / 2 - zoomx / 2} ${857 / 2 - (zoomx * 0.4285) / 2} ${zoomx} ${zoomx * 0.4285}`}
           xmlns="http://www.w3.org/2000/svg"
         >
           {WorldSVGData.map((item, key) => (
             <path
-              className={cn(
-                "stroke-white stroke-[0.5]  hover:cursor-pointer hover:stroke-gray-800 hover:stroke-2",
-              )}
+              className={cn("stroke-white stroke-[0.5]  hover:cursor-pointer hover:stroke-gray-800 hover:stroke-2")}
               key={key}
               name={item.name}
               id={item.id}
@@ -63,10 +59,7 @@ export default function SessionMap() {
       </div>
       <div className="flex flex-row">
         <div className="mx-1 flex h-9 w-9 flex-col justify-center  rounded-full border-[1px] border-gray-400 text-center align-middle">
-          <button
-            className="text-xl font-extrabold"
-            onClick={() => handleZoom(1)}
-          >
+          <button className="text-xl font-extrabold" onClick={() => handleZoom(1)}>
             -
           </button>
         </div>

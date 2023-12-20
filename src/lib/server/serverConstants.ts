@@ -25,4 +25,9 @@ export enum REDIS_ERRORS {
 /*Login constants*/
 export enum AUTHENTICATION_ERRORS {
   USER_ALREADY_EXISTS = "This email address is already registered",
+  RECAPCHA_VALIDATION_FAILED = "ReCaptcha validation failed",
+}
+
+export enum RECAPTCHA_ACTIONS {
+  REGISTER_FORM_SUBMIT = "registerFormSubmit",
 }
