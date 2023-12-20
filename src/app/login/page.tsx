@@ -6,6 +6,8 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { registerUserSchema, loginUserSchema, emailSchema } from "@/lib/helperFunctions";
 import { cn } from "@/lib/helperFunctions";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import { RECAPTCHA_ACTIONS } from "@/lib/server/serverConstants";
 
 export default function LoginPage() {
   const [registerView, setRegisterView] = useState(false);
@@ -18,6 +20,7 @@ export default function LoginPage() {
     loading ||
     (registerView &&
       (!registerUserSchema.safeParse({ email: email, password: password }).success || password !== confirmPassword));
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const { replace } = useRouter();
   /*Redirect if the user already logged in */
   if (useSession().status === "authenticated") replace("/user/links");
@@ -34,12 +37,27 @@ export default function LoginPage() {
     setLoading(true);
 
     if (registerView) {
-      //let status = await createUser(email, password);
+      /*Request reCapcha tokken */
+
+      if (!executeRecaptcha) {
+        setErrorText("Faild to execute reCaptcha. Reload the site and try again.");
+        setLoading(false);
+        return;
+      }
+
+      let reCaptchaTokken = await executeRecaptcha(RECAPTCHA_ACTIONS.REGISTER_FORM_SUBMIT);
+      if (!reCaptchaTokken) {
+        setErrorText("Faild to execute reCaptcha. Reload the site and try again.");
+        setLoading(false);
+        return;
+      }
+
       let result = await fetch("/api/auth/register", {
         method: "POST",
         body: JSON.stringify({
           email: email,
           password: password,
+          reCaptchaTokken: reCaptchaTokken,
         }),
       });
 

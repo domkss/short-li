@@ -1,7 +1,13 @@
 import "server-only";
 import crypto from "crypto";
 import { RedisDB } from "./redisDB";
-import { REDIS_NAME_PATTERNS, REDIS_USER_FIELDS, AUTHENTICATION_ERRORS, REDIS_ERRORS } from "./serverConstants";
+import {
+  REDIS_NAME_PATTERNS,
+  REDIS_USER_FIELDS,
+  AUTHENTICATION_ERRORS,
+  REDIS_ERRORS,
+  RECAPTCHA_ACTIONS,
+} from "./serverConstants";
 
 export async function loginUser(email: string, password: string) {
   try {
@@ -14,7 +20,11 @@ export async function loginUser(email: string, password: string) {
     throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   }
 }
-export async function registerNewUser(email: string, password: string) {
+export async function registerNewUser(email: string, password: string, reCaptchaToken: string | undefined) {
+  if (!reCaptchaToken) throw Error(AUTHENTICATION_ERRORS.RECAPCHA_VALIDATION_FAILED);
+  let reCaptchaValidationPassed = await verifyRecaptcha(reCaptchaToken);
+  if (!reCaptchaValidationPassed) throw Error(AUTHENTICATION_ERRORS.RECAPCHA_VALIDATION_FAILED);
+
   let status;
   try {
     const redisClient = await RedisDB.getClient();
@@ -35,6 +45,24 @@ export async function registerNewUser(email: string, password: string) {
       }
     });
 }
+
+const verifyRecaptcha = async (token: string) => {
+  const secretKey = process.env.RECAPCHA_SECRET_KEY;
+  var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + token;
+
+  let response = await fetch(verificationUrl, {
+    method: "POST",
+  });
+
+  if (response.ok) {
+    let data = await response.json();
+    if (data.success && data.score > 0.55 && data.action === RECAPTCHA_ACTIONS.REGISTER_FORM_SUBMIT) {
+      return true;
+    }
+  }
+  return false;
+};
+
 function createPasswordHash(password: string) {
   let salt = crypto.randomBytes(16).toString("hex");
   let hash = crypto.pbkdf2Sync(password, salt, 1000, 64, `sha512`).toString(`hex`);

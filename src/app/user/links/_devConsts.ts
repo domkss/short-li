@@ -1,797 +1,133 @@
-export const DummyURLs = [
+const originalArrayOfDummyURLs = [
   {
     name: "ExampleSite1",
     url: "https://www.examplesite1-abcdefghijklmnopqrstuvwx.com",
-    shortURL: "shortli.click/abc1234",
+    shortURL: "abc1234",
+    clickCount: 153420,
   },
-  { name: "SampleSite2", url: "https://www.samplesite2-qrstuvwxyz1234567890.net", shortURL: "shortli.click/def5678" },
+  {
+    name: "SampleSite2",
+    url: "https://www.samplesite2-qrstuvwxyz1234567890.net",
+    shortURL: "def5678",
+    clickCount: 78923,
+  },
   {
     name: "WebPortal3",
     url: "https://www.webportal3-abcdefghijklmnopqrstuvwxyz.org",
-    shortURL: "shortli.click/ghi9101",
+    shortURL: "ghi9101",
+    clickCount: 124567,
   },
-  { name: "GlobalHub4", url: "https://www.globalhub4-0123456789abcdefghij.info", shortURL: "shortli.click/jkl2345" },
+  {
+    name: "GlobalHub4",
+    url: "https://www.globalhub4-0123456789abcdefghij.info",
+    shortURL: "jkl2345",
+    clickCount: 42000,
+  },
   {
     name: "VirtualWorld5",
     url: "https://www.virtualworl-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/mno6789",
+    shortURL: "mno6789",
+    clickCount: 175000,
   },
   {
     name: "TechInnovate6",
     url: "https://www.techinnovat-0123456789abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr1234",
+    shortURL: "pqr1234",
+    clickCount: 98000,
   },
   {
     name: "NexusNetwork7",
     url: "https://www.nexusnetwor-abcdefghijklmnopqrstuvwxyz1234567890.com",
-    shortURL: "shortli.click/stu5678",
+    shortURL: "stu5678",
+    clickCount: 60000,
   },
   {
     name: "DataSphere8",
     url: "https://www.datasphere8-abcdefghijklmnopqrstuvwx12.dev",
-    shortURL: "shortli.click/vwx9101",
+    shortURL: "vwx9101",
+    clickCount: 150000,
   },
   {
     name: "QuantumLink9",
     url: "https://www.quantumlink9-3456789abcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/yz01234",
+    shortURL: "yz01234",
+    clickCount: 30000,
   },
   {
     name: "CyberSpace10",
     url: "https://www.cyberspace10-defghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/abc5678",
+    shortURL: "abc5678",
+    clickCount: 75000,
   },
   {
     name: "ExampleSite11",
     url: "https://www.examplesite11-zyxwvutsrqponmlkjihgfedcba9876543210.com",
-    shortURL: "shortli.click/def9101",
+    shortURL: "def9101",
+    clickCount: 125000,
   },
   {
     name: "SampleSite12",
     url: "https://www.samplesite12-9876543210abcdefghijklmnopqrstuvwxyz.net",
-    shortURL: "shortli.click/ghi2345",
+    shortURL: "ghi2345",
+    clickCount: 100000,
   },
   {
     name: "WebPortal13",
     url: "https://www.webportal13-abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx.org",
-    shortURL: "shortli.click/jkl6789",
+    shortURL: "jkl6789",
+    clickCount: 180000,
   },
   {
     name: "GlobalHub14",
     url: "https://www.globalhub14-klmnopqrstuvwxyz1234567890abcdefghijklmnopqr.info",
-    shortURL: "shortli.click/mno1234",
+    shortURL: "mno1234",
+    clickCount: 45000,
   },
   {
     name: "VirtualWorld15",
     url: "https://www.virtualworl15-uvwxyz1234567890abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr5678",
+    shortURL: "pqr5678",
+    clickCount: 160000,
   },
   {
     name: "TechInnovate16",
     url: "https://www.techinnovat16-0123456789abcdefghijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/stu9101",
+    shortURL: "stu9101",
+    clickCount: 120000,
   },
   {
     name: "NexusNetwork17",
     url: "https://www.nexusnetwor17-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/vwx2345",
+    shortURL: "vwx2345",
+    clickCount: 90000,
   },
   {
     name: "DataSphere18",
     url: "https://www.datasphere18-0123456789abcdefghijklmnopqrstuvwxyzabcdef.dev",
-    shortURL: "shortli.click/yz5678",
+    shortURL: "yz5678",
+    clickCount: 42000,
   },
   {
     name: "QuantumLink19",
     url: "https://www.quantumlink19-3456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/abc9101",
+    shortURL: "abc9101",
+    clickCount: 170000,
   },
   {
     name: "CyberSpace20",
     url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
+    shortURL: "def2345",
+    clickCount: 85000,
   },
-  { name: "LongURLEntry", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
-  {
-    name: "ExampleSite1",
-    url: "https://www.examplesite1-abcdefghijklmnopqrstuvwx.com",
-    shortURL: "shortli.click/abc1234",
-  },
-  { name: "SampleSite2", url: "https://www.samplesite2-qrstuvwxyz1234567890.net", shortURL: "shortli.click/def5678" },
-  {
-    name: "WebPortal3",
-    url: "https://www.webportal3-abcdefghijklmnopqrstuvwxyz.org",
-    shortURL: "shortli.click/ghi9101",
-  },
-  { name: "GlobalHub4", url: "https://www.globalhub4-0123456789abcdefghij.info", shortURL: "shortli.click/jkl2345" },
-  {
-    name: "VirtualWorld5",
-    url: "https://www.virtualworl-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/mno6789",
-  },
-  {
-    name: "TechInnovate6",
-    url: "https://www.techinnovat-0123456789abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr1234",
-  },
-  {
-    name: "NexusNetwork7",
-    url: "https://www.nexusnetwor-abcdefghijklmnopqrstuvwxyz1234567890.com",
-    shortURL: "shortli.click/stu5678",
-  },
-  {
-    name: "DataSphere8",
-    url: "https://www.datasphere8-abcdefghijklmnopqrstuvwx12.dev",
-    shortURL: "shortli.click/vwx9101",
-  },
-  {
-    name: "QuantumLink9",
-    url: "https://www.quantumlink9-3456789abcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/yz01234",
-  },
-  {
-    name: "CyberSpace10",
-    url: "https://www.cyberspace10-defghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/abc5678",
-  },
-  {
-    name: "ExampleSite11",
-    url: "https://www.examplesite11-zyxwvutsrqponmlkjihgfedcba9876543210.com",
-    shortURL: "shortli.click/def9101",
-  },
-  {
-    name: "SampleSite12",
-    url: "https://www.samplesite12-9876543210abcdefghijklmnopqrstuvwxyz.net",
-    shortURL: "shortli.click/ghi2345",
-  },
-  {
-    name: "WebPortal13",
-    url: "https://www.webportal13-abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx.org",
-    shortURL: "shortli.click/jkl6789",
-  },
-  {
-    name: "GlobalHub14",
-    url: "https://www.globalhub14-klmnopqrstuvwxyz1234567890abcdefghijklmnopqr.info",
-    shortURL: "shortli.click/mno1234",
-  },
-  {
-    name: "VirtualWorld15",
-    url: "https://www.virtualworl15-uvwxyz1234567890abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr5678",
-  },
-  {
-    name: "TechInnovate16",
-    url: "https://www.techinnovat16-0123456789abcdefghijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/stu9101",
-  },
-  {
-    name: "NexusNetwork17",
-    url: "https://www.nexusnetwor17-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/vwx2345",
-  },
-  {
-    name: "DataSphere18",
-    url: "https://www.datasphere18-0123456789abcdefghijklmnopqrstuvwxyzabcdef.dev",
-    shortURL: "shortli.click/yz5678",
-  },
-  {
-    name: "QuantumLink19",
-    url: "https://www.quantumlink19-3456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/abc9101",
-  },
-  {
-    name: "CyberSpace20",
-    url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
-  },
-  { name: "LongURLEntry", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
-  {
-    name: "QuantumLink19",
-    url: "https://www.quantumlink19-3456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/abc9101",
-  },
-  {
-    name: "OverflowItem1",
-    url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
-  },
-  { name: "OverflowItem2", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
-
-  {
-    name: "ExampleSite1",
-    url: "https://www.examplesite1-abcdefghijklmnopqrstuvwx.com",
-    shortURL: "shortli.click/abc1234",
-  },
-  { name: "SampleSite2", url: "https://www.samplesite2-qrstuvwxyz1234567890.net", shortURL: "shortli.click/def5678" },
-  {
-    name: "WebPortal3",
-    url: "https://www.webportal3-abcdefghijklmnopqrstuvwxyz.org",
-    shortURL: "shortli.click/ghi9101",
-  },
-  { name: "GlobalHub4", url: "https://www.globalhub4-0123456789abcdefghij.info", shortURL: "shortli.click/jkl2345" },
-  {
-    name: "VirtualWorld5",
-    url: "https://www.virtualworl-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/mno6789",
-  },
-  {
-    name: "TechInnovate6",
-    url: "https://www.techinnovat-0123456789abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr1234",
-  },
-  {
-    name: "NexusNetwork7",
-    url: "https://www.nexusnetwor-abcdefghijklmnopqrstuvwxyz1234567890.com",
-    shortURL: "shortli.click/stu5678",
-  },
-  {
-    name: "DataSphere8",
-    url: "https://www.datasphere8-abcdefghijklmnopqrstuvwx12.dev",
-    shortURL: "shortli.click/vwx9101",
-  },
-  {
-    name: "QuantumLink9",
-    url: "https://www.quantumlink9-3456789abcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/yz01234",
-  },
-  {
-    name: "CyberSpace10",
-    url: "https://www.cyberspace10-defghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/abc5678",
-  },
-  {
-    name: "ExampleSite11",
-    url: "https://www.examplesite11-zyxwvutsrqponmlkjihgfedcba9876543210.com",
-    shortURL: "shortli.click/def9101",
-  },
-  {
-    name: "SampleSite12",
-    url: "https://www.samplesite12-9876543210abcdefghijklmnopqrstuvwxyz.net",
-    shortURL: "shortli.click/ghi2345",
-  },
-  {
-    name: "WebPortal13",
-    url: "https://www.webportal13-abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx.org",
-    shortURL: "shortli.click/jkl6789",
-  },
-  {
-    name: "GlobalHub14",
-    url: "https://www.globalhub14-klmnopqrstuvwxyz1234567890abcdefghijklmnopqr.info",
-    shortURL: "shortli.click/mno1234",
-  },
-  {
-    name: "VirtualWorld15",
-    url: "https://www.virtualworl15-uvwxyz1234567890abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr5678",
-  },
-  {
-    name: "TechInnovate16",
-    url: "https://www.techinnovat16-0123456789abcdefghijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/stu9101",
-  },
-  {
-    name: "NexusNetwork17",
-    url: "https://www.nexusnetwor17-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/vwx2345",
-  },
-  {
-    name: "DataSphere18",
-    url: "https://www.datasphere18-0123456789abcdefghijklmnopqrstuvwxyzabcdef.dev",
-    shortURL: "shortli.click/yz5678",
-  },
-  {
-    name: "QuantumLink19",
-    url: "https://www.quantumlink19-3456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/abc9101",
-  },
-  {
-    name: "CyberSpace20",
-    url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
-  },
-  { name: "LongURLEntry", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
-  {
-    name: "ExampleSite1",
-    url: "https://www.examplesite1-abcdefghijklmnopqrstuvwx.com",
-    shortURL: "shortli.click/abc1234",
-  },
-  { name: "SampleSite2", url: "https://www.samplesite2-qrstuvwxyz1234567890.net", shortURL: "shortli.click/def5678" },
-  {
-    name: "WebPortal3",
-    url: "https://www.webportal3-abcdefghijklmnopqrstuvwxyz.org",
-    shortURL: "shortli.click/ghi9101",
-  },
-  { name: "GlobalHub4", url: "https://www.globalhub4-0123456789abcdefghij.info", shortURL: "shortli.click/jkl2345" },
-  {
-    name: "VirtualWorld5",
-    url: "https://www.virtualworl-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/mno6789",
-  },
-  {
-    name: "TechInnovate6",
-    url: "https://www.techinnovat-0123456789abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr1234",
-  },
-  {
-    name: "NexusNetwork7",
-    url: "https://www.nexusnetwor-abcdefghijklmnopqrstuvwxyz1234567890.com",
-    shortURL: "shortli.click/stu5678",
-  },
-  {
-    name: "DataSphere8",
-    url: "https://www.datasphere8-abcdefghijklmnopqrstuvwx12.dev",
-    shortURL: "shortli.click/vwx9101",
-  },
-  {
-    name: "QuantumLink9",
-    url: "https://www.quantumlink9-3456789abcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/yz01234",
-  },
-  {
-    name: "CyberSpace10",
-    url: "https://www.cyberspace10-defghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/abc5678",
-  },
-  {
-    name: "ExampleSite11",
-    url: "https://www.examplesite11-zyxwvutsrqponmlkjihgfedcba9876543210.com",
-    shortURL: "shortli.click/def9101",
-  },
-  {
-    name: "SampleSite12",
-    url: "https://www.samplesite12-9876543210abcdefghijklmnopqrstuvwxyz.net",
-    shortURL: "shortli.click/ghi2345",
-  },
-  {
-    name: "WebPortal13",
-    url: "https://www.webportal13-abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx.org",
-    shortURL: "shortli.click/jkl6789",
-  },
-  {
-    name: "GlobalHub14",
-    url: "https://www.globalhub14-klmnopqrstuvwxyz1234567890abcdefghijklmnopqr.info",
-    shortURL: "shortli.click/mno1234",
-  },
-  {
-    name: "VirtualWorld15",
-    url: "https://www.virtualworl15-uvwxyz1234567890abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr5678",
-  },
-  {
-    name: "TechInnovate16",
-    url: "https://www.techinnovat16-0123456789abcdefghijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/stu9101",
-  },
-  {
-    name: "NexusNetwork17",
-    url: "https://www.nexusnetwor17-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/vwx2345",
-  },
-  {
-    name: "DataSphere18",
-    url: "https://www.datasphere18-0123456789abcdefghijklmnopqrstuvwxyzabcdef.dev",
-    shortURL: "shortli.click/yz5678",
-  },
-  {
-    name: "QuantumLink19",
-    url: "https://www.quantumlink19-3456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/abc9101",
-  },
-  {
-    name: "CyberSpace20",
-    url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
-  },
-  { name: "LongURLEntry", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
-  {
-    name: "QuantumLink19",
-    url: "https://www.quantumlink19-3456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/abc9101",
-  },
-  {
-    name: "OverflowItem1",
-    url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
-  },
-  { name: "OverflowItem2", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
-  {
-    name: "ExampleSite1",
-    url: "https://www.examplesite1-abcdefghijklmnopqrstuvwx.com",
-    shortURL: "shortli.click/abc1234",
-  },
-  { name: "SampleSite2", url: "https://www.samplesite2-qrstuvwxyz1234567890.net", shortURL: "shortli.click/def5678" },
-  {
-    name: "WebPortal3",
-    url: "https://www.webportal3-abcdefghijklmnopqrstuvwxyz.org",
-    shortURL: "shortli.click/ghi9101",
-  },
-  { name: "GlobalHub4", url: "https://www.globalhub4-0123456789abcdefghij.info", shortURL: "shortli.click/jkl2345" },
-  {
-    name: "VirtualWorld5",
-    url: "https://www.virtualworl-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/mno6789",
-  },
-  {
-    name: "TechInnovate6",
-    url: "https://www.techinnovat-0123456789abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr1234",
-  },
-  {
-    name: "NexusNetwork7",
-    url: "https://www.nexusnetwor-abcdefghijklmnopqrstuvwxyz1234567890.com",
-    shortURL: "shortli.click/stu5678",
-  },
-  {
-    name: "DataSphere8",
-    url: "https://www.datasphere8-abcdefghijklmnopqrstuvwx12.dev",
-    shortURL: "shortli.click/vwx9101",
-  },
-  {
-    name: "QuantumLink9",
-    url: "https://www.quantumlink9-3456789abcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/yz01234",
-  },
-  {
-    name: "CyberSpace10",
-    url: "https://www.cyberspace10-defghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/abc5678",
-  },
-  {
-    name: "ExampleSite11",
-    url: "https://www.examplesite11-zyxwvutsrqponmlkjihgfedcba9876543210.com",
-    shortURL: "shortli.click/def9101",
-  },
-  {
-    name: "SampleSite12",
-    url: "https://www.samplesite12-9876543210abcdefghijklmnopqrstuvwxyz.net",
-    shortURL: "shortli.click/ghi2345",
-  },
-  {
-    name: "WebPortal13",
-    url: "https://www.webportal13-abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx.org",
-    shortURL: "shortli.click/jkl6789",
-  },
-  {
-    name: "GlobalHub14",
-    url: "https://www.globalhub14-klmnopqrstuvwxyz1234567890abcdefghijklmnopqr.info",
-    shortURL: "shortli.click/mno1234",
-  },
-  {
-    name: "VirtualWorld15",
-    url: "https://www.virtualworl15-uvwxyz1234567890abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr5678",
-  },
-  {
-    name: "TechInnovate16",
-    url: "https://www.techinnovat16-0123456789abcdefghijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/stu9101",
-  },
-  {
-    name: "NexusNetwork17",
-    url: "https://www.nexusnetwor17-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/vwx2345",
-  },
-  {
-    name: "DataSphere18",
-    url: "https://www.datasphere18-0123456789abcdefghijklmnopqrstuvwxyzabcdef.dev",
-    shortURL: "shortli.click/yz5678",
-  },
-  {
-    name: "QuantumLink19",
-    url: "https://www.quantumlink19-3456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/abc9101",
-  },
-  {
-    name: "CyberSpace20",
-    url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
-  },
-  { name: "LongURLEntry", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
-  {
-    name: "ExampleSite1",
-    url: "https://www.examplesite1-abcdefghijklmnopqrstuvwx.com",
-    shortURL: "shortli.click/abc1234",
-  },
-  { name: "SampleSite2", url: "https://www.samplesite2-qrstuvwxyz1234567890.net", shortURL: "shortli.click/def5678" },
-  {
-    name: "WebPortal3",
-    url: "https://www.webportal3-abcdefghijklmnopqrstuvwxyz.org",
-    shortURL: "shortli.click/ghi9101",
-  },
-  { name: "GlobalHub4", url: "https://www.globalhub4-0123456789abcdefghij.info", shortURL: "shortli.click/jkl2345" },
-  {
-    name: "VirtualWorld5",
-    url: "https://www.virtualworl-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/mno6789",
-  },
-  {
-    name: "TechInnovate6",
-    url: "https://www.techinnovat-0123456789abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr1234",
-  },
-  {
-    name: "NexusNetwork7",
-    url: "https://www.nexusnetwor-abcdefghijklmnopqrstuvwxyz1234567890.com",
-    shortURL: "shortli.click/stu5678",
-  },
-  {
-    name: "DataSphere8",
-    url: "https://www.datasphere8-abcdefghijklmnopqrstuvwx12.dev",
-    shortURL: "shortli.click/vwx9101",
-  },
-  {
-    name: "QuantumLink9",
-    url: "https://www.quantumlink9-3456789abcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/yz01234",
-  },
-  {
-    name: "CyberSpace10",
-    url: "https://www.cyberspace10-defghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/abc5678",
-  },
-  {
-    name: "ExampleSite11",
-    url: "https://www.examplesite11-zyxwvutsrqponmlkjihgfedcba9876543210.com",
-    shortURL: "shortli.click/def9101",
-  },
-  {
-    name: "SampleSite12",
-    url: "https://www.samplesite12-9876543210abcdefghijklmnopqrstuvwxyz.net",
-    shortURL: "shortli.click/ghi2345",
-  },
-  {
-    name: "WebPortal13",
-    url: "https://www.webportal13-abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx.org",
-    shortURL: "shortli.click/jkl6789",
-  },
-  {
-    name: "GlobalHub14",
-    url: "https://www.globalhub14-klmnopqrstuvwxyz1234567890abcdefghijklmnopqr.info",
-    shortURL: "shortli.click/mno1234",
-  },
-  {
-    name: "VirtualWorld15",
-    url: "https://www.virtualworl15-uvwxyz1234567890abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr5678",
-  },
-  {
-    name: "TechInnovate16",
-    url: "https://www.techinnovat16-0123456789abcdefghijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/stu9101",
-  },
-  {
-    name: "NexusNetwork17",
-    url: "https://www.nexusnetwor17-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/vwx2345",
-  },
-  {
-    name: "DataSphere18",
-    url: "https://www.datasphere18-0123456789abcdefghijklmnopqrstuvwxyzabcdef.dev",
-    shortURL: "shortli.click/yz5678",
-  },
-  {
-    name: "QuantumLink19",
-    url: "https://www.quantumlink19-3456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/abc9101",
-  },
-  {
-    name: "CyberSpace20",
-    url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
-  },
-  { name: "LongURLEntry", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
-  {
-    name: "QuantumLink19",
-    url: "https://www.quantumlink19-3456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/abc9101",
-  },
-  {
-    name: "OverflowItem1",
-    url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
-  },
-  { name: "OverflowItem2", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
-
-  {
-    name: "ExampleSite1",
-    url: "https://www.examplesite1-abcdefghijklmnopqrstuvwx.com",
-    shortURL: "shortli.click/abc1234",
-  },
-  { name: "SampleSite2", url: "https://www.samplesite2-qrstuvwxyz1234567890.net", shortURL: "shortli.click/def5678" },
-  {
-    name: "WebPortal3",
-    url: "https://www.webportal3-abcdefghijklmnopqrstuvwxyz.org",
-    shortURL: "shortli.click/ghi9101",
-  },
-  { name: "GlobalHub4", url: "https://www.globalhub4-0123456789abcdefghij.info", shortURL: "shortli.click/jkl2345" },
-  {
-    name: "VirtualWorld5",
-    url: "https://www.virtualworl-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/mno6789",
-  },
-  {
-    name: "TechInnovate6",
-    url: "https://www.techinnovat-0123456789abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr1234",
-  },
-  {
-    name: "NexusNetwork7",
-    url: "https://www.nexusnetwor-abcdefghijklmnopqrstuvwxyz1234567890.com",
-    shortURL: "shortli.click/stu5678",
-  },
-  {
-    name: "DataSphere8",
-    url: "https://www.datasphere8-abcdefghijklmnopqrstuvwx12.dev",
-    shortURL: "shortli.click/vwx9101",
-  },
-  {
-    name: "QuantumLink9",
-    url: "https://www.quantumlink9-3456789abcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/yz01234",
-  },
-  {
-    name: "CyberSpace10",
-    url: "https://www.cyberspace10-defghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/abc5678",
-  },
-  {
-    name: "ExampleSite11",
-    url: "https://www.examplesite11-zyxwvutsrqponmlkjihgfedcba9876543210.com",
-    shortURL: "shortli.click/def9101",
-  },
-  {
-    name: "SampleSite12",
-    url: "https://www.samplesite12-9876543210abcdefghijklmnopqrstuvwxyz.net",
-    shortURL: "shortli.click/ghi2345",
-  },
-  {
-    name: "WebPortal13",
-    url: "https://www.webportal13-abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx.org",
-    shortURL: "shortli.click/jkl6789",
-  },
-  {
-    name: "GlobalHub14",
-    url: "https://www.globalhub14-klmnopqrstuvwxyz1234567890abcdefghijklmnopqr.info",
-    shortURL: "shortli.click/mno1234",
-  },
-  {
-    name: "VirtualWorld15",
-    url: "https://www.virtualworl15-uvwxyz1234567890abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr5678",
-  },
-  {
-    name: "TechInnovate16",
-    url: "https://www.techinnovat16-0123456789abcdefghijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/stu9101",
-  },
-  {
-    name: "NexusNetwork17",
-    url: "https://www.nexusnetwor17-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/vwx2345",
-  },
-  {
-    name: "DataSphere18",
-    url: "https://www.datasphere18-0123456789abcdefghijklmnopqrstuvwxyzabcdef.dev",
-    shortURL: "shortli.click/yz5678",
-  },
-  {
-    name: "QuantumLink19",
-    url: "https://www.quantumlink19-3456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/abc9101",
-  },
-  {
-    name: "CyberSpace20",
-    url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
-  },
-  { name: "LongURLEntry", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
-  {
-    name: "ExampleSite1",
-    url: "https://www.examplesite1-abcdefghijklmnopqrstuvwx.com",
-    shortURL: "shortli.click/abc1234",
-  },
-  { name: "SampleSite2", url: "https://www.samplesite2-qrstuvwxyz1234567890.net", shortURL: "shortli.click/def5678" },
-  {
-    name: "WebPortal3",
-    url: "https://www.webportal3-abcdefghijklmnopqrstuvwxyz.org",
-    shortURL: "shortli.click/ghi9101",
-  },
-  { name: "GlobalHub4", url: "https://www.globalhub4-0123456789abcdefghij.info", shortURL: "shortli.click/jkl2345" },
-  {
-    name: "VirtualWorld5",
-    url: "https://www.virtualworl-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/mno6789",
-  },
-  {
-    name: "TechInnovate6",
-    url: "https://www.techinnovat-0123456789abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr1234",
-  },
-  {
-    name: "NexusNetwork7",
-    url: "https://www.nexusnetwor-abcdefghijklmnopqrstuvwxyz1234567890.com",
-    shortURL: "shortli.click/stu5678",
-  },
-  {
-    name: "DataSphere8",
-    url: "https://www.datasphere8-abcdefghijklmnopqrstuvwx12.dev",
-    shortURL: "shortli.click/vwx9101",
-  },
-  {
-    name: "QuantumLink9",
-    url: "https://www.quantumlink9-3456789abcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/yz01234",
-  },
-  {
-    name: "CyberSpace10",
-    url: "https://www.cyberspace10-defghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/abc5678",
-  },
-  {
-    name: "ExampleSite11",
-    url: "https://www.examplesite11-zyxwvutsrqponmlkjihgfedcba9876543210.com",
-    shortURL: "shortli.click/def9101",
-  },
-  {
-    name: "SampleSite12",
-    url: "https://www.samplesite12-9876543210abcdefghijklmnopqrstuvwxyz.net",
-    shortURL: "shortli.click/ghi2345",
-  },
-  {
-    name: "WebPortal13",
-    url: "https://www.webportal13-abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx.org",
-    shortURL: "shortli.click/jkl6789",
-  },
-  {
-    name: "GlobalHub14",
-    url: "https://www.globalhub14-klmnopqrstuvwxyz1234567890abcdefghijklmnopqr.info",
-    shortURL: "shortli.click/mno1234",
-  },
-  {
-    name: "VirtualWorld15",
-    url: "https://www.virtualworl15-uvwxyz1234567890abcdefghijklmnopqrstuvwxyz.com",
-    shortURL: "shortli.click/pqr5678",
-  },
-  {
-    name: "TechInnovate16",
-    url: "https://www.techinnovat16-0123456789abcdefghijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/stu9101",
-  },
-  {
-    name: "NexusNetwork17",
-    url: "https://www.nexusnetwor17-ijklmnopqrstuvwxyzabcdefgh.com",
-    shortURL: "shortli.click/vwx2345",
-  },
-  {
-    name: "DataSphere18",
-    url: "https://www.datasphere18-0123456789abcdefghijklmnopqrstuvwxyzabcdef.dev",
-    shortURL: "shortli.click/yz5678",
-  },
-  {
-    name: "QuantumLink19",
-    url: "https://www.quantumlink19-3456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/abc9101",
-  },
-  {
-    name: "CyberSpace20",
-    url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
-  },
-  { name: "LongURLEntry", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
-  {
-    name: "QuantumLink19",
-    url: "https://www.quantumlink19-3456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabc.pro",
-    shortURL: "shortli.click/abc9101",
-  },
-  {
-    name: "OverflowItem1",
-    url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
-  },
-  {
-    name: "OverflowItem1",
-    url: "https://www.cyberspace20-defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno.io",
-    shortURL: "shortli.click/def2345",
-  },
-  { name: "OverflowItem2", url: "https://www.longurlentry".padEnd(2048, "X"), shortURL: "shortli.click/ghi5678" },
+  { name: "LongURLEntry", url: "https://www.longurlentry-".padEnd(2048, "X"), shortURL: "ghi5678", clickCount: 190000 },
 ];
+
+export const DummyURLs = copyAndExpand(originalArrayOfDummyURLs);
+
+export function copyAndExpand(array: { name: string; url: string; shortURL: string; clickCount: number }[]) {
+  // Copy the array and return a new array three times larger
+  let newArray = [...array];
+  newArray = newArray.concat([...newArray, ...newArray]);
+  newArray = newArray.concat([...newArray, ...newArray]);
+  return newArray.concat([...newArray, ...newArray]);
+}
