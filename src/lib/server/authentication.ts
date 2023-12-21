@@ -56,7 +56,7 @@ const verifyRecaptcha = async (token: string) => {
 
   if (response.ok) {
     let data = await response.json();
-    if (data.success && data.score > 0.55 && data.action === RECAPTCHA_ACTIONS.REGISTER_FORM_SUBMIT) {
+    if (data.success && data.score >= 0.5 && data.action === RECAPTCHA_ACTIONS.REGISTER_FORM_SUBMIT) {
       return true;
     }
   }
