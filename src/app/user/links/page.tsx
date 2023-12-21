@@ -150,9 +150,12 @@ export default function Dashboard() {
           <div className="flex flex-row justify-center p-3">
             <input
               type="text"
-              className={cn("mx-2 text-center font-serif text-2xl font-semibold text-gray-900 focus:outline-none", {
-                "border-b-2 border-gray-400": nameEditingView,
-              })}
+              className={cn(
+                "mx-2 bg-transparent text-center font-serif text-2xl font-semibold text-gray-900 focus:outline-none",
+                {
+                  "border-b-2 border-gray-400": nameEditingView,
+                },
+              )}
               value={nameInputValue.length > 0 ? nameInputValue : linkListItems.at(activeLinkListItem)?.name}
               onChange={(event) => {
                 setNameInputValue(event.target.value);
@@ -195,7 +198,46 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        <div className="flex p-2">Total clicks</div>
+        <div className="p-4">
+          <div className="flex flex-col justify-center">
+            <div className="relative h-40 w-40">
+              <div className="text-center">Total clicks</div>
+              <svg className="h-full w-full" viewBox="0 0 100 100">
+                <circle
+                  className="stroke-current text-gray-200"
+                  stroke-width="10"
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="transparent"
+                ></circle>
+
+                <circle
+                  className="progress-ring__circle  stroke-current text-indigo-500"
+                  stroke-width="10"
+                  stroke-linecap="round"
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="transparent"
+                  strokeDasharray="252"
+                  stroke-dashoffset={`calc(252 - (252 * ${70}) / 100)`}
+                ></circle>
+
+                <text
+                  x="50"
+                  y="50"
+                  font-family="Verdana"
+                  font-size="12"
+                  text-anchor="middle"
+                  alignment-baseline="middle"
+                >
+                  70%
+                </text>
+              </svg>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

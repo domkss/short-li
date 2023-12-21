@@ -15,3 +15,10 @@
     75% { transform: translateY(-2px) rotate(-2deg) }
     100% { transform: translateY(0) rotate(0) }
 }
+
+.progress-ring__circle {
+    stroke-dasharray: 252;
+    transition: stroke-dashoffset 0.35s;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+  }
