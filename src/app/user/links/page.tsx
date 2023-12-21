@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { DummyURLs } from "./_devConsts";
 import { ChangeEvent, useState } from "react";
-import { cn } from "@/lib/helperFunctions";
-import { generateVisiblePaginationButtonKeys, debounce } from "@/lib/helperFunctions";
+import { cn, progressUntilNextPowerOfTen } from "@/lib/helperFunctions";
+import { generateVisiblePaginationButtonKeys, debounce, nFormatter } from "@/lib/helperFunctions";
 
 export default function Dashboard() {
   const linkItemsPerPage = 9;
@@ -201,11 +201,13 @@ export default function Dashboard() {
         <div className="p-4">
           <div className="flex flex-col justify-center">
             <div className="relative h-40 w-40">
-              <div className="text-center">Total clicks</div>
+              <div className="text-center">
+                <span className="min-w-fit text-lg font-semibold text-gray-700">Total clicks</span>
+              </div>
               <svg className="h-full w-full" viewBox="0 0 100 100">
                 <circle
                   className="stroke-current text-gray-200"
-                  stroke-width="10"
+                  strokeWidth="10"
                   cx="50"
                   cy="50"
                   r="40"
@@ -214,25 +216,20 @@ export default function Dashboard() {
 
                 <circle
                   className="progress-ring__circle  stroke-current text-indigo-500"
-                  stroke-width="10"
-                  stroke-linecap="round"
+                  strokeWidth="10"
+                  strokeLinecap="round"
                   cx="50"
                   cy="50"
                   r="40"
                   fill="transparent"
                   strokeDasharray="252"
-                  stroke-dashoffset={`calc(252 - (252 * ${70}) / 100)`}
+                  strokeDashoffset={`calc(252 - (252 * ${progressUntilNextPowerOfTen(
+                    linkListItems.at(activeLinkListItem)?.clickCount,
+                  )}) / 100)`}
                 ></circle>
 
-                <text
-                  x="50"
-                  y="50"
-                  font-family="Verdana"
-                  font-size="12"
-                  text-anchor="middle"
-                  alignment-baseline="middle"
-                >
-                  70%
+                <text x="50" y="50" fontFamily="Verdana" fontSize="12" textAnchor="middle" alignmentBaseline="middle">
+                  {nFormatter(linkListItems.at(activeLinkListItem)?.clickCount, 1)}
                 </text>
               </svg>
             </div>
