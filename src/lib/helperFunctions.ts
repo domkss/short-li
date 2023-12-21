@@ -1,8 +1,11 @@
 import { z } from "zod";
 import clsx, { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+
+/* Class Name concatenation with tailwindMerge and clsx */
 export const cn = (...classes: ClassValue[]) => twMerge(clsx(...classes));
 
+/*Data validation checkers */
 export function isValidHttpURL(input: string) {
   try {
     new URL(input);
@@ -10,11 +13,6 @@ export function isValidHttpURL(input: string) {
   } catch (_) {
     return false;
   }
-}
-
-export function addHttpstoURL(input: string): string {
-  if (!(input.startsWith("https://") || input.startsWith("http://"))) return "https://" + input;
-  return input;
 }
 
 export const emailSchema = z
@@ -37,6 +35,11 @@ export const registerUserSchema = z.object({
   reCaptchaTokken: z.string().optional(),
 });
 
+export function addHttpstoURL(input: string): string {
+  if (!(input.startsWith("https://") || input.startsWith("http://"))) return "https://" + input;
+  return input;
+}
+
 export function generateVisiblePaginationButtonKeys(originalArray: number[], currentPage: number) {
   const quarterPoint = Math.floor(originalArray.length / 5);
 
@@ -58,3 +61,11 @@ export function generateVisiblePaginationButtonKeys(originalArray: number[], cur
 
   return newArray;
 }
+
+export const debounce = (fn: Function, ms = 300) => {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return function (this: any, ...args: any[]) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn.apply(this, args), ms);
+  };
+};

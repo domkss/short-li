@@ -4,14 +4,16 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { DummyURLs } from "./_devConsts";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { cn } from "@/lib/helperFunctions";
-import { generateVisiblePaginationButtonKeys } from "@/lib/helperFunctions";
+import { generateVisiblePaginationButtonKeys, debounce } from "@/lib/helperFunctions";
 
 export default function Dashboard() {
   const linkItemsPerPage = 9;
   const [linkListFirstItemIndex, setListFirstItemIndex] = useState(0);
   const [linkListItems, setLinkListItems] = useState(DummyURLs.slice(0, 62));
+  const [originalLinkList, setOriginalLinkList] = useState(linkListItems);
+
   const numberOfLinkListPages = linkListItems.length / linkItemsPerPage;
   const linkListPageButtonKeys = [...Array.from(Array(Math.ceil(numberOfLinkListPages)).keys())];
   const [activeLinkListItem, setActiveLinkListItem] = useState(0);
@@ -23,22 +25,42 @@ export default function Dashboard() {
     setNameInputValue("");
   };
 
+  const searchListElements = debounce((event: ChangeEvent<HTMLInputElement>) => {
+    let searchWord = event.target.value.toLowerCase();
+    let filteredList = originalLinkList.filter(
+      (item) => item.name.toLowerCase().includes(searchWord) || item.shortURL.toLowerCase().includes(searchWord),
+    );
+    setLinkListItems(filteredList);
+  }, 300);
+
   //const session = useSession();
   //const { replace } = useRouter();
   //if (session.status !== "authenticated" || !session.data || !session.data.user) replace("/login");
   //if (session.data?.user) {
   return (
-    <div className="flex flex-row max-sm:flex-col">
+    <div className="flex flex-row max-lg:flex-col">
       <div className="min-w-0 basis-1/3">
         {/*Link list header */}
-        <div className="0 flex flex-row rounded-b-lg border-b-2 border-blue-200 bg-indigo-100 p-3 text-center shadow-md">
-          <div className="flex basis-1/3 items-center justify-center">
-            <Image className="" src="/links_undraw.svg" width={38} height={38} alt="My Links icon" />
+        <div className="flex flex-col rounded-b-lg border-b-2 border-blue-200 bg-indigo-100 p-3 text-center shadow-md">
+          <div className="flex flex-row justify-between">
+            <div className="flex flex-row">
+              <Image className="m-3" src="/links_undraw.svg" width={38} height={38} alt="My Links icon" />
+              <span className="m-3 text-xl font-semibold">My Links</span>
+            </div>
+            <button className="m-3 rounded-2xl border-2 border-blue-500 bg-blue-500 p-2 text-white">+ Add link</button>
           </div>
-          <div className="bais-2/3 flex">
-            <span className="text-xl font-semibold">My Links</span>
+          {/*Search bar*/}
+          <div className="mt-3 flex">
+            <input
+              className="min-w-[60%] rounded-md bg-gray-50 p-2 max-sm:w-full"
+              placeholder="Search"
+              onChange={(event) => {
+                searchListElements(event);
+              }}
+            />
           </div>
         </div>
+
         {/*Link list */}
         <ul className="mt-1">
           {linkListItems.map((item, key) => {
@@ -68,7 +90,7 @@ export default function Dashboard() {
                     <div className="flex flex-row flex-nowrap items-center">
                       <span className="ml-4">{key + 1 + "."}</span>
                       <div className="flex flex-col overflow-hidden overflow-ellipsis whitespace-nowrap">
-                        <span className="px-2 font-semibold">{item.name}</span>
+                        <span className="px-2">{item.name}</span>
                         <span className="px-2">{item.shortURL}</span>
                       </div>
                     </div>
@@ -132,8 +154,8 @@ export default function Dashboard() {
                 "border-b-2 border-gray-400": nameEditingView,
               })}
               value={nameInputValue.length > 0 ? nameInputValue : linkListItems.at(activeLinkListItem)?.name}
-              onChange={(value) => {
-                setNameInputValue(value.target.value);
+              onChange={(event) => {
+                setNameInputValue(event.target.value);
               }}
               disabled={!nameEditingView}
             />
