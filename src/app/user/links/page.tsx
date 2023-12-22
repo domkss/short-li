@@ -7,12 +7,14 @@ import { DummyURLs } from "./_devConsts";
 import { ChangeEvent, useState } from "react";
 import { cn, progressUntilNextPowerOfTen } from "@/lib/helperFunctions";
 import { generateVisiblePaginationButtonKeys, debounce, nFormatter } from "@/lib/helperFunctions";
+import ConfirmationView from "@/components/ConfirmationView";
 
 export default function Dashboard() {
   const linkItemsPerPage = 9;
   const [linkListFirstItemIndex, setListFirstItemIndex] = useState(0);
   const [linkListItems, setLinkListItems] = useState(DummyURLs.slice(0, 62));
   const [originalLinkList, setOriginalLinkList] = useState(linkListItems);
+  const [deleteLinkView, setDeleteLinkView] = useState(false);
 
   const numberOfLinkListPages = linkListItems.length / linkItemsPerPage;
   const linkListPageButtonKeys = [...Array.from(Array(Math.ceil(numberOfLinkListPages)).keys())];
@@ -151,7 +153,7 @@ export default function Dashboard() {
             <input
               type="text"
               className={cn(
-                "mx-2 bg-transparent text-center font-serif text-2xl font-semibold text-gray-900 focus:outline-none",
+                "bg-transparent text-center font-serif text-2xl font-semibold text-gray-900 focus:outline-none",
                 {
                   "border-b-2 border-gray-400": nameEditingView,
                 },
@@ -162,20 +164,20 @@ export default function Dashboard() {
               }}
               disabled={!nameEditingView}
             />
-            <button>
-              <Image
-                className="mx-2"
-                src="/edit_pencil.svg"
-                width={20}
-                height={20}
-                alt="Edit pencil icon"
-                onClick={() => {
-                  if (nameEditingView) {
-                    //Submit change
-                  }
-                  setNameEditingView(!nameEditingView);
-                }}
-              />
+            <button
+              id="edit-link-name-button"
+              className="ml-2 mr-4"
+              onClick={() => {
+                if (nameEditingView) {
+                  //Submit change
+                }
+                setNameEditingView(!nameEditingView);
+              }}
+            >
+              <Image src="/edit_pencil.svg" width={24} height={24} alt="Edit pencil icon" />
+            </button>
+            <button id="delet-link-button" className="mx-2" onClick={() => setDeleteLinkView(true)}>
+              <Image src="/delete_icon.svg" width={24} height={24} alt="Edit pencil icon" />
             </button>
           </div>
           <div className="flex flex-col p-4">
@@ -235,6 +237,19 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+      </div>
+      {/*Delete link view */}
+      <div>
+        {deleteLinkView ? (
+          <ConfirmationView
+            title="Delete link?"
+            detailedMessage={`Are you sure you want to delete the selected link and its associated data?\nThis action cannot be undone.`}
+            proccedButtonText="Delete"
+            iconSrc="/delete_undraw.svg"
+            onCancel={() => setDeleteLinkView(false)}
+            onProceed={() => setDeleteLinkView(false)}
+          />
+        ) : null}
       </div>
     </div>
   );
