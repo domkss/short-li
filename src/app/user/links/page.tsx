@@ -149,7 +149,7 @@ export default function Dashboard() {
       {/*Detailed view of the selected link */}
       <div className="flex basis-2/3 flex-col">
         <div className="p-2">
-          <div className="flex flex-row justify-center p-3">
+          <div className="flex flex-row justify-center p-3 max-lg:flex-col">
             <input
               type="text"
               className={cn(
@@ -164,21 +164,23 @@ export default function Dashboard() {
               }}
               disabled={!nameEditingView}
             />
-            <button
-              id="edit-link-name-button"
-              className="ml-2 mr-4"
-              onClick={() => {
-                if (nameEditingView) {
-                  //Submit change
-                }
-                setNameEditingView(!nameEditingView);
-              }}
-            >
-              <Image src="/edit_pencil.svg" width={24} height={24} alt="Edit pencil icon" />
-            </button>
-            <button id="delet-link-button" className="mx-2" onClick={() => setDeleteLinkView(true)}>
-              <Image src="/delete_icon.svg" width={24} height={24} alt="Edit pencil icon" />
-            </button>
+            <div className="my-3 flex flex-row justify-center">
+              <button
+                id="edit-link-name-button"
+                className="ml-2 mr-4"
+                onClick={() => {
+                  if (nameEditingView) {
+                    //Submit change
+                  }
+                  setNameEditingView(!nameEditingView);
+                }}
+              >
+                <Image src="/edit_pencil.svg" width={24} height={24} alt="Edit pencil icon" />
+              </button>
+              <button id="delet-link-button" className="mx-2" onClick={() => setDeleteLinkView(true)}>
+                <Image src="/delete_icon.svg" width={24} height={24} alt="Edit pencil icon" />
+              </button>
+            </div>
           </div>
           <div className="flex flex-col p-4">
             <div className="my-2 flex flex-col">
