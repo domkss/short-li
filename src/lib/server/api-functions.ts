@@ -109,15 +109,22 @@ export async function deleteShortURL(shortURL: string, session: DefaultSession) 
   let status = await redisClient
     .MULTI()
     .DEL(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL)
+    .DEL(REDIS_NAME_PATTERNS.STATISTICAL_IP_ADDRESSES + shortURL)
     .SREM(REDIS_NAME_PATTERNS.USER_LINKS + session.user?.email, shortURL)
     .EXEC(true);
 
-  if (status)
-    status.forEach((s: any) => {
-      if (!s) {
-        throw Error(REDIS_ERRORS.REDIS_DB_WRITE_ERROR);
-      }
-    });
+  return status;
+}
+
+export async function updateLinkCustomName(shortURL: string, newCustomName: string, session: DefaultSession) {
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  let userShortURLs = await redisClient.SMEMBERS(REDIS_NAME_PATTERNS.USER_LINKS + session.user?.email);
+  if (!userShortURLs.includes(shortURL)) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
+
+  let status = redisClient.HSET(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.NAME, newCustomName);
+  if (!status) throw Error(REDIS_ERRORS.REDIS_DB_WRITE_ERROR);
 
   return status;
 }

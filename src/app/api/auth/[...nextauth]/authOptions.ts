@@ -1,3 +1,4 @@
+import "server-only";
 import { loginUserSchema } from "@/lib/helperFunctions";
 import { loginUser } from "@/lib/server/authentication";
 import Credentials from "next-auth/providers/credentials";

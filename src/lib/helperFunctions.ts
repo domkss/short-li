@@ -44,6 +44,7 @@ export const shortURLSchema = z.object({
     .string()
     .min(1)
     .transform((string) => string.split("/").pop()),
+  newCustomName: z.string().min(1).optional(),
 });
 
 /*Utility functions */
