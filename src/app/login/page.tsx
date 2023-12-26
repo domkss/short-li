@@ -20,10 +20,13 @@ export default function LoginPage() {
     loading ||
     (registerView &&
       (!registerUserSchema.safeParse({ email: email, password: password }).success || password !== confirmPassword));
-  const { executeRecaptcha } = useGoogleReCaptcha();
-  const { replace } = useRouter();
+
+  const reactRouter = useRouter();
+  const session = useSession();
   /*Redirect if the user already logged in */
-  if (useSession().status === "authenticated") replace("/user/links");
+  if (session.status === "authenticated") reactRouter.replace("/user/links");
+
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   /*Register and login form submit handler */
   async function handleSubmit(e: React.FormEvent) {
@@ -82,7 +85,7 @@ export default function LoginPage() {
         setErrorText(error);
         return;
       } else {
-        replace("/user/links");
+        reactRouter.replace("/user/links");
       }
     } else {
       //Login
@@ -98,7 +101,7 @@ export default function LoginPage() {
         setErrorText(error);
         return;
       } else {
-        replace("/user/links");
+        reactRouter.replace("/user/links");
       }
     }
   }
@@ -110,7 +113,7 @@ export default function LoginPage() {
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <Image
             className="mx-auto h-14 w-auto rounded-lg pl-8"
-            src="/shortli_logo.svg"
+            src="/icons/shortli_logo.svg"
             alt="ShortLi logo"
             width={56}
             height={56}
@@ -126,7 +129,7 @@ export default function LoginPage() {
           >
             <Image
               className="my-auto ml-2 mr-1 h-6"
-              src="/circle_user_error.svg"
+              src="/icons/circle_user_error.svg"
               alt="Error icon"
               width={24}
               height={24}

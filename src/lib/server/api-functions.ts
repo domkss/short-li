@@ -9,7 +9,7 @@ type URLCreatorOptions = {
   session: DefaultSession | null;
   linkCustomName?: string;
 };
-
+/*Link related CRUD functions */
 export async function createShortURL(longURL: string, options: URLCreatorOptions) {
   if (longURL.length < 5 || longURL.length > 2048 || !isValidHttpURL(longURL))
     return REDIS_ERRORS.DATA_VALIDATION_ERROR;
@@ -67,9 +67,6 @@ export async function getDestinationURL(inputURL: string, ip?: string) {
 }
 
 export async function getAllUserLinks(session: DefaultSession) {
-  const envType = process.env.NODE_ENV;
-  const includeHTTPProtocol = process.env.SHORT_URL_INCLUDE_HTTP_PROTOCOL === "true";
-
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   let userShortURLs = await redisClient.SMEMBERS(REDIS_NAME_PATTERNS.USER_LINKS + session.user?.email);
@@ -102,6 +99,30 @@ export async function getAllUserLinks(session: DefaultSession) {
   return await Promise.all(arrayOfPromises);
 }
 
+export async function deleteShortURL(shortURL: string, session: DefaultSession) {
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  let userShortURLs = await redisClient.SMEMBERS(REDIS_NAME_PATTERNS.USER_LINKS + session.user?.email);
+  if (!userShortURLs.includes(shortURL)) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
+
+  let status = await redisClient
+    .MULTI()
+    .DEL(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL)
+    .SREM(REDIS_NAME_PATTERNS.USER_LINKS + session.user?.email, shortURL)
+    .EXEC(true);
+
+  if (status)
+    status.forEach((s: any) => {
+      if (!s) {
+        throw Error(REDIS_ERRORS.REDIS_DB_WRITE_ERROR);
+      }
+    });
+
+  return status;
+}
+
+/*Helper functions */
 function makeid(length: number) {
   const BUFFER_SIZE = 512;
   if (!length || typeof length !== "number") throw new Error('base62 length must be a number "' + length + '"');

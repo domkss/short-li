@@ -18,7 +18,7 @@ export default function Home() {
         <div className="mb-3 mt-14 flex min-w-full flex-row justify-evenly p-4 max-lg:flex-col">
           <div className="my-3 flex basis-1/4 flex-col flex-wrap rounded-lg border border-gray-200 p-6 shadow">
             <div className="flex flex-row justify-center">
-              <Image className="h-14" src="/share_link_undraw.svg" width={56} height={56} alt="Link share logo" />
+              <Image className="h-14" src="/icons/share_link_undraw.svg" width={56} height={56} alt="Link share logo" />
               <span className="ml-3 flex flex-1 flex-col justify-center">
                 <h5 className="text-2xl font-bold tracking-tight text-gray-900">What is ShortLi?</h5>
               </span>
@@ -33,7 +33,7 @@ export default function Home() {
           </div>
           <div className="my-3 flex basis-1/4 flex-col flex-wrap rounded-lg border border-gray-200 p-6 shadow">
             <div className="flex flex-row justify-center">
-              <Image className="h-14" src="/expiry_time_undraw.svg" width={56} height={56} alt="Expiry time logo" />
+              <Image className="h-14" src="/icons/expiry_time_undraw.svg" width={56} height={56} alt="Expiry time logo" />
               <span className="ml-3 flex flex-1 flex-col justify-center">
                 <h5 className="text-2xl font-bold tracking-tight text-gray-900">Default Link Expiry Time</h5>
               </span>
@@ -47,7 +47,7 @@ export default function Home() {
           </div>
           <div className="my-3 flex basis-1/4 flex-col flex-wrap rounded-lg border border-gray-200 p-6 shadow">
             <div className="flex flex-row justify-center">
-              <Image className="h-14" src="/charts_undraw.svg" width={56} height={56} alt="Expiry time logo" />
+              <Image className="h-14" src="/icons/charts_undraw.svg" width={56} height={56} alt="Expiry time logo" />
               <span className="ml-3 flex flex-1 flex-col justify-center">
                 <h5 className="text-2xl font-bold tracking-tight text-gray-900">Redirection statistics</h5>
               </span>

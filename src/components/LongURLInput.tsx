@@ -117,7 +117,7 @@ export default function LongURLInput() {
               Copy
               <Image
                 className="ml-2 inline-block w-6"
-                src={copied ? "/done_icon.gif" : "/copy.svg"}
+                src={copied ? "/icons/done_icon.gif" : "/icons/copy.svg"}
                 width={32}
                 height={32}
                 alt="copy-icon"
@@ -160,7 +160,7 @@ export default function LongURLInput() {
             Copy
             <Image
               className="ml-2 inline-block w-6"
-              src={copied ? "/done_icon.gif" : "/copy.svg"}
+              src={copied ? "/icons/done_icon.gif" : "/icons/copy.svg"}
               width={32}
               height={32}
               alt="copy-icon"

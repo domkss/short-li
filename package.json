@@ -11,7 +11,7 @@
   "dependencies": {
     "clsx": "^2.0.0",
     "copy-to-clipboard": "^3.3.3",
-    "next": "14.0.3",
+    "next": "^14.0.4",
     "next-auth": "^4.24.5",
     "qr-code-styling": "^1.6.0-rc.1",
     "react": "^18",
