@@ -41,30 +41,19 @@ function NavBar() {
                 stroke="currentColor"
                 aria-hidden="true"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
               </svg>
               {/* Icon when menu is open.
               Menu open: "block", Menu closed: "hidden" */}
               <svg
-                className={cn(
-                  "hh-6 w-6",
-                  mobileMenuOpened ? "block" : "hidden",
-                )}
+                className={cn("hh-6 w-6", mobileMenuOpened ? "block" : "hidden")}
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
                 stroke="currentColor"
                 aria-hidden="true"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
@@ -73,9 +62,9 @@ function NavBar() {
               <Link href="/">
                 <Image
                   className="h-8 w-auto cursor-pointer pl-8"
-                  src="/shortli_logo.svg"
+                  src="/icons/shortli_logo.svg"
                   alt="ShortLi logo"
-                  width={32}
+                  width={84}
                   height={32}
                 />
               </Link>
@@ -92,9 +81,7 @@ function NavBar() {
                         ? "rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
                         : "rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white",
                       {
-                        hidden:
-                          item.authRequired &&
-                          session.status !== "authenticated",
+                        hidden: item.authRequired && session.status !== "authenticated",
                       },
                     )}
                     aria-current="page"
@@ -133,10 +120,7 @@ function NavBar() {
       </div>
 
       {/* Mobile menu, show/hide based on menu state. */}
-      <div
-        className={cn("sm:hidden", { hidden: !mobileMenuOpened })}
-        id="mobile-menu"
-      >
+      <div className={cn("sm:hidden", { hidden: !mobileMenuOpened })} id="mobile-menu">
         <div className="space-y-1 px-2 pb-3 pt-2">
           {navBarLinks.map((item) => (
             <Link

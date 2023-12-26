@@ -35,6 +35,18 @@ export const registerUserSchema = z.object({
   reCaptchaTokken: z.string().optional(),
 });
 
+export const urlSchema = z.object({
+  url: z.string().min(1),
+});
+
+export const shortURLSchema = z.object({
+  url: z
+    .string()
+    .min(1)
+    .transform((string) => string.split("/").pop()),
+});
+
+/*Utility functions */
 export function addHttpstoURL(input: string): string {
   if (!(input.startsWith("https://") || input.startsWith("http://"))) return "https://" + input;
   return input;
