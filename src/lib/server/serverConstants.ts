@@ -10,6 +10,7 @@ export enum REDIS_LINK_FIELDS {
   TARGET = "target_url",
   REDIRECT_COUNTER = "redirect_counter",
   TRACKED = "tracked",
+  NAME = "name",
 }
 export enum REDIS_USER_FIELDS {
   PASSWORD_HASH = "password",

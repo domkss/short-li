@@ -34,7 +34,7 @@ export default function LongURLInput() {
 
     setProgressStatus(ProgressState.Loading);
 
-    let result = await fetch("/api/url", {
+    let result = await fetch("/api/link", {
       method: "POST",
       body: JSON.stringify({
         url: constructedUrl,
@@ -46,9 +46,7 @@ export default function LongURLInput() {
     if (data.success && data.url) {
       setUrlInputContent(data.url);
     } else {
-      setUrlInputContent(
-        "Unable to construct the short URL. Please try again later.",
-      );
+      setUrlInputContent("Unable to construct the short URL. Please try again later.");
     }
 
     setInputChanged(false);
@@ -141,13 +139,10 @@ export default function LongURLInput() {
         <button
           type="button"
           onClick={() => onSubmitClick()}
-          className={cn(
-            "flex min-w-[50%] items-center justify-center rounded-lg bg-emerald-500 py-2 text-white",
-            {
-              "hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-blue-400":
-                progressStatus != ProgressState.Loading,
-            },
-          )}
+          className={cn("flex min-w-[50%] items-center justify-center rounded-lg bg-emerald-500 py-2 text-white", {
+            "hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-blue-400":
+              progressStatus != ProgressState.Loading,
+          })}
           disabled={progressStatus == ProgressState.Loading}
         >
           <div
