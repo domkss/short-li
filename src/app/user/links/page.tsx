@@ -26,7 +26,7 @@ export default function Dashboard() {
 
   const numberOfLinkListPages = linkListItems.length / LINK_ITEM_PER_PAGE;
   const linkListPageButtonKeys = [...Array.from(Array(Math.ceil(numberOfLinkListPages)).keys())];
-  const [activeLinkListItem, setActiveLinkListItem] = useState(0);
+  const [activeLinkListItemIndex, setActiveLinkListItemIndex] = useState(0);
   const [nameEditingView, setNameEditingView] = useState(false);
   const [nameInputValue, setNameInputValue] = useState("");
   const [contentLoadingFinished, setContentLoadingFinished] = useState(false);
@@ -41,10 +41,13 @@ export default function Dashboard() {
 
     let searchWord = event.target.value.toLowerCase();
     let filteredList = originalLinkList.filter(
-      (item) => item.name.toLowerCase().includes(searchWord) || item.shortURL.toLowerCase().includes(searchWord),
+      (item) =>
+        item.name.toLowerCase().includes(searchWord) ||
+        item.shortURL.toLowerCase().includes(searchWord) ||
+        item.target_url.toLowerCase().includes(searchWord),
     );
     setLinkListItems(filteredList);
-  }, 300);
+  }, 400);
 
   async function getUserLinks() {
     let response = await fetch("/api/link");
@@ -71,6 +74,34 @@ export default function Dashboard() {
       setDeleteLinkView(false);
     } else {
       //Todo: Show error if item deletion failed
+    }
+  }
+
+  async function updateLinkItemCustomName(shortURL: string, newCustomName: string) {
+    let result = await fetch("/api/link", {
+      method: "PATCH",
+      body: JSON.stringify({
+        url: shortURL,
+        newCustomName: newCustomName,
+      }),
+    });
+    let data = await result.json();
+
+    if (data.success) {
+      /*Handle name change on list items on client side instead reload all data from server */
+      let modifiedLinkListItem = linkListItems.at(activeLinkListItemIndex);
+      if (modifiedLinkListItem) {
+        modifiedLinkListItem.name = newCustomName;
+        let modifiedOriginalLinkList = originalLinkList.filter((item) => item.shortURL !== shortURL);
+        modifiedOriginalLinkList.push(modifiedLinkListItem);
+        setOriginalLinkList(modifiedOriginalLinkList);
+        let modifiedLinkList = linkListItems.filter((item) => item.shortURL !== shortURL);
+        modifiedLinkList.push(modifiedLinkListItem);
+        setLinkListItems(modifiedLinkList);
+        setActiveLinkListItemIndex(modifiedLinkList.length - 1);
+      }
+    } else {
+      //Todo: Handle error
     }
   }
 
@@ -134,11 +165,11 @@ export default function Dashboard() {
                       <button
                         className={cn(
                           "flex min-w-full border-b-[1px] border-slate-100 text-left shadow-sm hover:bg-blue-200",
-                          { "bg-emerald-200": key === activeLinkListItem },
+                          { "bg-emerald-200": key === activeLinkListItemIndex },
                         )}
                         onClick={() => {
                           resetDetailView();
-                          setActiveLinkListItem(key);
+                          setActiveLinkListItemIndex(key);
                         }}
                       >
                         <div className="flex flex-row flex-nowrap items-center">
@@ -166,6 +197,7 @@ export default function Dashboard() {
                 } else return listItem(key, false);
               })}
             </ul>
+
             {/*Link pagination bar */}
             <div className="mb-8 flex flex-row justify-center">
               <ul className="flex flex-row flex-wrap items-center justify-center">
@@ -198,6 +230,7 @@ export default function Dashboard() {
               </ul>
             </div>
           </div>
+
           {/*Detailed view of the selected link */}
           {linkListItems.length > 0 ? (
             <div className="flex basis-2/3 flex-col">
@@ -212,9 +245,19 @@ export default function Dashboard() {
                         "border-b-2 border-gray-400": nameEditingView,
                       },
                     )}
-                    value={nameInputValue.length > 0 ? nameInputValue : linkListItems.at(activeLinkListItem)?.name}
+                    value={nameInputValue.length > 0 ? nameInputValue : linkListItems.at(activeLinkListItemIndex)?.name}
                     onChange={(event) => {
                       setNameInputValue(event.target.value);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        if (nameEditingView) {
+                          let currentItem = linkListItems.at(activeLinkListItemIndex);
+                          if (currentItem?.shortURL && nameInputValue.length > 0)
+                            updateLinkItemCustomName(currentItem?.shortURL, nameInputValue);
+                        }
+                        setNameEditingView(!nameEditingView);
+                      }
                     }}
                     disabled={!nameEditingView}
                   />
@@ -224,7 +267,9 @@ export default function Dashboard() {
                       className="ml-2 mr-4"
                       onClick={() => {
                         if (nameEditingView) {
-                          //Submit change
+                          let currentItem = linkListItems.at(activeLinkListItemIndex);
+                          if (currentItem?.shortURL && nameInputValue.length > 0)
+                            updateLinkItemCustomName(currentItem?.shortURL, nameInputValue);
                         }
                         setNameEditingView(!nameEditingView);
                       }}
@@ -236,13 +281,14 @@ export default function Dashboard() {
                     </button>
                   </div>
                 </div>
+
                 {/*Short and Original Link data section*/}
                 <div className="flex flex-col p-4">
                   <div className="flex flex-row">
                     <div className="my-2 mr-4 flex flex-col">
                       <span className="text-lg font-semibold text-gray-700">Short link:</span>
                       <div className="flex flex-row items-center">
-                        <span className="ml-1">{linkListItems.at(activeLinkListItem)?.shortURL}</span>
+                        <span className="ml-1">{linkListItems.at(activeLinkListItemIndex)?.shortURL}</span>
                       </div>
                     </div>
                     <div className="mx-3 flex flex-row">
@@ -257,11 +303,12 @@ export default function Dashboard() {
                       className="flex-1 rounded-md bg-transparent p-1"
                       rows={4}
                       readOnly={true}
-                      value={linkListItems.at(activeLinkListItem)?.target_url}
+                      value={linkListItems.at(activeLinkListItemIndex)?.target_url}
                     />
                   </div>
                 </div>
               </div>
+
               {/*Link Analytics Section */}
               <div className="flex flex-row p-4">
                 <div className="flex flex-col justify-center">
@@ -289,7 +336,7 @@ export default function Dashboard() {
                         fill="transparent"
                         strokeDasharray="252"
                         strokeDashoffset={`calc(252 - (252 * ${progressUntilNextPowerOfTen(
-                          Number(linkListItems.at(activeLinkListItem)?.redirect_count),
+                          Number(linkListItems.at(activeLinkListItemIndex)?.redirect_count),
                         )}) / 100)`}
                       ></circle>
 
@@ -301,7 +348,7 @@ export default function Dashboard() {
                         textAnchor="middle"
                         alignmentBaseline="middle"
                       >
-                        {nFormatter(Number(linkListItems.at(activeLinkListItem)?.redirect_count), 1)}
+                        {nFormatter(Number(linkListItems.at(activeLinkListItemIndex)?.redirect_count), 1)}
                       </text>
                     </svg>
                   </div>
@@ -326,6 +373,7 @@ export default function Dashboard() {
               </div>
             </div>
           )}
+
           {/*Delete link view */}
           <div>
             {deleteLinkView ? (
@@ -336,7 +384,7 @@ export default function Dashboard() {
                 iconSrc="/icons/delete_undraw.svg"
                 onCancel={() => setDeleteLinkView(false)}
                 onProceed={() => {
-                  let itemToDelete = linkListItems.at(activeLinkListItem);
+                  let itemToDelete = linkListItems.at(activeLinkListItemIndex);
                   if (itemToDelete?.shortURL) deleteUserLink(itemToDelete?.shortURL);
                 }}
               />
