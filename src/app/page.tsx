@@ -33,7 +33,13 @@ export default function Home() {
           </div>
           <div className="my-3 flex basis-1/4 flex-col flex-wrap rounded-lg border border-gray-200 p-6 shadow">
             <div className="flex flex-row justify-center">
-              <Image className="h-14" src="/icons/expiry_time_undraw.svg" width={56} height={56} alt="Expiry time logo" />
+              <Image
+                className="h-14"
+                src="/icons/expiry_time_undraw.svg"
+                width={56}
+                height={56}
+                alt="Expiry time logo"
+              />
               <span className="ml-3 flex flex-1 flex-col justify-center">
                 <h5 className="text-2xl font-bold tracking-tight text-gray-900">Default Link Expiry Time</h5>
               </span>
@@ -42,7 +48,8 @@ export default function Home() {
             <p className="mb-3 font-normal text-gray-700">
               By default the links expire after <span className="font-bold">180</span> days.
               <span className="mb-2 block" />
-              However, with a simple registration, this feature can be customized or even turned off.
+              Unlock full control and access a range of exciting additional features with just a quick and easy
+              registration.
             </p>
           </div>
           <div className="my-3 flex basis-1/4 flex-col flex-wrap rounded-lg border border-gray-200 p-6 shadow">

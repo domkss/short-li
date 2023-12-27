@@ -286,19 +286,20 @@ export default function Dashboard() {
 
                 {/*Short and Original Link data section*/}
                 <div className="flex flex-col p-4">
-                  <div className="flex flex-row">
-                    <div className="my-2 mr-4 flex flex-col">
+                  <div className="flex flex-row max-sm:flex-col">
+                    <div className="my-2 mr-4 flex flex-col max-sm:my-1">
                       <span className="text-lg font-semibold text-gray-700">Short link:</span>
                       <div className="flex flex-row items-center">
                         <span className="ml-1">{linkListItems.at(activeLinkListItemIndex)?.shortURL}</span>
                       </div>
                     </div>
-                    <div className="mx-3 flex flex-row">
+                    <div className="mx-3 flex flex-row max-sm:mx-0">
                       <button
-                        className="m-2 rounded-2xl bg-blue-500 px-2 text-white"
+                        className="m-2 inline-flex items-center rounded-2xl bg-blue-500 p-2 text-white"
                         onClick={() => setQrCodeViewActive(true)}
                       >
-                        Get QR Code
+                        <Image className="mx-1" src="/icons/qr_code_icon.svg" width={28} height={28} alt=""></Image>
+                        <span className="mx-1">Get QR Code</span>
                       </button>
                     </div>
                   </div>
