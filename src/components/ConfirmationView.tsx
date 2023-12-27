@@ -14,7 +14,7 @@ export default function ConfirmationView(props: ConfirmationViewProps) {
   return (
     <div className="confirm-dialog fixed inset-0 z-50 flex items-center justify-center backdrop-blur ">
       <div className="relative min-h-screen px-4 md:flex md:items-center md:justify-center">
-        <div className=" absolute inset-0 z-10 h-full w-full opacity-25"></div>
+        <div className="absolute inset-0 z-10 h-full w-full opacity-25"></div>
         <div className="fixed inset-x-0 bottom-0 z-50 mx-4 mb-4 rounded-lg bg-white p-4 shadow-lg md:relative md:mx-auto md:max-w-md">
           <div className="items-center md:flex">
             {props.iconSrc ? (

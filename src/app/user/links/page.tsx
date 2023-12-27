@@ -9,6 +9,7 @@ import { generateVisiblePaginationButtonKeys, debounce, nFormatter } from "@/lib
 import ConfirmationView from "@/components/ConfirmationView";
 import QrCodeComponent from "@/components/QrCodeComponent";
 import { DELETE } from "@/app/api/link/route";
+import QRCodeSelectorView from "@/components/QRCodeSelectorView";
 
 type LinkListItem = {
   name: string;
@@ -22,7 +23,8 @@ export default function Dashboard() {
   const [linkListFirstItemIndex, setListFirstItemIndex] = useState(0);
   const [originalLinkList, setOriginalLinkList] = useState<LinkListItem[]>([]);
   const [linkListItems, setLinkListItems] = useState<LinkListItem[]>([]);
-  const [deleteLinkView, setDeleteLinkView] = useState(false);
+  const [deleteLinkViewActive, setDeleteLinkViewActive] = useState(false);
+  const [qrCodeViewActive, setQrCodeViewActive] = useState(false);
 
   const numberOfLinkListPages = linkListItems.length / LINK_ITEM_PER_PAGE;
   const linkListPageButtonKeys = [...Array.from(Array(Math.ceil(numberOfLinkListPages)).keys())];
@@ -71,7 +73,7 @@ export default function Dashboard() {
     let data = await result.json();
     if (data.success) {
       getUserLinks();
-      setDeleteLinkView(false);
+      setDeleteLinkViewActive(false);
     } else {
       //Todo: Show error if item deletion failed
     }
@@ -93,12 +95,13 @@ export default function Dashboard() {
       if (modifiedLinkListItem) {
         modifiedLinkListItem.name = newCustomName;
         let modifiedOriginalLinkList = originalLinkList.filter((item) => item.shortURL !== shortURL);
-        modifiedOriginalLinkList.push(modifiedLinkListItem);
+        modifiedOriginalLinkList.unshift(modifiedLinkListItem);
         setOriginalLinkList(modifiedOriginalLinkList);
         let modifiedLinkList = linkListItems.filter((item) => item.shortURL !== shortURL);
-        modifiedLinkList.push(modifiedLinkListItem);
+        modifiedLinkList.unshift(modifiedLinkListItem);
         setLinkListItems(modifiedLinkList);
-        setActiveLinkListItemIndex(modifiedLinkList.length - 1);
+        setActiveLinkListItemIndex(0);
+        setListFirstItemIndex(0);
       }
     } else {
       //Todo: Handle error
@@ -108,7 +111,6 @@ export default function Dashboard() {
   const reactRouter = useRouter();
   const session = useSession();
   if (session.status !== "authenticated" || !session.data || !session.data.user) reactRouter.replace("/login");
-
   useEffect(() => {
     getUserLinks();
   }, []);
@@ -276,7 +278,7 @@ export default function Dashboard() {
                     >
                       <Image src="/icons/edit_pencil.svg" width={24} height={24} alt="Edit pencil icon" />
                     </button>
-                    <button id="delet-link-button" className="mx-2" onClick={() => setDeleteLinkView(true)}>
+                    <button id="delet-link-button" className="mx-2" onClick={() => setDeleteLinkViewActive(true)}>
                       <Image src="/icons/delete_icon.svg" width={24} height={24} alt="Edit pencil icon" />
                     </button>
                   </div>
@@ -292,7 +294,12 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="mx-3 flex flex-row">
-                      <button className="m-2 rounded-2xl bg-blue-500 px-2 text-white">Get QR Code</button>
+                      <button
+                        className="m-2 rounded-2xl bg-blue-500 px-2 text-white"
+                        onClick={() => setQrCodeViewActive(true)}
+                      >
+                        Get QR Code
+                      </button>
                     </div>
                   </div>
                   <div className="my-2 flex flex-col">
@@ -376,16 +383,27 @@ export default function Dashboard() {
 
           {/*Delete link view */}
           <div>
-            {deleteLinkView ? (
+            {deleteLinkViewActive ? (
               <ConfirmationView
                 title="Delete link?"
                 detailedMessage={`Are you sure you want to delete the selected link and its associated data?\nThis action cannot be undone.`}
                 proccedButtonText="Delete"
                 iconSrc="/icons/delete_undraw.svg"
-                onCancel={() => setDeleteLinkView(false)}
+                onCancel={() => setDeleteLinkViewActive(false)}
                 onProceed={() => {
                   let itemToDelete = linkListItems.at(activeLinkListItemIndex);
                   if (itemToDelete?.shortURL) deleteUserLink(itemToDelete?.shortURL);
+                }}
+              />
+            ) : null}
+          </div>
+          {/*QRCodeSelectorView */}
+          <div>
+            {qrCodeViewActive ? (
+              <QRCodeSelectorView
+                shortURL={linkListItems[activeLinkListItemIndex].shortURL}
+                onCloseClicked={() => {
+                  setQrCodeViewActive(false);
                 }}
               />
             ) : null}
