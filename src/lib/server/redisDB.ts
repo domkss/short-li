@@ -30,4 +30,4 @@ class RedisDB {
   }
 }
 
-export { RedisDB };
+export default RedisDB;

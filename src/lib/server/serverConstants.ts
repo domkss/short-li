@@ -3,7 +3,7 @@ export enum REDIS_NAME_PATTERNS {
   LINK_PRETAG = "link:",
   USER_PRETAG = "user:",
   USER_LINKS = "user:links:",
-  STATISTICAL_IP_ADDRESSES = "statistical:ips:",
+  STATISTIC_COUNTRY_CODE = "statistic:countries:",
 }
 
 export enum REDIS_LINK_FIELDS {

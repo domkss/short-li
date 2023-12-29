@@ -1,6 +1,6 @@
 import "server-only";
 import crypto from "crypto";
-import { RedisDB } from "./redisDB";
+import RedisDB from "./redisDB";
 import {
   REDIS_NAME_PATTERNS,
   REDIS_USER_FIELDS,
