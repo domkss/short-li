@@ -1,9 +1,11 @@
 import "server-only";
-import { RedisDB } from "./redisDB";
+import RedisDB from "./redisDB";
 import { REDIS_ERRORS, REDIS_NAME_PATTERNS, REDIS_LINK_FIELDS } from "./serverConstants";
 import { isValidHttpURL } from "../helperFunctions";
 import { randomBytes } from "crypto";
 import { DefaultSession } from "next-auth";
+import { RedisClientType } from "redis";
+import GeoLocationService from "./GeoLocationService";
 
 type URLCreatorOptions = {
   session: DefaultSession | null;
@@ -19,11 +21,11 @@ export async function createShortURL(longURL: string, options: URLCreatorOptions
 
   var status = false;
   var shortURL: string;
-  var lenght = 7;
+  var lenght = 4;
   var numberOfRetries = 0;
 
   do {
-    shortURL = makeid(lenght + Math.floor(numberOfRetries / 3));
+    shortURL = makeid(lenght + Math.floor(numberOfRetries / 2));
     status = await redisClient.HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TARGET, longURL);
     if (status && options.session && options.session.user?.email) {
       let linkCustomName = options.linkCustomName;
@@ -42,22 +44,22 @@ export async function createShortURL(longURL: string, options: URLCreatorOptions
       redisClient.EXPIRE(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, 15552000);
     }
     numberOfRetries++;
-  } while (status !== true && numberOfRetries <= 6);
+  } while (status !== true && numberOfRetries <= 8);
 
   if (numberOfRetries > 6) throw Error(REDIS_ERRORS.REDIS_DB_WRITE_ERROR);
 
   return formatShortLink(shortURL);
 }
 
-export async function getDestinationURL(inputURL: string, ip?: string) {
+export async function getDestinationURL(shortURL: string, ip?: string) {
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   try {
-    let targetURL = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.TARGET);
-    let tracked = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.TRACKED);
+    let targetURL = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TARGET);
+    let tracked = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TRACKED);
     if (targetURL && tracked) {
-      redisClient.HINCRBY(REDIS_NAME_PATTERNS.LINK_PRETAG + inputURL, REDIS_LINK_FIELDS.REDIRECT_COUNTER, 1);
-      if (ip) redisClient.SADD(REDIS_NAME_PATTERNS.STATISTICAL_IP_ADDRESSES + inputURL, ip);
+      redisClient.HINCRBY(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.REDIRECT_COUNTER, 1);
+      if (ip) saveRedirectedUserCountryCode(redisClient, shortURL, ip);
     }
     let destionationURL = targetURL ? targetURL : "/";
     return destionationURL;
@@ -109,7 +111,7 @@ export async function deleteShortURL(shortURL: string, session: DefaultSession) 
   let status = await redisClient
     .MULTI()
     .DEL(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL)
-    .DEL(REDIS_NAME_PATTERNS.STATISTICAL_IP_ADDRESSES + shortURL)
+    .DEL(REDIS_NAME_PATTERNS.STATISTIC_COUNTRY_CODE + shortURL)
     .SREM(REDIS_NAME_PATTERNS.USER_LINKS + session.user?.email, shortURL)
     .EXEC(true);
 
@@ -158,4 +160,9 @@ function formatShortLink(shortURL: string) {
   } else {
     return (includeHTTPProtocol ? "https://" : "") + process.env.SERVER_DOMAIN_NAME + "/" + shortURL;
   }
+}
+
+async function saveRedirectedUserCountryCode(redisClient: RedisClientType, shortURL: string, ip: string) {
+  let countryCode = await GeoLocationService.getCountry(ip);
+  redisClient.ZINCRBY(REDIS_NAME_PATTERNS.STATISTIC_COUNTRY_CODE + shortURL, 1, countryCode);
 }
