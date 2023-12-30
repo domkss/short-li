@@ -4,13 +4,19 @@ import Image from "next/image";
 import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { registerUserSchema, loginUserSchema, emailSchema } from "@/lib/helperFunctions";
+import { registerUserSchema, loginUserSchema, emailSchema, passwordRecoverySchema } from "@/lib/helperFunctions";
 import { cn } from "@/lib/helperFunctions";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { RECAPTCHA_ACTIONS } from "@/lib/server/serverConstants";
 
+enum ViewType {
+  LoginView,
+  RegisterView,
+  PasswordRecoveryView,
+}
+
 export default function LoginPage() {
-  const [registerView, setRegisterView] = useState(false);
+  const [viewType, setViewType] = useState(ViewType.LoginView);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,7 +24,7 @@ export default function LoginPage() {
   const [errorText, setErrorText] = useState("");
   const submitDisabled =
     loading ||
-    (registerView &&
+    (viewType === ViewType.RegisterView &&
       (!registerUserSchema.safeParse({ email: email, password: password }).success || password !== confirmPassword));
 
   const reactRouter = useRouter();
@@ -31,15 +37,12 @@ export default function LoginPage() {
   /*Register and login form submit handler */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (
-      (!registerUserSchema.safeParse({ email: email, password: password }).success && registerView) ||
-      (!loginUserSchema.safeParse({ email: email, password: password }).success && !registerView)
-    )
-      return;
 
-    setLoading(true);
+    if (viewType === ViewType.RegisterView) {
+      if (!registerUserSchema.safeParse({ email: email, password: password }).success) return;
 
-    if (registerView) {
+      setLoading(true);
+
       /*Request reCapcha tokken */
 
       if (!executeRecaptcha) {
@@ -67,7 +70,6 @@ export default function LoginPage() {
       let data = await result.json();
 
       if (!data.success || !data.user) {
-        //Todo: handle error
         setErrorText(data.error);
         setLoading(false);
         return;
@@ -87,7 +89,9 @@ export default function LoginPage() {
       } else {
         reactRouter.replace("/user/links");
       }
-    } else {
+    } else if (viewType === ViewType.LoginView) {
+      if (!loginUserSchema.safeParse({ email: email, password: password }).success) return;
+      setLoading(true);
       //Login
       let loginResult = await signIn("credentials", {
         email: email,
@@ -103,6 +107,43 @@ export default function LoginPage() {
       } else {
         reactRouter.replace("/user/links");
       }
+    } else if (viewType === ViewType.PasswordRecoveryView) {
+      if (!passwordRecoverySchema.safeParse({ email: email }).success) return;
+      setLoading(true);
+
+      /*Request reCapcha tokken */
+
+      if (!executeRecaptcha) {
+        setErrorText("Faild to execute reCaptcha. Reload the site and try again.");
+        setLoading(false);
+        return;
+      }
+
+      let reCaptchaTokken = await executeRecaptcha(RECAPTCHA_ACTIONS.PASSWORD_RECOVERY_FORM_SUBMIT);
+      if (!reCaptchaTokken) {
+        setErrorText("Faild to execute reCaptcha. Reload the site and try again.");
+        setLoading(false);
+        return;
+      }
+
+      let result = await fetch("/api/auth/recover", {
+        method: "POST",
+        body: JSON.stringify({
+          email: email,
+          reCaptchaTokken: reCaptchaTokken,
+        }),
+      });
+
+      let data = await result.json();
+
+      if (!data.success) {
+        setErrorText(data.error);
+        setLoading(false);
+        return;
+      }
+
+      //Todo
+      setLoading(false);
     }
   }
 
@@ -119,7 +160,11 @@ export default function LoginPage() {
             height={56}
           />
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            {registerView ? "Create your account" : "Sign in to your account"}
+            {viewType === ViewType.RegisterView
+              ? "Create your account"
+              : viewType === ViewType.LoginView
+                ? "Sign in to your account"
+                : "Recover your password"}
           </h2>
           <div
             className={cn(
@@ -159,15 +204,21 @@ export default function LoginPage() {
             </div>
 
             {/*Password Input */}
-            <div>
+            <div className={cn({ hidden: viewType === ViewType.PasswordRecoveryView })}>
               <div className="flex items-center justify-between">
                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                   Password
                 </label>
-                <div className={cn("text-sm", { hidden: registerView })}>
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                <div className={cn("text-sm", { hidden: viewType !== ViewType.LoginView })}>
+                  <button
+                    type="button"
+                    className="font-semibold text-indigo-600 hover:text-indigo-500"
+                    onClick={() => {
+                      setViewType(ViewType.PasswordRecoveryView);
+                    }}
+                  >
                     Forgot password?
-                  </a>
+                  </button>
                 </div>
               </div>
               <div className="mt-2">
@@ -175,8 +226,8 @@ export default function LoginPage() {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete={registerView ? "new-password" : "current-password"}
-                  required
+                  autoComplete={viewType === ViewType.RegisterView ? "new-password" : "current-password"}
+                  required={viewType !== ViewType.PasswordRecoveryView}
                   onChange={(input) => setPassword(input.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
@@ -184,7 +235,7 @@ export default function LoginPage() {
             </div>
 
             {/*Password Confirmation input */}
-            <div className={cn({ hidden: !registerView })}>
+            <div className={cn({ hidden: viewType !== ViewType.RegisterView })}>
               <div className="flex items-center justify-between">
                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                   Confirm Password
@@ -196,7 +247,7 @@ export default function LoginPage() {
                   name="confirm-password"
                   type="password"
                   autoComplete="new-password"
-                  required={registerView}
+                  required={viewType === ViewType.RegisterView}
                   onChange={(input) => {
                     setConfirmPassword(input.target.value);
                   }}
@@ -206,7 +257,7 @@ export default function LoginPage() {
             </div>
 
             {/*Sign Up data validation view */}
-            <div className={cn({ hidden: !registerView })}>
+            <div className={cn({ hidden: viewType !== ViewType.RegisterView })}>
               <div id="hs-strong-password-hints">
                 <h4 className="mb-2 text-sm font-semibold text-gray-800 dark:text-white">Sign up data validation:</h4>
                 <ul className="space-y-1 text-sm text-gray-500">
@@ -382,20 +433,26 @@ export default function LoginPage() {
                 disabled={submitDisabled}
                 className={cn(
                   "flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
-                  { "bg-indigo-600": !registerView },
+                  { "bg-indigo-600": viewType !== ViewType.RegisterView },
                   {
-                    "hover:bg-indigo-500  focus-visible:outline-indigo-600": !registerView && !submitDisabled,
+                    "hover:bg-indigo-500  focus-visible:outline-indigo-600":
+                      viewType !== ViewType.RegisterView && !submitDisabled,
                   },
-                  { "bg-emerald-500": registerView },
+                  { "bg-emerald-500": viewType === ViewType.RegisterView },
                   {
-                    "hover:bg-green-500 focus-visible:outline-green-500": !submitDisabled && registerView,
+                    "hover:bg-green-500 focus-visible:outline-green-500":
+                      !submitDisabled && viewType === ViewType.RegisterView,
                   },
                   {
                     "bounce-and-shake hover:bg-red-400": submitDisabled && !loading,
                   },
                 )}
               >
-                {registerView ? "Sign up" : "Sign in"}
+                {viewType === ViewType.RegisterView
+                  ? "Sign up"
+                  : viewType === ViewType.LoginView
+                    ? "Sign in"
+                    : "Recover Password"}
                 <div
                   className={cn(
                     "ml-2 inline-block h-4 w-4 animate-spin self-center rounded-full border-2 border-solid border-current",
@@ -409,14 +466,15 @@ export default function LoginPage() {
           </form>
           {/*Login/Register view switch */}
           <p className="mt-10 text-center text-sm text-gray-500">
-            Don&apos;t have an account yet?
+            {viewType === ViewType.LoginView ? "Don't have an account yet?" : "Already have an account?"}
             <button
               className="ml-1 font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
               onClick={() => {
-                setRegisterView(!registerView);
+                let newViewType = viewType === ViewType.LoginView ? ViewType.RegisterView : ViewType.LoginView;
+                setViewType(newViewType);
               }}
             >
-              Get Started
+              {viewType === ViewType.LoginView ? "Get Started" : "Login now!"}
             </button>
           </p>
         </div>

@@ -24,6 +24,8 @@ export const emailSchema = z
 
 const passwordSchema = z.string().min(8, "Password should be minimum 8 character");
 
+const reCaptchaTokenSchema = z.string().optional();
+
 export const loginUserSchema = z.object({
   email: emailSchema,
   password: z.string().min(1, "Empty password is not allowed"),
@@ -32,7 +34,12 @@ export const loginUserSchema = z.object({
 export const registerUserSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
-  reCaptchaTokken: z.string().optional(),
+  reCaptchaTokken: reCaptchaTokenSchema,
+});
+
+export const passwordRecoverySchema = z.object({
+  email: emailSchema,
+  reCaptchaTokken: reCaptchaTokenSchema,
 });
 
 export const urlSchema = z.object({
