@@ -4,7 +4,7 @@ import { createShortURL, deleteShortURL, getAllUserLinks, updateLinkCustomName }
 import { REDIS_ERRORS } from "@/lib/server/serverConstants";
 import { getServerSession } from "next-auth";
 import authOptions from "../auth/[...nextauth]/authOptions";
-import { shortURLSchema, urlSchema } from "@/lib/helperFunctions";
+import { shortURLSchema, urlSchema } from "@/lib/client/dataValidations";
 import { StatusCodes as HTTPStatusCode } from "http-status-codes";
 
 export async function POST(req: NextRequest) {

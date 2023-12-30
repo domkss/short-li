@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { registerUserSchema, loginUserSchema, emailSchema, passwordRecoverySchema } from "@/lib/helperFunctions";
-import { cn } from "@/lib/helperFunctions";
+import { registerUserSchema, loginUserSchema, emailSchema, passwordRecoverySchema } from "@/lib/client/dataValidations";
+import { cn } from "@/lib/client/uiHelperFunctions";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { RECAPTCHA_ACTIONS } from "@/lib/server/serverConstants";
 
@@ -142,7 +142,9 @@ export default function LoginPage() {
         return;
       }
 
-      //Todo
+      //Todo create form to give new password and verification code
+      //send password change request
+      //login
       setLoading(false);
     }
   }

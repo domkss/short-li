@@ -1,6 +1,6 @@
 import "server-only";
 import { NextRequest } from "next/server";
-import { passwordRecoverySchema } from "@/lib/helperFunctions";
+import { passwordRecoverySchema } from "@/lib/client/dataValidations";
 
 import { AUTHENTICATION_ERRORS } from "@/lib/server/serverConstants";
 import { StatusCodes as HTTPStatusCode } from "http-status-codes";
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     );
 
   try {
-    //Todo send email
+    //Todo send email code
     return Response.json({ success: true, user: { email: parsedContent.data.email } }, { status: HTTPStatusCode.OK });
   } catch (e) {
     if (e instanceof Error && e.message === AUTHENTICATION_ERRORS.RECAPCHA_VALIDATION_FAILED) {

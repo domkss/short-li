@@ -1,11 +1,11 @@
 import "server-only";
 import RedisDB from "./redisDB";
 import { REDIS_ERRORS, REDIS_NAME_PATTERNS, REDIS_LINK_FIELDS } from "./serverConstants";
-import { isValidHttpURL } from "../helperFunctions";
-import { randomBytes } from "crypto";
+import { isValidHttpURL } from "../client/dataValidations";
 import { DefaultSession } from "next-auth";
 import { RedisClientType } from "redis";
 import GeoLocationService from "./GeoLocationService";
+import { makeid } from "./serverHelperFunctions";
 
 type URLCreatorOptions = {
   session: DefaultSession | null;
@@ -132,20 +132,6 @@ export async function updateLinkCustomName(shortURL: string, newCustomName: stri
 }
 
 /*Helper functions */
-function makeid(length: number) {
-  const BUFFER_SIZE = 512;
-  if (!length || typeof length !== "number") throw new Error('base62 length must be a number "' + length + '"');
-  let str = "";
-
-  if (str.length < length)
-    str = randomBytes(BUFFER_SIZE)
-      .toString("base64")
-      .replace(/[+.=/]/g, "");
-
-  let startIdx = Math.floor(Math.random() * (BUFFER_SIZE / 2));
-  return str.slice(startIdx, startIdx + length);
-}
-
 function formatShortLink(shortURL: string) {
   const envType = process.env.NODE_ENV;
 

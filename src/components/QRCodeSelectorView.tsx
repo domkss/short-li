@@ -1,7 +1,6 @@
 "use client";
 import QrCodeComponent from "./QrCodeComponent";
 import Image from "next/image";
-import { Options } from "qr-code-styling";
 
 type QRCodeSelectorViewProps = {
   shortURL: string;

@@ -4,8 +4,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useState } from "react";
-import { cn, progressUntilNextPowerOfTen } from "@/lib/helperFunctions";
-import { generateVisiblePaginationButtonKeys, debounce, nFormatter } from "@/lib/helperFunctions";
+import {
+  cn,
+  progressUntilNextPowerOfTen,
+  generateVisiblePaginationButtonKeys,
+  debounce,
+  nFormatter,
+} from "@/lib/client/uiHelperFunctions";
 import ConfirmationView from "@/components/ConfirmationView";
 import QrCodeComponent from "@/components/QrCodeComponent";
 import { DELETE } from "@/app/api/link/route";
