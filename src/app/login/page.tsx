@@ -4,7 +4,13 @@ import Image from "next/image";
 import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { registerUserSchema, loginUserSchema, emailSchema, passwordRecoverySchema } from "@/lib/client/dataValidations";
+import {
+  registerUserSchema,
+  loginUserSchema,
+  emailSchema,
+  passwordRecoverySchema,
+  recoveryTokenSchema,
+} from "@/lib/client/dataValidations";
 import { cn } from "@/lib/client/uiHelperFunctions";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { RECAPTCHA_ACTIONS } from "@/lib/server/serverConstants";
@@ -13,19 +19,17 @@ enum ViewType {
   LoginView,
   RegisterView,
   PasswordRecoveryView,
+  SetNewPasswordView,
 }
 
 export default function LoginPage() {
   const [viewType, setViewType] = useState(ViewType.LoginView);
   const [email, setEmail] = useState("");
+  const [passwRecoveryToken, setPasswRecoveryToken] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
-  const submitDisabled =
-    loading ||
-    (viewType === ViewType.RegisterView &&
-      (!registerUserSchema.safeParse({ email: email, password: password }).success || password !== confirmPassword));
 
   const reactRouter = useRouter();
   const session = useSession();
@@ -35,15 +39,15 @@ export default function LoginPage() {
   const { executeRecaptcha } = useGoogleReCaptcha();
 
   /*Register and login form submit handler */
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent, currentViewType: ViewType) {
     e.preventDefault();
 
-    if (viewType === ViewType.RegisterView) {
+    if (currentViewType === ViewType.RegisterView) {
       if (!registerUserSchema.safeParse({ email: email, password: password }).success) return;
 
       setLoading(true);
 
-      /*Request reCapcha tokken */
+      /*Request reCapcha token */
 
       if (!executeRecaptcha) {
         setErrorText("Faild to execute reCaptcha. Reload the site and try again.");
@@ -51,8 +55,8 @@ export default function LoginPage() {
         return;
       }
 
-      let reCaptchaTokken = await executeRecaptcha(RECAPTCHA_ACTIONS.REGISTER_FORM_SUBMIT);
-      if (!reCaptchaTokken) {
+      let reCaptchaToken = await executeRecaptcha(RECAPTCHA_ACTIONS.REGISTER_FORM_SUBMIT);
+      if (!reCaptchaToken) {
         setErrorText("Faild to execute reCaptcha. Reload the site and try again.");
         setLoading(false);
         return;
@@ -63,7 +67,7 @@ export default function LoginPage() {
         body: JSON.stringify({
           email: email,
           password: password,
-          reCaptchaTokken: reCaptchaTokken,
+          reCaptchaToken: reCaptchaToken,
         }),
       });
 
@@ -72,24 +76,11 @@ export default function LoginPage() {
       if (!data.success || !data.user) {
         setErrorText(data.error);
         setLoading(false);
-        return;
-      }
-
-      let loginResult = await signIn("credentials", {
-        email: email,
-        password: password,
-        redirect: false,
-      });
-      setLoading(false);
-
-      if (!loginResult?.ok) {
-        let error = loginResult?.error || "";
-        setErrorText(error);
-        return;
       } else {
-        reactRouter.replace("/user/links");
+        setLoading(false);
+        handleSubmit(e, ViewType.LoginView);
       }
-    } else if (viewType === ViewType.LoginView) {
+    } else if (currentViewType === ViewType.LoginView) {
       if (!loginUserSchema.safeParse({ email: email, password: password }).success) return;
       setLoading(true);
       //Login
@@ -107,11 +98,11 @@ export default function LoginPage() {
       } else {
         reactRouter.replace("/user/links");
       }
-    } else if (viewType === ViewType.PasswordRecoveryView) {
+    } else if (currentViewType === ViewType.PasswordRecoveryView) {
       if (!passwordRecoverySchema.safeParse({ email: email }).success) return;
       setLoading(true);
 
-      /*Request reCapcha tokken */
+      /*Request reCapcha token */
 
       if (!executeRecaptcha) {
         setErrorText("Faild to execute reCaptcha. Reload the site and try again.");
@@ -119,8 +110,8 @@ export default function LoginPage() {
         return;
       }
 
-      let reCaptchaTokken = await executeRecaptcha(RECAPTCHA_ACTIONS.PASSWORD_RECOVERY_FORM_SUBMIT);
-      if (!reCaptchaTokken) {
+      let reCaptchaToken = await executeRecaptcha(RECAPTCHA_ACTIONS.PW_RECOVERY_TOKEN_REQUEST);
+      if (!reCaptchaToken) {
         setErrorText("Faild to execute reCaptcha. Reload the site and try again.");
         setLoading(false);
         return;
@@ -130,24 +121,53 @@ export default function LoginPage() {
         method: "POST",
         body: JSON.stringify({
           email: email,
-          reCaptchaTokken: reCaptchaTokken,
+          reCaptchaToken: reCaptchaToken,
         }),
       });
 
       let data = await result.json();
+      if (!data.success) setErrorText(data.error);
+      else setViewType(ViewType.SetNewPasswordView);
+      setLoading(false);
+    } else if (currentViewType === ViewType.SetNewPasswordView) {
+      let formData = { email: email, recoveryToken: passwRecoveryToken, newPassword: password };
+      if (!passwordRecoverySchema.safeParse(formData).success) return;
 
+      setLoading(true);
+
+      let result = await fetch("/api/auth/recover", {
+        method: "POST",
+        body: JSON.stringify(formData),
+      });
+
+      let data = await result.json();
       if (!data.success) {
         setErrorText(data.error);
         setLoading(false);
-        return;
+      } else {
+        setLoading(false);
+        handleSubmit(e, ViewType.LoginView);
       }
-
-      //Todo create form to give new password and verification code
-      //send password change request
-      //login
-      setLoading(false);
     }
   }
+
+  const submitDisabled = () => {
+    if (loading) return true;
+    if ([ViewType.RegisterView, ViewType.SetNewPasswordView].includes(viewType)) {
+      if (password !== confirmPassword) return true;
+
+      if (viewType === ViewType.RegisterView)
+        return !registerUserSchema.safeParse({ email: email, password: password }).success;
+
+      if (viewType === ViewType.SetNewPasswordView)
+        return !passwordRecoverySchema.safeParse({
+          email: email,
+          newPassword: password,
+          recoveryToken: passwRecoveryToken,
+        }).success;
+    }
+    return false;
+  };
 
   return (
     <main className="flex flex-col">
@@ -186,9 +206,13 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={(e) => handleSubmit(e, viewType)}>
             {/*Email Input */}
-            <div>
+            <div
+              className={cn({
+                hidden: viewType === ViewType.SetNewPasswordView,
+              })}
+            >
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Email address
               </label>
@@ -198,18 +222,43 @@ export default function LoginPage() {
                   name="email"
                   type="email"
                   autoComplete="email"
-                  required
+                  required={viewType !== ViewType.SetNewPasswordView}
                   onChange={(input) => setEmail(input.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
 
+            {/*Password Reset Token Input */}
+            <div
+              className={cn({
+                hidden: viewType !== ViewType.SetNewPasswordView,
+              })}
+            >
+              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                Password Reset Token
+              </label>
+              <div className="mt-2">
+                <input
+                  id="resetToken"
+                  name="reset token"
+                  type="text"
+                  required={viewType === ViewType.SetNewPasswordView}
+                  onChange={(input) => setPasswRecoveryToken(input.target.value)}
+                  className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
             {/*Password Input */}
-            <div className={cn({ hidden: viewType === ViewType.PasswordRecoveryView })}>
+            <div
+              className={cn({
+                hidden: viewType === ViewType.PasswordRecoveryView,
+              })}
+            >
               <div className="flex items-center justify-between">
                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                  Password
+                  {viewType == ViewType.SetNewPasswordView ? "New Password" : "Password"}
                 </label>
                 <div className={cn("text-sm", { hidden: viewType !== ViewType.LoginView })}>
                   <button
@@ -228,7 +277,7 @@ export default function LoginPage() {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete={viewType === ViewType.RegisterView ? "new-password" : "current-password"}
+                  autoComplete={viewType === ViewType.LoginView ? "current-password" : "new-password"}
                   required={viewType !== ViewType.PasswordRecoveryView}
                   onChange={(input) => setPassword(input.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -237,7 +286,7 @@ export default function LoginPage() {
             </div>
 
             {/*Password Confirmation input */}
-            <div className={cn({ hidden: viewType !== ViewType.RegisterView })}>
+            <div className={cn({ hidden: ![ViewType.RegisterView, ViewType.SetNewPasswordView].includes(viewType) })}>
               <div className="flex items-center justify-between">
                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                   Confirm Password
@@ -258,10 +307,10 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/*Sign Up data validation view */}
-            <div className={cn({ hidden: viewType !== ViewType.RegisterView })}>
+            {/*Form data validation view */}
+            <div className={cn({ hidden: ![ViewType.RegisterView, ViewType.SetNewPasswordView].includes(viewType) })}>
               <div id="hs-strong-password-hints">
-                <h4 className="mb-2 text-sm font-semibold text-gray-800 dark:text-white">Sign up data validation:</h4>
+                <h4 className="mb-2 text-sm font-semibold text-gray-800 dark:text-white">Form data validation:</h4>
                 <ul className="space-y-1 text-sm text-gray-500">
                   {/*Email format invalid*/}
                   <li
@@ -272,6 +321,9 @@ export default function LoginPage() {
                       },
                       {
                         "text-red-500": !emailSchema.safeParse(email).success && email.length > 0,
+                      },
+                      {
+                        hidden: viewType !== ViewType.RegisterView,
                       },
                     )}
                   >
@@ -319,6 +371,67 @@ export default function LoginPage() {
                       </svg>
                     </span>
                     Valid email address is required.
+                  </li>
+                  {/*Password Reset Token format invalid*/}
+                  <li
+                    className={cn(
+                      "flex items-center gap-x-2",
+                      {
+                        "text-green-400": recoveryTokenSchema.safeParse(passwRecoveryToken).success,
+                      },
+                      {
+                        "text-red-500":
+                          !recoveryTokenSchema.safeParse(passwRecoveryToken).success && passwRecoveryToken.length > 0,
+                      },
+                      {
+                        hidden: viewType !== ViewType.SetNewPasswordView,
+                      },
+                    )}
+                  >
+                    <span
+                      className={cn({
+                        hidden: !recoveryTokenSchema.safeParse(passwRecoveryToken).success,
+                      })}
+                      data-check
+                    >
+                      <svg
+                        className="h-4 w-4 flex-shrink-0"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
+                    <span
+                      className={cn({
+                        hidden: recoveryTokenSchema.safeParse(passwRecoveryToken).success,
+                      })}
+                      data-uncheck
+                    >
+                      <svg
+                        className="h-4 w-4 flex-shrink-0"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                      </svg>
+                    </span>
+                    Valid password reset token is required.
                   </li>
                   {/*Min password lenght*/}
                   <li
@@ -432,21 +545,20 @@ export default function LoginPage() {
             <div>
               <button
                 type="submit"
-                disabled={submitDisabled}
+                disabled={submitDisabled()}
                 className={cn(
-                  "flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
-                  { "bg-indigo-600": viewType !== ViewType.RegisterView },
+                  `flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 
+                  text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2`,
                   {
-                    "hover:bg-indigo-500  focus-visible:outline-indigo-600":
-                      viewType !== ViewType.RegisterView && !submitDisabled,
+                    "hover:bg-indigo-500  focus-visible:outline-indigo-600": !submitDisabled(),
                   },
-                  { "bg-emerald-500": viewType === ViewType.RegisterView },
+                  { "bg-emerald-500": [ViewType.RegisterView, ViewType.SetNewPasswordView].includes(viewType) },
                   {
                     "hover:bg-green-500 focus-visible:outline-green-500":
-                      !submitDisabled && viewType === ViewType.RegisterView,
+                      !submitDisabled() && [ViewType.RegisterView, ViewType.SetNewPasswordView].includes(viewType),
                   },
                   {
-                    "bounce-and-shake hover:bg-red-400": submitDisabled && !loading,
+                    "bounce-and-shake hover:bg-red-400": submitDisabled() && !loading,
                   },
                 )}
               >
@@ -454,7 +566,9 @@ export default function LoginPage() {
                   ? "Sign up"
                   : viewType === ViewType.LoginView
                     ? "Sign in"
-                    : "Recover Password"}
+                    : viewType === ViewType.PasswordRecoveryView
+                      ? "Send Recovery Token"
+                      : "Update Password"}
                 <div
                   className={cn(
                     "ml-2 inline-block h-4 w-4 animate-spin self-center rounded-full border-2 border-solid border-current",

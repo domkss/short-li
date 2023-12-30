@@ -4,20 +4,29 @@ import { passwordRecoverySchema } from "@/lib/client/dataValidations";
 
 import { AUTHENTICATION_ERRORS } from "@/lib/server/serverConstants";
 import { StatusCodes as HTTPStatusCode } from "http-status-codes";
+import { sendUserPasswordRecoveryToken, updateUserPasswordWithRecoveryToken } from "@/lib/server/authentication";
 
 export async function POST(req: NextRequest) {
   const content = await req.json();
   const parsedContent = passwordRecoverySchema.safeParse(content);
 
   if (!parsedContent.success)
-    return Response.json(
-      { success: false, error: "Invalid email or reCaptchaToken" },
-      { status: HTTPStatusCode.BAD_REQUEST },
-    );
+    return Response.json({ success: false, error: "Invalid email" }, { status: HTTPStatusCode.BAD_REQUEST });
 
   try {
-    //Todo send email code
-    return Response.json({ success: true, user: { email: parsedContent.data.email } }, { status: HTTPStatusCode.OK });
+    if (parsedContent.data.recoveryToken && parsedContent.data.newPassword) {
+      let status = await updateUserPasswordWithRecoveryToken(
+        parsedContent.data.email,
+        parsedContent.data.recoveryToken,
+        parsedContent.data.newPassword,
+      );
+
+      if (!status)
+        return Response.json({ success: false, error: "Invalid password reset token" }, { status: HTTPStatusCode.OK });
+    } else {
+      await sendUserPasswordRecoveryToken(parsedContent.data.email, parsedContent.data.reCaptchaToken);
+    }
+    return Response.json({ success: true }, { status: HTTPStatusCode.OK });
   } catch (e) {
     if (e instanceof Error && e.message === AUTHENTICATION_ERRORS.RECAPCHA_VALIDATION_FAILED) {
       return Response.json(
