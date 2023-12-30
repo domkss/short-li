@@ -32,4 +32,5 @@ export enum AUTHENTICATION_ERRORS {
 
 export enum RECAPTCHA_ACTIONS {
   REGISTER_FORM_SUBMIT = "registerFormSubmit",
+  PASSWORD_RECOVERY_FORM_SUBMIT = "passwordRecoveryFormSubmit",
 }
