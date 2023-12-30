@@ -15,6 +15,11 @@ export enum REDIS_LINK_FIELDS {
 export enum REDIS_USER_FIELDS {
   PASSWORD_HASH = "password",
   PASSWORD_SALT = "salt",
+  INVALID_LOGIN_COUNTER = "invalid_login_counter",
+  LOGIN_BLOCK_OUT_TIME = "login_block_time",
+  RECOVERY_TOKEN = "recovery_token",
+  RECOVERY_TOKEN_EXPIRY_TIME = "recovery_token_expiry_date",
+  INVALID_RECOVERY_TOKEN_COUNTER = "invalid_recovery_counter",
 }
 
 export enum REDIS_ERRORS {
@@ -30,7 +35,13 @@ export enum AUTHENTICATION_ERRORS {
   RECAPCHA_VALIDATION_FAILED = "ReCaptcha validation failed",
 }
 
+export enum LoginUserResult {
+  Success,
+  Failed,
+  Blocked,
+}
+
 export enum RECAPTCHA_ACTIONS {
   REGISTER_FORM_SUBMIT = "registerFormSubmit",
-  PASSWORD_RECOVERY_FORM_SUBMIT = "passwordRecoveryFormSubmit",
+  PW_RECOVERY_TOKEN_REQUEST = "passwordRecoveryTokenRequest",
 }
