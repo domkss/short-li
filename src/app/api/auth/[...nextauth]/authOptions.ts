@@ -1,5 +1,5 @@
 import "server-only";
-import { loginUserSchema } from "@/lib/helperFunctions";
+import { loginUserSchema } from "@/lib/client/dataValidations";
 import { loginUser } from "@/lib/server/authentication";
 import Credentials from "next-auth/providers/credentials";
 import { AuthOptions } from "next-auth";

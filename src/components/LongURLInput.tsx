@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import { isValidHttpURL, addHttpstoURL } from "@/lib/helperFunctions";
+import { isValidHttpURL } from "@/lib/client/dataValidations";
 import Image from "next/image";
 import copyToClypboard from "copy-to-clipboard";
 import { useSession } from "next-auth/react";
-import { cn } from "@/lib/helperFunctions";
+import { cn, addHttpstoURL } from "@/lib/client/uiHelperFunctions";
 
 enum ProgressState {
   NotStarted,

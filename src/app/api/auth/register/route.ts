@@ -1,6 +1,6 @@
 import "server-only";
 import { NextRequest } from "next/server";
-import { registerUserSchema } from "@/lib/helperFunctions";
+import { registerUserSchema } from "@/lib/client/dataValidations";
 import { registerNewUser } from "@/lib/server/authentication";
 import { AUTHENTICATION_ERRORS } from "@/lib/server/serverConstants";
 import { StatusCodes as HTTPStatusCode } from "http-status-codes";

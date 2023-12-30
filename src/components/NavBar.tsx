@@ -6,7 +6,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
-import { cn } from "@/lib/helperFunctions";
+import { cn } from "@/lib/client/uiHelperFunctions";
 
 function NavBar() {
   const pathname = usePathname();

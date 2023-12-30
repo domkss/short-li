@@ -1,7 +1,7 @@
 "use client";
 
 import { WorldSVGData } from "./world-svg-data";
-import { cn } from "@/lib/helperFunctions";
+import { cn } from "@/lib/client/uiHelperFunctions";
 import { useEffect, createRef, useState } from "react";
 
 export default function SessionMap() {
