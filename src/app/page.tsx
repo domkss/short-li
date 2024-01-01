@@ -1,5 +1,6 @@
 import LongURLInput from "@/components/LongURLInput";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -69,6 +70,11 @@ export default function Home() {
             </p>
           </div>
         </div>
+      </div>
+      <div className="text-gray-600 max-lg:mx-6 max-lg:mb-8 max-lg:flex max-lg:justify-end lg:fixed lg:bottom-5 lg:right-5">
+        <Link className="text-sm" href="/termsofuse">
+          Terms Of Use
+        </Link>
       </div>
     </main>
   );
