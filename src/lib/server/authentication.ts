@@ -91,7 +91,7 @@ export async function sendUserPasswordRecoveryToken(email: string, reCaptchaToke
     if (!reCaptchaValidationPassed) throw Error(AUTHENTICATION_ERRORS.RECAPCHA_VALIDATION_FAILED);
 
     let recoveryToken = makeid(9);
-    let tokenExpireTime = Date.now() + 600000; //Current time + 10 minute
+    let tokenExpireTime = Date.now() + 1200000; //Current time + 20 minute
     redisClient
       .MULTI()
       .HSET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.RECOVERY_TOKEN, recoveryToken)
