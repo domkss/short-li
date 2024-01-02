@@ -13,14 +13,16 @@ class GeoLocationService {
 
     if (!this.ipV4LocationService) {
       this.ipV4LocationService = new IP2Location();
-      this.ipV4LocationService.open(path.join(serverRuntimeConfig.PROJECT_ROOT, "./ip-db/IP2LOCATION-LITE-DB3.BIN"));
+      this.ipV4LocationService.open(
+        path.join(serverRuntimeConfig.PROJECT_ROOT, "resources/ip-db/IP2LOCATION-LITE-DB3.BIN"),
+      );
 
       if (!this.ipV4LocationService.loadBin()) console.log("Failed to open ipv4 geo database.");
     }
     if (!this.ipV6LocationService) {
       this.ipV6LocationService = new IP2Location();
       this.ipV6LocationService.open(
-        path.join(serverRuntimeConfig.PROJECT_ROOT, "./ip-db/IP2LOCATION-LITE-DB3.IPV6.BIN"),
+        path.join(serverRuntimeConfig.PROJECT_ROOT, "resources/ip-db/IP2LOCATION-LITE-DB3.IPV6.BIN"),
       );
 
       if (!this.ipV6LocationService.loadBin()) console.log("Failed to open ipv6 geo database.");

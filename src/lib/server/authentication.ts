@@ -11,6 +11,7 @@ import {
 import { makeid } from "./serverHelperFunctions";
 import { LoginUserResult } from "./serverConstants";
 import z from "zod";
+import Mailer from "./mailer";
 
 export async function loginUser(email: string, password: string): Promise<LoginUserResult> {
   try {
@@ -98,8 +99,7 @@ export async function sendUserPasswordRecoveryToken(email: string, reCaptchaToke
       .HSET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.RECOVERY_TOKEN_EXPIRY_TIME, tokenExpireTime)
       .EXEC(true);
 
-    console.log(recoveryToken);
-    //Todo: Send token in email
+    Mailer.SendPasswordResetTokenMail(email, recoveryToken);
     return;
   } catch (e) {
     if (e instanceof Error && e.message === AUTHENTICATION_ERRORS.RECAPCHA_VALIDATION_FAILED)
