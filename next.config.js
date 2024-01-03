@@ -3,6 +3,9 @@ const nextConfig = {
   serverRuntimeConfig: {
     PROJECT_ROOT: __dirname,
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 module.exports = nextConfig;

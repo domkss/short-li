@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass redisDeveloperPW
+    volumes:
+      - redis:/data
+  next-app:
+    build:
+      ports:
+        - "3000:3000"
+      context: .
+      dockerfile: ./dockerfiles/app/Dockerfile
+    image: next-app:shortli
+volumes:
+  redis:
+    driver: local

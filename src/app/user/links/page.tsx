@@ -115,7 +115,10 @@ export default function Dashboard() {
 
   const reactRouter = useRouter();
   const session = useSession();
-  if (session.status !== "authenticated" || !session.data || !session.data.user) reactRouter.replace("/login");
+  let isServer = typeof window === "undefined" ? true : false;
+  if (!isServer && (session.status !== "authenticated" || !session.data || !session.data.user))
+    reactRouter.replace("/login");
+
   useEffect(() => {
     getUserLinks();
   }, []);

@@ -6,7 +6,9 @@ import Image from "next/image";
 export default function CustomBioDashboard() {
   const reactRouter = useRouter();
   const session = useSession();
-  if (session.status !== "authenticated" || !session.data || !session.data.user) reactRouter.replace("/login");
+  let isServer = typeof window === "undefined" ? true : false;
+  if (!isServer && (session.status !== "authenticated" || !session.data || !session.data.user))
+    reactRouter.replace("/login");
 
   return (
     <div className="flex min-h-screen min-w-full items-center">

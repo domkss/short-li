@@ -30,7 +30,7 @@ export default function SessionMap() {
         container.removeEventListener("wheel", handleWheel);
       };
     }
-  }, [mapContainer]);
+  });
 
   return (
     <div className="mt-5 min-w-[50%] rounded-md border-2 border-slate-300 p-3 shadow-md max-sm:min-w-[350px]">
