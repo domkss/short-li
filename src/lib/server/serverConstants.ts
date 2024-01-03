@@ -15,6 +15,7 @@ export enum REDIS_LINK_FIELDS {
 export enum REDIS_USER_FIELDS {
   PASSWORD_HASH = "password",
   PASSWORD_SALT = "salt",
+  RESTRICTED = "restricted",
   INVALID_LOGIN_COUNTER = "invalid_login_counter",
   LOGIN_BLOCK_OUT_TIME = "login_block_time",
   RECOVERY_TOKEN = "recovery_token",
@@ -39,6 +40,7 @@ export enum LoginUserResult {
   Success,
   Failed,
   Blocked,
+  Restricted,
 }
 
 export enum RECAPTCHA_ACTIONS {

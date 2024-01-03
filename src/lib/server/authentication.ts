@@ -19,6 +19,8 @@ export async function loginUser(email: string, password: string): Promise<LoginU
     let salt = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.PASSWORD_SALT);
     let hash = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.PASSWORD_HASH);
     if (!salt || !hash) return LoginUserResult.Failed;
+    let restricted = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.RESTRICTED);
+    if (restricted) return LoginUserResult.Restricted;
 
     let serverTimeMilis = Date.now();
     let loginBlockEndTime = await redisClient.HGET(
