@@ -25,6 +25,8 @@ const authOptions: AuthOptions = {
           return { id: email, email: email };
         } else if (success === LoginUserResult.Blocked) {
           throw new Error("Too many failed attempt.\nPlease try again later.");
+        } else if (success === LoginUserResult.Restricted) {
+          throw new Error("User account is restricted.");
         } else {
           throw new Error("Invalid username or password.\nPlease try again.");
         }
