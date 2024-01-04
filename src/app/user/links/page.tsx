@@ -1,5 +1,4 @@
 "use client";
-import SessionMap from "@/components/session-world-map/SessionMap";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -12,8 +11,6 @@ import {
   nFormatter,
 } from "@/lib/client/uiHelperFunctions";
 import ConfirmationView from "@/components/ConfirmationView";
-import QrCodeComponent from "@/components/QrCodeComponent";
-import { DELETE } from "@/app/api/link/route";
 import QRCodeSelectorView from "@/components/QRCodeSelectorView";
 
 type LinkListItem = {
