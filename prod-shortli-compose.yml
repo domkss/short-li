@@ -4,8 +4,8 @@ services:
   shortli-redis:
     image: redis:6.2-alpine
     restart: always
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
     command: redis-server --save 20 1 --loglevel warning --requirepass X9bwp8$j*$GE3@
     volumes:
       - redis:/data
@@ -20,7 +20,7 @@ services:
     links:
       - "shortli-redis:localhost"
     ports:
-      - "3000:3000"
+      - "3131:3000"
       
 volumes:
   redis:
