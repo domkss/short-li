@@ -1,11 +1,13 @@
 "use client";
-import QrCodeComponent from "./QrCodeComponent";
+
 import Image from "next/image";
+import dynamic from "next/dynamic";
 
 type QRCodeSelectorViewProps = {
   shortURL: string;
   onCloseClicked: () => void;
 };
+const QrCodeComponentWithNoSSR = dynamic(() => import("./QrCodeComponent"), { ssr: false });
 
 export default function QRCodeSelectorView(props: QRCodeSelectorViewProps) {
   return (
@@ -32,7 +34,7 @@ export default function QRCodeSelectorView(props: QRCodeSelectorViewProps) {
               <span className="font-semibold text-gray-700">{props.shortURL}</span>
             </div>
             <div>
-              <QrCodeComponent shortURL={props.shortURL} />
+              <QrCodeComponentWithNoSSR shortURL={props.shortURL} />
             </div>
           </div>
         </div>
