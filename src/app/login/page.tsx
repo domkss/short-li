@@ -235,7 +235,7 @@ export default function LoginPage() {
                 hidden: viewType !== ViewType.SetNewPasswordView,
               })}
             >
-              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="resetToken" className="block text-sm font-medium leading-6 text-gray-900">
                 Password Reset Token
               </label>
               <div className="mt-2">
@@ -288,7 +288,7 @@ export default function LoginPage() {
             {/*Password Confirmation input */}
             <div className={cn({ hidden: ![ViewType.RegisterView, ViewType.SetNewPasswordView].includes(viewType) })}>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="password-confirm" className="block text-sm font-medium leading-6 text-gray-900">
                   Confirm Password
                 </label>
               </div>

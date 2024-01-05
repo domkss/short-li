@@ -9,7 +9,7 @@ export const inter = Inter({ subsets: ["latin-ext"] });
 export const metadata: Metadata = {
   title: "ShortLi",
   description: "The Free Link Shortener",
-  icons: "/favicon.svg",
+  icons: "/public/icons/favicon.svg",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
