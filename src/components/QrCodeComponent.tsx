@@ -97,6 +97,7 @@ export default function QrCodeComponent(props: QRCodeComponentProps) {
   const ref = useRef(null);
   const [currentStyleIndex, setCurrentStyleIndex] = useState(0);
   const qrCode = new QRCodeStyling(qrCodeStyles[currentStyleIndex]);
+  const url = props.shortURL.startsWith("https://") ? props.shortURL : `https://${props.shortURL}`;
 
   const onDownloadClick = () => {
     qrCode.download({
@@ -108,7 +109,7 @@ export default function QrCodeComponent(props: QRCodeComponentProps) {
   useEffect(() => {
     if (ref.current) qrCode.append(ref.current);
     qrCode.update({
-      data: props.shortURL,
+      data: url,
     });
   });
 
