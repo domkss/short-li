@@ -9,13 +9,16 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass X9bwp8$j*$GE3@
     volumes:
       - redis:/data
+    networks:
+      network:
+        ipv4_address: 172.20.0.11
   shortli-app:
     build:
       context: .
       dockerfile: ./Dockerfile
     image: shortli-app:shortli
     restart: always
-    depends_on: 
+    depends_on:
       - shortli-redis
     links:
       - "shortli-redis:localhost"
@@ -23,7 +26,7 @@ services:
       - "3131:3000"
     networks:
       network:
-        ipv4_address: 172.20.0.10      
+        ipv4_address: 172.20.0.10
 volumes:
   redis:
     driver: local
