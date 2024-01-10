@@ -22,7 +22,7 @@ type LinkListItem = {
 
 export default function Dashboard() {
   const LINK_ITEM_PER_PAGE = 9;
-  const [linkListFirstItemIndex, setListFirstItemIndex] = useState(0);
+  const [linkListFirstItemIndex, setLinkListFirstItemIndex] = useState(0);
   const [originalLinkList, setOriginalLinkList] = useState<LinkListItem[]>([]);
   const [linkListItems, setLinkListItems] = useState<LinkListItem[]>([]);
   const [deleteLinkViewActive, setDeleteLinkViewActive] = useState(false);
@@ -58,7 +58,7 @@ export default function Dashboard() {
     let data = await response.json();
     let linkList: [{ name: string | null; shortURL: string | null }] = data.linkDataList;
 
-    if (data.success && linkList && linkList.length > 0) {
+    if (data.success && linkList) {
       setOriginalLinkList([]);
       setLinkListItems(data.linkDataList);
     }
@@ -75,6 +75,10 @@ export default function Dashboard() {
     let data = await result.json();
     if (data.success) {
       getUserLinks();
+      setActiveLinkListItemIndex(activeLinkListItemIndex - 1);
+      if (activeLinkListItemIndex - 1 < linkListFirstItemIndex)
+        setLinkListFirstItemIndex(linkListFirstItemIndex - LINK_ITEM_PER_PAGE);
+
       setDeleteLinkViewActive(false);
     } else {
       //Todo: Show error if item deletion failed
@@ -103,7 +107,7 @@ export default function Dashboard() {
         modifiedLinkList.unshift(modifiedLinkListItem);
         setLinkListItems(modifiedLinkList);
         setActiveLinkListItemIndex(0);
-        setListFirstItemIndex(0);
+        setLinkListFirstItemIndex(0);
       }
     } else {
       //Todo: Handle error
@@ -207,7 +211,7 @@ export default function Dashboard() {
 
             {/*Link pagination bar */}
             <div className="mb-8 flex flex-row justify-center">
-              <ul className="flex flex-row flex-wrap items-center justify-center">
+              <ul className="flex flex-1 flex-row flex-wrap items-center justify-center border-b-2 shadow-sm">
                 {linkListPageButtonKeys.map((key) => (
                   <li key={key}>
                     <button
@@ -228,7 +232,7 @@ export default function Dashboard() {
                             ).includes(key),
                         },
                       )}
-                      onClick={() => setListFirstItemIndex(key * LINK_ITEM_PER_PAGE)}
+                      onClick={() => setLinkListFirstItemIndex(key * LINK_ITEM_PER_PAGE)}
                     >
                       {(key + 1).toString().padStart(2, "0")}
                     </button>
