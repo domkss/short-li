@@ -6,7 +6,7 @@ services:
     restart: always
     expose:
       - "6379"
-    command: redis-server --save 20 1 --loglevel warning --requirepass X9bwp8$j*$GE3@
+    command: redis-server --save 20 1 --loglevel warning --requirepass X9bwp8j*GE3@
     volumes:
       - redis:/data
     networks:
