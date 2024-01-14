@@ -12,6 +12,7 @@ import {
 } from "@/lib/client/uiHelperFunctions";
 import ConfirmationView from "@/components/ConfirmationView";
 import QRCodeSelectorView from "@/components/QRCodeSelectorView";
+import SessionMap from "@/components/session-world-map/SessionMap";
 
 type LinkListItem = {
   name: string;
@@ -75,10 +76,11 @@ export default function Dashboard() {
     let data = await result.json();
     if (data.success) {
       getUserLinks();
-      setActiveLinkListItemIndex(activeLinkListItemIndex - 1);
-      if (activeLinkListItemIndex - 1 < linkListFirstItemIndex)
-        setLinkListFirstItemIndex(linkListFirstItemIndex - LINK_ITEM_PER_PAGE);
-
+      if (activeLinkListItemIndex !== 0) {
+        setActiveLinkListItemIndex(activeLinkListItemIndex - 1);
+        if (activeLinkListItemIndex - 1 < linkListFirstItemIndex)
+          setLinkListFirstItemIndex(linkListFirstItemIndex - LINK_ITEM_PER_PAGE);
+      }
       setDeleteLinkViewActive(false);
     } else {
       //Todo: Show error if item deletion failed
@@ -109,8 +111,6 @@ export default function Dashboard() {
         setActiveLinkListItemIndex(0);
         setLinkListFirstItemIndex(0);
       }
-    } else {
-      //Todo: Handle error
     }
   }
 
@@ -327,8 +327,9 @@ export default function Dashboard() {
               </div>
 
               {/*Link Analytics Section */}
-              <div className="flex flex-row p-4">
-                <div className="flex flex-col justify-center">
+              <div className="flex flex-row p-4 max-md:flex-col">
+                {/*Redirect counter display*/}
+                <div className="mb-11 flex basis-1/3 flex-col items-center md:justify-center">
                   <div className="relative h-40 w-40">
                     <div className="text-center">
                       <span className="min-w-fit text-lg font-semibold text-gray-700">Total clicks</span>
@@ -369,6 +370,10 @@ export default function Dashboard() {
                       </text>
                     </svg>
                   </div>
+                </div>
+                {/*Redirect geo data display*/}
+                <div className="flex basis-2/3 flex-col justify-center">
+                  <SessionMap />
                 </div>
               </div>
             </div>
