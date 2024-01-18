@@ -5,52 +5,20 @@ import { cn } from "@/lib/client/uiHelperFunctions";
 import { useEffect, createRef, useState } from "react";
 
 export default function SessionMap() {
-  const [hoveredElementCountryName, setHoveredElementCountryName] = useState("");
-
-  const SVGCountryPath = (className: string, item: { d: string; name: string; id?: string }, key: number) => {
-    return (
-      <path
-        className={className}
-        key={key}
-        name={item.name}
-        id={item.id}
-        d={item.d}
-        onMouseEnter={() => {
-          setHoveredElementCountryName(item.name);
-        }}
-        onMouseLeave={() => {
-          if (hoveredElementCountryName === item.name) {
-            setHoveredElementCountryName("");
-          }
-        }}
-      />
-    );
-  };
-
   const mapSVGRef = createRef<SVGSVGElement>();
   const SVG_WIDTH = 2000;
   const SVG_HEIGHT_MULTIPLIER = 0.4285;
+
+  const [hoveredElementCountryName, setHoveredElementCountryName] = useState("");
+  const [popUpPosition, setPopUpPosition] = useState({ x: 0, y: 0 });
 
   const [viewBoxWidth, setViewBoxWidth] = useState(SVG_WIDTH);
   const viewBoxHeight = viewBoxWidth * SVG_HEIGHT_MULTIPLIER;
   const [viewBoxX, setViewBoxX] = useState(0);
   const [viewBoxY, setViewBoxY] = useState(0);
   const [scale, setScale] = useState(1);
-
   const [isPanning, setIsPanning] = useState(false);
   const [panningStartPoint, setPanningStartPoint] = useState({ x: 0, y: 0 });
-
-  const handleZoomButton = (zoomDirection: number) => {
-    const svgElement = mapSVGRef.current;
-    if (!svgElement) return;
-    const { width } = svgElement.getBoundingClientRect();
-
-    let newViewBoxWidth = viewBoxWidth + zoomDirection * 100;
-    if (newViewBoxWidth > 200 && newViewBoxWidth < SVG_WIDTH) {
-      setViewBoxWidth(newViewBoxWidth);
-      setScale(width / viewBoxWidth);
-    }
-  };
 
   useEffect(() => {
     const svgElement = mapSVGRef.current;
@@ -99,11 +67,14 @@ export default function SessionMap() {
         if (viewBoxX < minX) setViewBoxX(minX);
         if (viewBoxY > maxY) setViewBoxY((SVG_WIDTH * SVG_HEIGHT_MULTIPLIER) / 4);
         if (viewBoxY < minY) setViewBoxY(minY);
+      } else {
+        setPopUpPosition({ x: event.pageX, y: event.pageY });
       }
     };
 
     const handleMouseLeave = (event: MouseEvent) => {
       setIsPanning(false);
+      setHoveredElementCountryName("");
     };
 
     if (svgElement) {
@@ -122,6 +93,38 @@ export default function SessionMap() {
       };
     }
   });
+
+  const handleZoomButton = (zoomDirection: number) => {
+    const svgElement = mapSVGRef.current;
+    if (!svgElement) return;
+    const { width } = svgElement.getBoundingClientRect();
+
+    let newViewBoxWidth = viewBoxWidth + zoomDirection * 100;
+    if (newViewBoxWidth > 200 && newViewBoxWidth < SVG_WIDTH) {
+      setViewBoxWidth(newViewBoxWidth);
+      setScale(width / viewBoxWidth);
+    }
+  };
+
+  const SVGCountryPath = (className: string, item: { d: string; name: string; id?: string }, key: number) => {
+    return (
+      <path
+        className={className}
+        key={key}
+        name={item.name}
+        id={item.id}
+        d={item.d}
+        onMouseEnter={() => {
+          setHoveredElementCountryName(item.name);
+        }}
+        onMouseLeave={() => {
+          if (hoveredElementCountryName === item.name) {
+            setHoveredElementCountryName("");
+          }
+        }}
+      />
+    );
+  };
 
   return (
     <div className="mt-5 min-w-[50%] select-none rounded-md border-2 border-slate-300 p-3 shadow-md max-sm:min-w-[350px]">
@@ -145,6 +148,12 @@ export default function SessionMap() {
             SVGCountryPath(cn("stroke-gray-800 stroke-1 hover:cursor-pointer select-none"), item, key),
           )}
         </svg>
+        <div
+          className={cn("absolute", { hidden: hoveredElementCountryName === "" })}
+          style={{ left: popUpPosition.x - 50, top: popUpPosition.y - 50 }}
+        >
+          {hoveredElementCountryName}
+        </div>
       </div>
       <div className="flex flex-row">
         <div className="mx-1 flex h-9 w-9 flex-col justify-center  rounded-full border-[1px] border-gray-400 text-center align-middle">
