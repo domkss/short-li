@@ -1,8 +1,9 @@
 "use client";
 
-import { WorldSVGData } from "./world-svg-data";
+import { WorldSVGData, getCountryCode } from "./world-svg-data";
 import { cn } from "@/lib/client/uiHelperFunctions";
 import { useEffect, createRef, useState } from "react";
+import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 export default function SessionMap() {
   const mapSVGRef = createRef<SVGSVGElement>();
@@ -45,6 +46,7 @@ export default function SessionMap() {
     const handleMouseDown = (event: MouseEvent) => {
       setIsPanning(true);
       setPanningStartPoint({ x: event.pageX, y: event.pageY });
+      setHoveredElementCountryName("");
     };
     const handleMouseUp = (event: MouseEvent) => {
       setIsPanning(false);
@@ -74,7 +76,6 @@ export default function SessionMap() {
 
     const handleMouseLeave = (event: MouseEvent) => {
       setIsPanning(false);
-      setHoveredElementCountryName("");
     };
 
     if (svgElement) {
@@ -100,8 +101,11 @@ export default function SessionMap() {
     const { width } = svgElement.getBoundingClientRect();
 
     let newViewBoxWidth = viewBoxWidth + zoomDirection * 100;
+    let newViewBoxX = viewBoxX + viewBoxWidth / 2 - newViewBoxWidth / 2;
+
     if (newViewBoxWidth > 200 && newViewBoxWidth < SVG_WIDTH) {
       setViewBoxWidth(newViewBoxWidth);
+      setViewBoxX(newViewBoxX);
       setScale(width / viewBoxWidth);
     }
   };
@@ -115,7 +119,7 @@ export default function SessionMap() {
         id={item.id}
         d={item.d}
         onMouseEnter={() => {
-          setHoveredElementCountryName(item.name);
+          if (!isPanning) setHoveredElementCountryName(item.name);
         }}
         onMouseLeave={() => {
           if (hoveredElementCountryName === item.name) {
@@ -128,7 +132,7 @@ export default function SessionMap() {
 
   return (
     <div className="mt-5 min-w-[50%] select-none rounded-md border-2 border-slate-300 p-3 shadow-md max-sm:min-w-[350px]">
-      <div>
+      <div onMouseLeave={() => setHoveredElementCountryName("")}>
         <svg
           baseProfile="tiny"
           fill="#ececec"
@@ -144,15 +148,21 @@ export default function SessionMap() {
           {WorldSVGData.filter((element) => element.name !== hoveredElementCountryName).map((item, key) =>
             SVGCountryPath(cn("stroke-white stroke-1 hover:cursor-pointer select-none"), item, key),
           )}
-          {WorldSVGData.filter((element) => element.name === hoveredElementCountryName).map((item, key) =>
-            SVGCountryPath(cn("stroke-gray-800 stroke-1 hover:cursor-pointer select-none"), item, key),
-          )}
+          {WorldSVGData.filter((element) => element.name === hoveredElementCountryName).map((item, key) => {
+            return SVGCountryPath(cn("stroke-gray-800 stroke-1 hover:cursor-pointer select-none"), item, key);
+          })}
         </svg>
         <div
-          className={cn("absolute", { hidden: hoveredElementCountryName === "" })}
-          style={{ left: popUpPosition.x - 50, top: popUpPosition.y - 50 }}
+          className={cn("absolute flex flex-col rounded-md border-[1px] bg-white p-2 shadow-sm", {
+            hidden: hoveredElementCountryName === "",
+          })}
+          style={{ left: popUpPosition.x - 50, top: popUpPosition.y - 80 }}
         >
-          {hoveredElementCountryName}
+          <div className="flex flex-row">
+            <span className={cn("fi mr-2", `fi-${getCountryCode(hoveredElementCountryName)}`)} />
+            <span className="font-bold">{hoveredElementCountryName}</span>
+          </div>
+          <span className="font-light">Clicks: 12312</span>
         </div>
       </div>
       <div className="flex flex-row">
