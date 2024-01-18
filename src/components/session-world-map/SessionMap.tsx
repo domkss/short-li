@@ -1,7 +1,7 @@
 "use client";
 
 import { WorldSVGData } from "./world-svg-data";
-import { cn, debounce } from "@/lib/client/uiHelperFunctions";
+import { cn } from "@/lib/client/uiHelperFunctions";
 import { useEffect, createRef, useState } from "react";
 
 export default function SessionMap() {
@@ -82,15 +82,15 @@ export default function SessionMap() {
       setIsPanning(false);
     };
     const handleMouseMove = (event: MouseEvent) => {
-      const minY = -100;
-      const minX = -100;
-      const maxY = (SVG_WIDTH * SVG_HEIGHT_MULTIPLIER) / 4;
-      const maxX = SVG_WIDTH - 300;
+      const minY = 0 - viewBoxHeight / 3;
+      const minX = 0 - viewBoxWidth / 3;
+      const maxY = SVG_WIDTH * SVG_HEIGHT_MULTIPLIER - viewBoxHeight / 3;
+      const maxX = SVG_WIDTH - viewBoxWidth / 3;
 
       if (isPanning) {
         let panningEndPoint = { x: event.pageX, y: event.pageY };
-        var dx = (panningStartPoint.x - panningEndPoint.x) / 30 / scale;
-        var dy = (panningStartPoint.y - panningEndPoint.y) / 30 / scale;
+        var dx = (panningStartPoint.x - panningEndPoint.x) / 75 / (scale / 2);
+        var dy = (panningStartPoint.y - panningEndPoint.y) / 75 / (scale / 2);
 
         if (viewBoxX + dx > minX && viewBoxX + dx < maxX) setViewBoxX(viewBoxX + dx);
         if (viewBoxY + dy > minY && viewBoxY + dy < maxY) setViewBoxY(viewBoxY + dy);
