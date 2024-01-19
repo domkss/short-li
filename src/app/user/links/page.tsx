@@ -373,7 +373,14 @@ export default function Dashboard() {
                 </div>
                 {/*Redirect geo data display*/}
                 <div className="flex basis-2/3 flex-col justify-center">
-                  <SessionMap />
+                  <SessionMap
+                    countryClickCountMap={
+                      new Map([
+                        ["HU", 10],
+                        ["US", -10],
+                      ])
+                    }
+                  />
                 </div>
               </div>
             </div>

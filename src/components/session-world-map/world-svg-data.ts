@@ -1926,8 +1926,8 @@ const countryCodes = [
   { Code: "BJ", Name: "Benin" },
   { Code: "BM", Name: "Bermuda" },
   { Code: "BT", Name: "Bhutan" },
-  { Code: "BO", Name: "Bolivia, Plurinational State of" },
-  { Code: "BQ", Name: "Bonaire, Sint Eustatius and Saba" },
+  { Code: "BO", Name: "Bolivia" },
+  { Code: "BQ", Name: "Bonaire" },
   { Code: "BA", Name: "Bosnia and Herzegovina" },
   { Code: "BW", Name: "Botswana" },
   { Code: "BV", Name: "Bouvet Island" },
@@ -2017,6 +2017,7 @@ const countryCodes = [
   { Code: "KZ", Name: "Kazakhstan" },
   { Code: "KE", Name: "Kenya" },
   { Code: "KI", Name: "Kiribati" },
+  { Code: "XK", Name: "Kosovo" },
   { Code: "KP", Name: "Dem. Rep. Korea" },
   { Code: "KR", Name: "Republic of Korea" },
   { Code: "KW", Name: "Kuwait" },
@@ -2031,7 +2032,7 @@ const countryCodes = [
   { Code: "LT", Name: "Lithuania" },
   { Code: "LU", Name: "Luxembourg" },
   { Code: "MO", Name: "Macao" },
-  { Code: "MK", Name: "Macedonia, the Former Yugoslav Republic of" },
+  { Code: "MK", Name: "Macedonia" },
   { Code: "MG", Name: "Madagascar" },
   { Code: "MW", Name: "Malawi" },
   { Code: "MY", Name: "Malaysia" },
@@ -2044,8 +2045,8 @@ const countryCodes = [
   { Code: "MU", Name: "Mauritius" },
   { Code: "YT", Name: "Mayotte" },
   { Code: "MX", Name: "Mexico" },
-  { Code: "FM", Name: "Micronesia, Federated States of" },
-  { Code: "MD", Name: "Moldova, Republic of" },
+  { Code: "FM", Name: "Micronesia" },
+  { Code: "MD", Name: "Moldova" },
   { Code: "MC", Name: "Monaco" },
   { Code: "MN", Name: "Mongolia" },
   { Code: "ME", Name: "Montenegro" },
@@ -2152,5 +2153,5 @@ const countryCodes = [
 ];
 
 export const getCountryCode = (countryName: string) => {
-  return countryCodes.find((item) => item.Name === countryName)?.Code.toLowerCase() || null;
+  return countryCodes.find((item) => item.Name === countryName)?.Code || "";
 };
