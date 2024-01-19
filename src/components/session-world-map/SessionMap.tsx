@@ -5,7 +5,11 @@ import { cn } from "@/lib/client/uiHelperFunctions";
 import { useEffect, createRef, useState } from "react";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 
-export default function SessionMap() {
+type SessionMapProps = {
+  countryClickCountMap?: Map<string, number>;
+};
+
+export default function SessionMap(props: SessionMapProps) {
   const mapSVGRef = createRef<SVGSVGElement>();
   const SVG_WIDTH = 2000;
   const SVG_HEIGHT_MULTIPLIER = 0.4285;
@@ -159,10 +163,12 @@ export default function SessionMap() {
           style={{ left: popUpPosition.x - 50, top: popUpPosition.y - 80 }}
         >
           <div className="flex flex-row">
-            <span className={cn("fi mr-2", `fi-${getCountryCode(hoveredElementCountryName)}`)} />
+            <span className={cn("fi mr-2", `fi-${getCountryCode(hoveredElementCountryName).toLowerCase()}`)} />
             <span className="font-bold">{hoveredElementCountryName}</span>
           </div>
-          <span className="font-light">Clicks: 12312</span>
+          <span className="font-light">
+            Clicks: {props.countryClickCountMap?.get(getCountryCode(hoveredElementCountryName)) || "0"}
+          </span>
         </div>
       </div>
       <div className="flex flex-row">
