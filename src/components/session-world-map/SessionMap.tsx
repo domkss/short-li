@@ -1,12 +1,12 @@
 "use client";
 
-import { WorldSVGData, getCountryCode } from "./world-svg-data";
+import { WorldSVGData, getCountryCode, CountryCodeType } from "./world-svg-data";
 import { cn } from "@/lib/client/uiHelperFunctions";
 import { useEffect, createRef, useState } from "react";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 type SessionMapProps = {
-  countryClickCountMap?: Map<string, number>;
+  countryClickCountMap?: Map<CountryCodeType, number>;
 };
 
 export default function SessionMap(props: SessionMapProps) {
@@ -114,10 +114,35 @@ export default function SessionMap(props: SessionMapProps) {
     }
   };
 
+  const getCountryFillColor = (countryCode: CountryCodeType) => {
+    const clickCount = parseInt(props.countryClickCountMap?.get(countryCode)?.toString() || "0");
+
+    let bgColorClassName = "";
+    switch (true) {
+      case clickCount > 0 && clickCount <= 50:
+        bgColorClassName = "fill-sky-50";
+        break;
+      case clickCount > 50 && clickCount <= 500:
+        bgColorClassName = "fill-sky-100";
+        break;
+      case clickCount > 500 && clickCount <= 2000:
+        bgColorClassName = "fill-sky-200";
+        break;
+      case clickCount > 2000 && clickCount <= 10000:
+        bgColorClassName = "fill-sky-300";
+        break;
+      case clickCount > 10000:
+        bgColorClassName = "fill-sky-400";
+        break;
+    }
+
+    return bgColorClassName;
+  };
+
   const SVGCountryPath = (className: string, item: { d: string; name: string; id?: string }, key: number) => {
     return (
       <path
-        className={className}
+        className={cn(className, getCountryFillColor(getCountryCode(item.name)))}
         key={key}
         name={item.name}
         id={item.id}
@@ -150,10 +175,10 @@ export default function SessionMap(props: SessionMapProps) {
           ref={mapSVGRef}
         >
           {WorldSVGData.filter((element) => element.name !== hoveredElementCountryName).map((item, key) =>
-            SVGCountryPath(cn("stroke-white stroke-1 hover:cursor-pointer select-none"), item, key),
+            SVGCountryPath(cn("stroke-white stroke-[0.5] hover:cursor-pointer select-none"), item, key),
           )}
           {WorldSVGData.filter((element) => element.name === hoveredElementCountryName).map((item, key) => {
-            return SVGCountryPath(cn("stroke-gray-800 stroke-1 hover:cursor-pointer select-none"), item, key);
+            return SVGCountryPath(cn("stroke-gray-700 stroke-[0.5] hover:cursor-pointer select-none"), item, key);
           })}
         </svg>
         <div
