@@ -26,6 +26,261 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+export type CountryCodeType =
+  | ""
+  | "AF"
+  | "IC"
+  | "NL"
+  | "AX"
+  | "AL"
+  | "DZ"
+  | "AS"
+  | "AD"
+  | "AO"
+  | "AI"
+  | "AQ"
+  | "AG"
+  | "AR"
+  | "AM"
+  | "AW"
+  | "AU"
+  | "AT"
+  | "AZ"
+  | "BS"
+  | "BH"
+  | "BD"
+  | "BB"
+  | "BY"
+  | "BE"
+  | "BZ"
+  | "BJ"
+  | "BM"
+  | "BT"
+  | "BO"
+  | "BQ"
+  | "BA"
+  | "BW"
+  | "BV"
+  | "BR"
+  | "IO"
+  | "BN"
+  | "BG"
+  | "BF"
+  | "BI"
+  | "KH"
+  | "CM"
+  | "CA"
+  | "CV"
+  | "KY"
+  | "CF"
+  | "TD"
+  | "CL"
+  | "CN"
+  | "CX"
+  | "CC"
+  | "CO"
+  | "KM"
+  | "CG"
+  | "CD"
+  | "CK"
+  | "CR"
+  | "CI"
+  | "HR"
+  | "CU"
+  | "CW"
+  | "CY"
+  | "CZ"
+  | "DK"
+  | "DJ"
+  | "DM"
+  | "DO"
+  | "EC"
+  | "EG"
+  | "SV"
+  | "GQ"
+  | "ER"
+  | "EE"
+  | "ET"
+  | "FK"
+  | "FO"
+  | "FJ"
+  | "FI"
+  | "FR"
+  | "GF"
+  | "PF"
+  | "TF"
+  | "GA"
+  | "GM"
+  | "GE"
+  | "DE"
+  | "GH"
+  | "GI"
+  | "GR"
+  | "GL"
+  | "GD"
+  | "GP"
+  | "GU"
+  | "GT"
+  | "GG"
+  | "GN"
+  | "GW"
+  | "GY"
+  | "HT"
+  | "HM"
+  | "VA"
+  | "HN"
+  | "HK"
+  | "HU"
+  | "IS"
+  | "IN"
+  | "ID"
+  | "IR"
+  | "IQ"
+  | "IE"
+  | "IM"
+  | "IL"
+  | "IT"
+  | "JM"
+  | "JP"
+  | "JE"
+  | "JO"
+  | "KZ"
+  | "KE"
+  | "KI"
+  | "XK"
+  | "KP"
+  | "KR"
+  | "KW"
+  | "KG"
+  | "LA"
+  | "LV"
+  | "LB"
+  | "LS"
+  | "LR"
+  | "LY"
+  | "LI"
+  | "LT"
+  | "LU"
+  | "MO"
+  | "MK"
+  | "MG"
+  | "MW"
+  | "MY"
+  | "MV"
+  | "ML"
+  | "MT"
+  | "MH"
+  | "MQ"
+  | "MR"
+  | "MU"
+  | "YT"
+  | "MX"
+  | "FM"
+  | "MD"
+  | "MC"
+  | "MN"
+  | "ME"
+  | "MS"
+  | "MA"
+  | "MZ"
+  | "MM"
+  | "NA"
+  | "NR"
+  | "NP"
+  | "NL"
+  | "NC"
+  | "NZ"
+  | "NI"
+  | "NE"
+  | "NG"
+  | "NU"
+  | "NF"
+  | "MP"
+  | "NO"
+  | "OM"
+  | "PK"
+  | "PW"
+  | "PS"
+  | "PA"
+  | "PG"
+  | "PY"
+  | "PE"
+  | "PH"
+  | "PN"
+  | "PL"
+  | "PT"
+  | "PR"
+  | "QA"
+  | "RE"
+  | "RO"
+  | "RU"
+  | "RW"
+  | "BL"
+  | "SH"
+  | "KN"
+  | "LC"
+  | "MF"
+  | "PM"
+  | "VC"
+  | "WS"
+  | "SM"
+  | "ST"
+  | "SA"
+  | "SN"
+  | "RS"
+  | "SC"
+  | "SL"
+  | "SG"
+  | "SX"
+  | "SK"
+  | "SI"
+  | "SB"
+  | "SO"
+  | "ZA"
+  | "GS"
+  | "SS"
+  | "ES"
+  | "LK"
+  | "SD"
+  | "SR"
+  | "SJ"
+  | "SZ"
+  | "SE"
+  | "CH"
+  | "SY"
+  | "TW"
+  | "TJ"
+  | "TZ"
+  | "TH"
+  | "TL"
+  | "TG"
+  | "TK"
+  | "TO"
+  | "TT"
+  | "TN"
+  | "TR"
+  | "TM"
+  | "TC"
+  | "TV"
+  | "UG"
+  | "UA"
+  | "AE"
+  | "GB"
+  | "US"
+  | "UM"
+  | "UY"
+  | "UZ"
+  | "VU"
+  | "VE"
+  | "VN"
+  | "VG"
+  | "VI"
+  | "WF"
+  | "EH"
+  | "YE"
+  | "ZM"
+  | "ZW";
+
 export const WorldSVGData = [
   {
     d: "M1383 261.6l1.5 1.8-2.9 0.8-2.4 1.1-5.9 0.8-5.3 1.3-2.4 2.8 1.9 2.7 1.4 3.2-2 2.7 0.8 2.5-0.9 2.3-5.2-0.2 3.1 4.2-3.1 1.7-1.4 3.8 1.1 3.9-1.8 1.8-2.1-0.6-4 0.9-0.2 1.7-4.1 0-2.3 3.7 0.8 5.4-6.6 2.7-3.9-0.6-0.9 1.4-3.4-0.8-5.3 1-9.6-3.3 3.9-5.8-1.1-4.1-4.3-1.1-1.2-4.1-2.7-5.1 1.6-3.5-2.5-1 0.5-4.7 0.6-8 5.9 2.5 3.9-0.9 0.4-2.9 4-0.9 2.6-2-0.2-5.1 4.2-1.3 0.3-2.2 2.9 1.7 1.6 0.2 3 0 4.3 1.4 1.8 0.7 3.4-2 2.1 1.2 0.9-2.9 3.2 0.1 0.6-0.9-0.2-2.6 1.7-2.2 3.3 1.4-0.1 2 1.7 0.3 0.9 5.4 2.7 2.1 1.5-1.4 2.2-0.6 2.5-2.9 3.8 0.5 5.4 0z",
@@ -1897,10 +2152,11 @@ export const WorldSVGData = [
   },
 ];
 
-const countryCodes = [
+const countryCodes: { Code: CountryCodeType; Name: string }[] = [
   { Code: "AF", Name: "Afghanistan" },
   { Code: "IC", Name: "Canary Islands (Spain)" },
   { Code: "NL", Name: "St. Eustatius (Netherlands)" },
+  { Code: "NL", Name: "Saba (Netherlands)" },
   { Code: "AX", Name: "\u00c5land Islands" },
   { Code: "AL", Name: "Albania" },
   { Code: "DZ", Name: "Algeria" },
@@ -1971,8 +2227,8 @@ const countryCodes = [
   { Code: "ER", Name: "Eritrea" },
   { Code: "EE", Name: "Estonia" },
   { Code: "ET", Name: "Ethiopia" },
-  { Code: "FK", Name: "Falkland Islands (Malvinas)" },
-  { Code: "FO", Name: "Faroe Islands" },
+  { Code: "FK", Name: "Falkland Islands" },
+  { Code: "FO", Name: "Faeroe Islands" },
   { Code: "FJ", Name: "Fiji" },
   { Code: "FI", Name: "Finland" },
   { Code: "FR", Name: "France" },
@@ -2045,7 +2301,7 @@ const countryCodes = [
   { Code: "MU", Name: "Mauritius" },
   { Code: "YT", Name: "Mayotte" },
   { Code: "MX", Name: "Mexico" },
-  { Code: "FM", Name: "Micronesia" },
+  { Code: "FM", Name: "Federated States of Micronesia" },
   { Code: "MD", Name: "Moldova" },
   { Code: "MC", Name: "Monaco" },
   { Code: "MN", Name: "Mongolia" },
@@ -2070,7 +2326,7 @@ const countryCodes = [
   { Code: "OM", Name: "Oman" },
   { Code: "PK", Name: "Pakistan" },
   { Code: "PW", Name: "Palau" },
-  { Code: "PS", Name: "Palestine, State of" },
+  { Code: "PS", Name: "Palestine" },
   { Code: "PA", Name: "Panama" },
   { Code: "PG", Name: "Papua New Guinea" },
   { Code: "PY", Name: "Paraguay" },
@@ -2085,23 +2341,23 @@ const countryCodes = [
   { Code: "RO", Name: "Romania" },
   { Code: "RU", Name: "Russian Federation" },
   { Code: "RW", Name: "Rwanda" },
-  { Code: "BL", Name: "Saint Barth\u00e9lemy" },
+  { Code: "BL", Name: "Saint-Barthélemy" },
   { Code: "SH", Name: "Saint Helena, Ascension and Tristan da Cunha" },
   { Code: "KN", Name: "Saint Kitts and Nevis" },
   { Code: "LC", Name: "Saint Lucia" },
-  { Code: "MF", Name: "Saint Martin (French part)" },
+  { Code: "MF", Name: "Saint-Martin" },
   { Code: "PM", Name: "Saint Pierre and Miquelon" },
   { Code: "VC", Name: "Saint Vincent and the Grenadines" },
   { Code: "WS", Name: "Samoa" },
   { Code: "SM", Name: "San Marino" },
-  { Code: "ST", Name: "Sao Tome and Principe" },
+  { Code: "ST", Name: "São Tomé and Principe" },
   { Code: "SA", Name: "Saudi Arabia" },
   { Code: "SN", Name: "Senegal" },
   { Code: "RS", Name: "Serbia" },
   { Code: "SC", Name: "Seychelles" },
   { Code: "SL", Name: "Sierra Leone" },
   { Code: "SG", Name: "Singapore" },
-  { Code: "SX", Name: "Sint Maarten (Dutch part)" },
+  { Code: "SX", Name: "Sint Maarten" },
   { Code: "SK", Name: "Slovakia" },
   { Code: "SI", Name: "Slovenia" },
   { Code: "SB", Name: "Solomon Islands" },
@@ -2143,8 +2399,8 @@ const countryCodes = [
   { Code: "VU", Name: "Vanuatu" },
   { Code: "VE", Name: "Venezuela" },
   { Code: "VN", Name: "Vietnam" },
-  { Code: "VG", Name: "Virgin Islands, British" },
-  { Code: "VI", Name: "Virgin Islands, U.S." },
+  { Code: "VG", Name: "British Virgin Islands" },
+  { Code: "VI", Name: "United States Virgin Islands" },
   { Code: "WF", Name: "Wallis and Futuna" },
   { Code: "EH", Name: "Western Sahara" },
   { Code: "YE", Name: "Yemen" },

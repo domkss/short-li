@@ -376,8 +376,8 @@ export default function Dashboard() {
                   <SessionMap
                     countryClickCountMap={
                       new Map([
-                        ["HU", 10],
-                        ["US", -10],
+                        ["HU", 100],
+                        ["US", 10000],
                       ])
                     }
                   />
