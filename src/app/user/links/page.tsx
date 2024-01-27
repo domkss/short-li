@@ -13,19 +13,13 @@ import {
 import ConfirmationView from "@/components/ConfirmationView";
 import QRCodeSelectorView from "@/components/QRCodeSelectorView";
 import SessionMap from "@/components/session-world-map/SessionMap";
-
-type LinkListItem = {
-  name: string;
-  target_url: string;
-  shortURL: string;
-  redirect_count: string;
-};
+import { LinkListItemType } from "@/lib/common/Types";
 
 export default function Dashboard() {
   const LINK_ITEM_PER_PAGE = 9;
   const [linkListFirstItemIndex, setLinkListFirstItemIndex] = useState(0);
-  const [originalLinkList, setOriginalLinkList] = useState<LinkListItem[]>([]);
-  const [linkListItems, setLinkListItems] = useState<LinkListItem[]>([]);
+  const [originalLinkList, setOriginalLinkList] = useState<LinkListItemType[]>([]);
+  const [linkListItems, setLinkListItems] = useState<LinkListItemType[]>([]);
   const [deleteLinkViewActive, setDeleteLinkViewActive] = useState(false);
   const [qrCodeViewActive, setQrCodeViewActive] = useState(false);
 
@@ -57,9 +51,9 @@ export default function Dashboard() {
   async function getUserLinks() {
     let response = await fetch("/api/link");
     let data = await response.json();
-    let linkList: [{ name: string | null; shortURL: string | null }] = data.linkDataList;
+    let linkList: LinkListItemType[] = data.linkDataList;
 
-    if (data.success && linkList) {
+    if (data.success && linkList[0].shortURL) {
       setOriginalLinkList([]);
       setLinkListItems(data.linkDataList);
     }

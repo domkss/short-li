@@ -6,6 +6,7 @@ import { DefaultSession } from "next-auth";
 import { RedisClientType } from "redis";
 import GeoLocationService from "./GeoLocationService";
 import { makeid } from "./serverHelperFunctions";
+import { LinkListItemType, Promisify } from "../common/Types";
 
 type URLCreatorOptions = {
   session: DefaultSession | null;
@@ -72,7 +73,7 @@ export async function getAllUserLinks(session: DefaultSession) {
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   let userShortURLs = await redisClient.SMEMBERS(REDIS_NAME_PATTERNS.USER_LINKS + session.user?.email);
-  let userLinkList: { [key: string]: Promise<string | undefined> }[] = [];
+  let userLinkList: Promisify<LinkListItemType>[] = [];
 
   for (const shortURL of userShortURLs) {
     let name = redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.NAME);
@@ -81,24 +82,27 @@ export async function getAllUserLinks(session: DefaultSession) {
       REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL,
       REDIS_LINK_FIELDS.REDIRECT_COUNTER,
     );
+    let click_by_country = redisClient.ZRANGE_WITHSCORES(REDIS_NAME_PATTERNS.STATISTIC_COUNTRY_CODE + shortURL, 0, -1);
+
     userLinkList.push({
       shortURL: Promise.resolve(formatShortLink(shortURL)),
       name: name,
       target_url: target_url,
       redirect_count: redirect_count,
+      click_by_country: click_by_country,
     });
   }
 
-  const arrayOfPromises: Promise<{ [key: string]: string | undefined }>[] = userLinkList.map((obj) =>
+  const arrayOfPromises: Promise<{ [key: string]: any }>[] = userLinkList.map((obj) =>
     Promise.all(Object.values(obj)).then((resolvedValues: any[]) => {
-      const resolvedObject: { [key: string]: string | undefined } = {};
+      const resolvedObject: { [key: string]: any } = {};
       Object.keys(obj).forEach((key, index) => {
         resolvedObject[key] = resolvedValues[index];
       });
       return resolvedObject;
     }),
   );
-  return await Promise.all(arrayOfPromises);
+  return (await Promise.all(arrayOfPromises)) as LinkListItemType[];
 }
 
 export async function deleteShortURL(shortURL: string, session: DefaultSession) {
