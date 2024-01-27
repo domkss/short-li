@@ -115,28 +115,31 @@ export default function SessionMap(props: SessionMapProps) {
   };
 
   const getCountryFillColor = (countryCode: CountryCodeType) => {
-    const clickCount = parseInt(props.countryClickCountMap?.get(countryCode)?.toString() || "0");
+    const clickCount = props.countryClickCountMap?.get(countryCode) || 0;
 
-    let bgColorClassName = "";
+    let fillColorClassName = "";
     switch (true) {
-      case clickCount > 0 && clickCount <= 50:
-        bgColorClassName = "fill-sky-50";
+      case clickCount < 1:
+        fillColorClassName = "";
         break;
-      case clickCount > 50 && clickCount <= 500:
-        bgColorClassName = "fill-sky-100";
+      case clickCount <= 50:
+        fillColorClassName = "fill-sky-50";
         break;
-      case clickCount > 500 && clickCount <= 2000:
-        bgColorClassName = "fill-sky-200";
+      case clickCount <= 500:
+        fillColorClassName = "fill-sky-100";
         break;
-      case clickCount > 2000 && clickCount <= 10000:
-        bgColorClassName = "fill-sky-300";
+      case clickCount <= 2000:
+        fillColorClassName = "fill-sky-200";
+        break;
+      case clickCount <= 10000:
+        fillColorClassName = "fill-sky-300";
         break;
       case clickCount > 10000:
-        bgColorClassName = "fill-sky-400";
+        fillColorClassName = "fill-sky-400";
         break;
     }
 
-    return bgColorClassName;
+    return fillColorClassName;
   };
 
   const SVGCountryPath = (className: string, item: { d: string; name: string; id?: string }, key: number) => {
