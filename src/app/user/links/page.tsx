@@ -14,6 +14,7 @@ import ConfirmationView from "@/components/ConfirmationView";
 import QRCodeSelectorView from "@/components/QRCodeSelectorView";
 import SessionMap from "@/components/session-world-map/SessionMap";
 import { LinkListItemType } from "@/lib/common/Types";
+import { CountryCodeType } from "@/components/session-world-map/world-svg-data";
 
 export default function Dashboard() {
   const LINK_ITEM_PER_PAGE = 9;
@@ -369,10 +370,11 @@ export default function Dashboard() {
                 <div className="flex basis-2/3 flex-col justify-center">
                   <SessionMap
                     countryClickCountMap={
-                      new Map([
-                        ["HU", 100],
-                        ["US", 10000],
-                      ])
+                      new Map(
+                        linkListItems
+                          .at(linkListFirstItemIndex)
+                          ?.click_by_country.map((obj) => [obj.value as CountryCodeType, obj.score]),
+                      )
                     }
                   />
                 </div>
