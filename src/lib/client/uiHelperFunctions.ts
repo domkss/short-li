@@ -68,3 +68,26 @@ export function progressUntilNextPowerOfTen(input: number | undefined) {
   let precentage = (input / 10 ** (Math.floor(Math.log10(input)) + 1)) * 100;
   return precentage;
 }
+
+export function countryBgColor(value: number): string {
+  switch (true) {
+    case value < 50:
+      return "fill-sky-50";
+      break;
+    case value < 100:
+      return "fill-sky-100";
+      break;
+    case value < 500:
+      return "fill-sky-200";
+      break;
+    case value < 1000:
+      return "fill-sky-300";
+      break;
+    case value > 1000:
+      return "fill-sky-400";
+      break;
+    default:
+      return "";
+      break;
+  }
+}
