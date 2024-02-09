@@ -9,12 +9,12 @@ import {
   generateVisiblePaginationButtonKeys,
   debounce,
   nFormatter,
+  countryBgColor,
 } from "@/lib/client/uiHelperFunctions";
 import ConfirmationView from "@/components/ConfirmationView";
 import QRCodeSelectorView from "@/components/QRCodeSelectorView";
-import SessionMap from "@/components/session-world-map/SessionMap";
+import { SessionMap, CountryCodeType } from "session-country-map";
 import { LinkListItemType } from "@/lib/common/Types";
-import { CountryCodeType } from "@/components/session-world-map/world-svg-data";
 
 export default function Dashboard() {
   const LINK_ITEM_PER_PAGE = 9;
@@ -369,11 +369,15 @@ export default function Dashboard() {
                 {/*Redirect geo data display*/}
                 <div className="flex basis-2/3 flex-col justify-center">
                   <SessionMap
-                    countryClickCountMap={
+                    valueTytle="Clicks"
+                    valueByCountryMap={
                       new Map(
                         linkListItems
                           .at(linkListFirstItemIndex)
-                          ?.click_by_country.map((obj) => [obj.value as CountryCodeType, obj.score]),
+                          ?.click_by_country.map((obj) => [
+                            obj.value as CountryCodeType,
+                            { value: obj.score, className: countryBgColor(obj.score) },
+                          ]),
                       )
                     }
                   />
