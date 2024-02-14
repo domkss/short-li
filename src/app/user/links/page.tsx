@@ -54,7 +54,7 @@ export default function Dashboard() {
     let data = await response.json();
     let linkList: LinkListItemType[] = data.linkDataList;
 
-    if (data.success && linkList[0].shortURL) {
+    if (data.success && linkList[0]?.shortURL) {
       setOriginalLinkList([]);
       setLinkListItems(data.linkDataList);
     }
