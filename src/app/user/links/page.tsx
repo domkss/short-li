@@ -15,6 +15,7 @@ import ConfirmationView from "@/components/ConfirmationView";
 import QRCodeSelectorView from "@/components/QRCodeSelectorView";
 import { SessionMap, CountryCodeType } from "session-country-map";
 import { LinkListItemType } from "@/lib/common/Types";
+import copyToClypboard from "copy-to-clipboard";
 
 export default function Dashboard() {
   const LINK_ITEM_PER_PAGE = 9;
@@ -124,9 +125,9 @@ export default function Dashboard() {
       {contentLoadingFinished ? (
         <div className="flex flex-row max-lg:flex-col">
           {/*Link List */}
-          <div className="min-w-0 basis-1/3">
+          <div className="flex min-h-full min-w-0 basis-1/3 flex-col">
             {/*Link list header */}
-            <div className="flex flex-col rounded-b-lg border-b-2 border-blue-200 bg-indigo-100 p-3 text-center shadow-md">
+            <div className="flex-0 flex flex-col rounded-b-lg border-b-2 border-blue-200 bg-indigo-100 p-3 text-center shadow-md">
               <div className="flex flex-row justify-between">
                 <div className="flex flex-row">
                   <Image className="m-3" src="/icons/links_undraw.svg" width={38} height={38} alt="My Links icon" />
@@ -153,18 +154,15 @@ export default function Dashboard() {
             </div>
 
             {/*Link list */}
-            <ul className="mt-1">
+            <ul className="mt-1 flex-grow basis-full">
               {linkListItems.map((item, key) => {
-                const listItem = (key: number, invisibleFillingItem: boolean) => {
-                  const lastPageDisplayed = linkListFirstItemIndex + LINK_ITEM_PER_PAGE > linkListItems.length;
+                const listItem = (key: number) => {
                   return (
                     <li
                       className={
-                        invisibleFillingItem && lastPageDisplayed
-                          ? "invisible"
-                          : linkListFirstItemIndex <= key && linkListFirstItemIndex + LINK_ITEM_PER_PAGE > key
-                            ? ""
-                            : "hidden"
+                        linkListFirstItemIndex <= key && linkListFirstItemIndex + LINK_ITEM_PER_PAGE > key
+                          ? ""
+                          : "hidden"
                       }
                       key={key}
                     >
@@ -189,23 +187,12 @@ export default function Dashboard() {
                     </li>
                   );
                 };
-
-                /*If we are on the last page create invisible copies of the last item 
-               util it filles the desired number of display items,
-               to keep the pagination bar in place withotu abosolute positioning*/
-                const isLastItem = key === linkListItems.length - 1;
-                const isLastPageIncomplete = linkListItems.length % LINK_ITEM_PER_PAGE !== 0;
-                if (isLastItem && isLastPageIncomplete) {
-                  const invisibleItemCount = LINK_ITEM_PER_PAGE - (linkListItems.length % LINK_ITEM_PER_PAGE) + 1;
-                  return Array(invisibleItemCount)
-                    .fill(null)
-                    .map((item, k) => listItem(key + k, k !== 0));
-                } else return listItem(key, false);
+                return listItem(key);
               })}
             </ul>
 
             {/*Link pagination bar */}
-            <div className="mb-8 flex flex-row justify-center">
+            <div className="flex-0 mt-2 flex flex-row justify-center sm:mb-8">
               <ul className="flex flex-1 flex-row flex-wrap items-center justify-center border-b-2 shadow-sm">
                 {linkListPageButtonKeys.map((key) => (
                   <li key={key}>
@@ -291,13 +278,28 @@ export default function Dashboard() {
                 {/*Short and Original Link data section*/}
                 <div className="flex flex-col p-4">
                   <div className="flex flex-row max-sm:flex-col">
-                    <div className="my-2 mr-4 flex flex-col max-sm:my-1">
+                    <div className="my-3 mr-4 flex flex-col max-sm:my-1">
                       <span className="text-lg font-semibold text-gray-700">Short link:</span>
                       <div className="flex flex-row items-center">
-                        <span className="ml-1">{linkListItems.at(activeLinkListItemIndex)?.shortURL}</span>
+                        <div
+                          className="ml-1 cursor-pointer"
+                          onClick={() => {
+                            let content = linkListItems.at(activeLinkListItemIndex)?.shortURL?.trim();
+                            if (content) copyToClypboard(content);
+                          }}
+                        >
+                          {linkListItems.at(activeLinkListItemIndex)?.shortURL}
+                          <Image
+                            className="ml-1 inline-block w-6"
+                            src="/icons/copy_blue.svg"
+                            width={32}
+                            height={32}
+                            alt="copy-icon"
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="mx-3 flex flex-row max-sm:mx-0">
+                    <div className="mx-3 my-2 flex flex-row justify-center max-sm:mx-0">
                       <button
                         className="m-2 inline-flex items-center rounded-2xl bg-blue-500 p-2 text-white"
                         onClick={() => setQrCodeViewActive(true)}

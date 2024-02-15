@@ -190,7 +190,7 @@ export default function LoginPage() {
           </h2>
           <div
             className={cn(
-              "mx-4 mt-2 flex flex-row justify-stretch rounded-md  border-[1px] border-red-300 bg-red-200 py-2 align-middle",
+              "mx-4 mt-2 flex flex-row justify-stretch rounded-md border border-red-300 bg-red-200 py-2 align-middle",
               { invisible: errorText.length === 0 },
             )}
           >
