@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${inter.className} min-h-screen antialiased`}>
         <AuthProvider>
-          <div className="mx-auto max-w-[2560px]">
+          <div className="mx-auto flex min-h-screen max-w-[2560px] flex-col">
             <NavBar />
             {children}
           </div>
