@@ -11,7 +11,7 @@ export default function CustomBioDashboard() {
     reactRouter.replace("/login");
 
   return (
-    <div className="flex min-w-full flex-col">
+    <main className="flex min-w-full flex-col">
       <div className="flex flex-col p-4">
         <div className="flex flex-col items-center">
           <button className="rounded-xl bg-purple-500 p-4 text-white">sli.ink/bioLink</button>
@@ -30,6 +30,6 @@ export default function CustomBioDashboard() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

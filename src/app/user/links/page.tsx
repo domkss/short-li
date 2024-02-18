@@ -16,6 +16,7 @@ import QRCodeSelectorView from "@/components/QRCodeSelectorView";
 import { SessionMap, CountryCodeType } from "session-country-map";
 import { LinkListItemType } from "@/lib/common/Types";
 import copyToClypboard from "copy-to-clipboard";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Dashboard() {
   const LINK_ITEM_PER_PAGE = 10;
@@ -121,7 +122,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="flex flex-grow flex-col">
+    <main className="flex flex-grow flex-col">
       {contentLoadingFinished ? (
         <div className="flex flex-grow flex-row max-lg:flex-col">
           {/*Link List */}
@@ -434,8 +435,10 @@ export default function Dashboard() {
           </div>
         </div>
       ) : (
-        <div>{/*Todo: Loading animation */}</div>
+        <div className="my-auto">
+          <LoadingSpinner />
+        </div>
       )}
-    </div>
+    </main>
   );
 }
