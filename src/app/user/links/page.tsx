@@ -18,7 +18,7 @@ import { LinkListItemType } from "@/lib/common/Types";
 import copyToClypboard from "copy-to-clipboard";
 
 export default function Dashboard() {
-  const LINK_ITEM_PER_PAGE = 9;
+  const LINK_ITEM_PER_PAGE = 10;
   const [linkListFirstItemIndex, setLinkListFirstItemIndex] = useState(0);
   const [originalLinkList, setOriginalLinkList] = useState<LinkListItemType[]>([]);
   const [linkListItems, setLinkListItems] = useState<LinkListItemType[]>([]);
@@ -121,11 +121,11 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div>
+    <div className="flex flex-grow flex-col">
       {contentLoadingFinished ? (
-        <div className="flex flex-row max-lg:flex-col">
+        <div className="flex flex-grow flex-row max-lg:flex-col">
           {/*Link List */}
-          <div className="flex min-h-full min-w-0 basis-1/3 flex-col">
+          <div className="flex min-h-full basis-1/3 flex-col">
             {/*Link list header */}
             <div className="flex-0 flex flex-col rounded-b-lg border-b-2 border-blue-200 bg-indigo-100 p-3 text-center shadow-md">
               <div className="flex flex-row justify-between">
@@ -192,7 +192,7 @@ export default function Dashboard() {
             </ul>
 
             {/*Link pagination bar */}
-            <div className="flex-0 mt-2 flex flex-row justify-center sm:mb-8">
+            <div className="flex-0 mt-2 flex flex-row justify-center max-sm:mb-8">
               <ul className="flex flex-1 flex-row flex-wrap items-center justify-center border-b-2 shadow-sm">
                 {linkListPageButtonKeys.map((key) => (
                   <li key={key}>
