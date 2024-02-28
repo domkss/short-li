@@ -120,7 +120,7 @@ export default function QrCodeComponent(props: QRCodeComponentProps) {
       </div>
       <div className="mt-2 inline-flex justify-center">
         <button
-          className="rounded-l bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-600"
+          className="rounded-l bg-gray-400 px-4 py-2 font-bold text-white hover:bg-gray-500"
           onClick={() => {
             if (currentStyleIndex > 0) setCurrentStyleIndex(currentStyleIndex - 1);
             else {
@@ -131,7 +131,7 @@ export default function QrCodeComponent(props: QRCodeComponentProps) {
           Prev
         </button>
         <button
-          className="inline-flex items-center bg-blue-600 px-6 py-2 font-bold text-white hover:bg-blue-700"
+          className="inline-flex items-center bg-blue-500 px-6 py-2 font-bold text-white hover:bg-blue-600"
           onClick={() => onDownloadClick()}
         >
           <svg className="mr-2 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -140,7 +140,7 @@ export default function QrCodeComponent(props: QRCodeComponentProps) {
           <span>Download</span>
         </button>
         <button
-          className="rounded-r bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-600"
+          className="rounded-r bg-gray-400 px-4 py-2 font-bold text-white hover:bg-gray-500"
           onClick={() => {
             if (currentStyleIndex < qrCodeStyles.length - 1) setCurrentStyleIndex(currentStyleIndex + 1);
             else {
