@@ -28,7 +28,7 @@ export default function QRCodeSelectorView(props: QRCodeSelectorViewProps) {
           <div className="flex flex-col p-4">
             <div className="flex flex-row p-2">
               <button
-                className="flex justify-center rounded-full bg-slate-400 px-2 py-2 align-middle font-bold text-white hover:bg-slate-500"
+                className="flex justify-center rounded-full bg-gray-400 px-2 py-2 align-middle font-bold text-white hover:bg-gray-500"
                 onClick={() => props.onCloseClicked()}
               >
                 <Image src="/icons/back_arrow_icon.svg" height={24} width={24} alt="<-" />
@@ -37,7 +37,7 @@ export default function QRCodeSelectorView(props: QRCodeSelectorViewProps) {
             <div className="flex justify-center p-2">
               <span className="font-semibold text-gray-700">{props.shortURL}</span>
             </div>
-            <div>
+            <div className="lg:px-10 lg:py-6">
               <QrCodeComponentWithNoSSR shortURL={props.shortURL} />
             </div>
           </div>
