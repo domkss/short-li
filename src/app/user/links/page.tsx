@@ -17,6 +17,7 @@ import { SessionMap, CountryCodeType } from "session-country-map";
 import { LinkListItemType } from "@/lib/common/Types";
 import copyToClypboard from "copy-to-clipboard";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import "./session-map.css";
 
 export default function Dashboard() {
   const LINK_ITEM_PER_PAGE = 10;
@@ -376,7 +377,7 @@ export default function Dashboard() {
                     valueByCountryMap={
                       new Map(
                         linkListItems
-                          .at(linkListFirstItemIndex)
+                          .at(activeLinkListItemIndex)
                           ?.click_by_country.map((obj) => [
                             obj.value as CountryCodeType,
                             { value: obj.score, className: countryBgColor(obj.score) },
