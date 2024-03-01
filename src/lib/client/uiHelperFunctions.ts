@@ -70,24 +70,24 @@ export function progressUntilNextPowerOfTen(input: number | undefined) {
 }
 
 export function countryBgColor(value: number): string {
+  let className = "";
+
   switch (true) {
     case value < 50:
-      return "fill-sky-50";
+      className = "svg-fill-sky-50";
       break;
     case value < 100:
-      return "fill-sky-100";
+      className = "svg-fill-sky-100";
       break;
     case value < 500:
-      return "fill-sky-200";
+      className = "svg-fill-sky-200";
       break;
     case value < 1000:
-      return "fill-sky-300";
+      className = "svg-fill-sky-300";
       break;
-    case value > 1000:
-      return "fill-sky-400";
-      break;
-    default:
-      return "";
+    case value >= 1000:
+      className = "svg-fill-sky-400";
       break;
   }
+  return className;
 }
