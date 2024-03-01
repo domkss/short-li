@@ -1,6 +1,6 @@
 "use client";
 
-import { navBarLinks } from "@/lib/client/clientConstants";
+import { pathsWithHiddenNavbar, navBarLinks } from "@/lib/client/clientConstants";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
@@ -13,6 +13,7 @@ function NavBar() {
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const { replace } = useRouter();
   const session = useSession();
+  if (pathsWithHiddenNavbar.some((path) => pathname.startsWith(path))) return null;
 
   return (
     <nav className="bg-gray-800">
