@@ -11,12 +11,12 @@ import {
   nFormatter,
   countryBgColor,
 } from "@/lib/client/uiHelperFunctions";
-import ConfirmationView from "@/components/ConfirmationView";
-import QRCodeSelectorView from "@/components/QRCodeSelectorView";
+import ConfirmationView from "@/components/views/ConfirmationView";
+import QRCodeSelectorView from "@/components/views/QRCodeSelectorView";
 import { SessionMap, CountryCodeType } from "session-country-map";
 import { LinkListItemType } from "@/lib/common/Types";
 import copyToClypboard from "copy-to-clipboard";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import LoadingSpinner from "@/components/atomic/LoadingSpinner";
 import "./session-map.css";
 
 export default function Dashboard() {

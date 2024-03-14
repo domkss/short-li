@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import LoadingSpinner from "./LoadingSpinner";
+import LoadingSpinner from "../atomic/LoadingSpinner";
 
 type QRCodeSelectorViewProps = {
   shortURL: string;
   onCloseClicked: () => void;
 };
-const QrCodeComponentWithNoSSR = dynamic(() => import("./QrCodeComponent"), {
+const QrCodeComponentWithNoSSR = dynamic(() => import("../atomic/QrCodeComponent"), {
   ssr: false,
   loading: () => <LoadingSpinner />,
 });
