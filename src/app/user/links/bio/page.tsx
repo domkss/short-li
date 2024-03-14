@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
+import SocialMediaRefBar from "@/components/atomic/SocialMediaRefBar";
 
 export default function CustomBioDashboard() {
   const reactRouter = useRouter();
@@ -23,7 +23,9 @@ export default function CustomBioDashboard() {
         <div className="my-2 flex justify-center">
           <button className="basis-full rounded-md bg-cyan-200 px-5  py-3 md:basis-2/3 xl:basis-1/3">Twitter</button>
         </div>
-        <div className="my-2 mt-12 flex justify-center">Media buttons</div>
+        <div className="my-2 mt-12 flex justify-center">
+          <SocialMediaRefBar />
+        </div>
       </div>
     </main>
   );
