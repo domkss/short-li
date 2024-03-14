@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import NavBar from "@/components/NavBar";
+import NavBar from "@/components/views/NavBar";
 import "./globals.css";
 import { Inter } from "next/font/google";
-import AuthProvider from "@/components/Providers/AuthProvider";
+import AuthProvider from "@/components/providers/AuthProvider";
 
 export const inter = Inter({ subsets: ["latin-ext"] });
 

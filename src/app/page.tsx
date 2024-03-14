@@ -1,4 +1,4 @@
-import LongURLInput from "@/components/LongURLInput";
+import LongURLInput from "@/components/views/LongURLInputView";
 import Image from "next/image";
 import Link from "next/link";
 
