@@ -21,6 +21,7 @@ export enum REDIS_USER_FIELDS {
   RECOVERY_TOKEN = "recovery_token",
   RECOVERY_TOKEN_EXPIRY_TIME = "recovery_token_expiry_date",
   INVALID_RECOVERY_TOKEN_COUNTER = "invalid_recovery_counter",
+  OAUTH_PROVIDER = "oauth_provider",
 }
 
 export enum REDIS_ERRORS {
@@ -46,4 +47,9 @@ export enum LoginUserResult {
 export enum RECAPTCHA_ACTIONS {
   REGISTER_FORM_SUBMIT = "registerFormSubmit",
   PW_RECOVERY_TOKEN_REQUEST = "passwordRecoveryTokenRequest",
+}
+
+export enum AUTH_PROVIDERS {
+  CREDENTIALS = "credentials",
+  GOOGLE = "google",
 }
