@@ -7,20 +7,20 @@ import {
   AUTHENTICATION_ERRORS,
   REDIS_ERRORS,
   RECAPTCHA_ACTIONS,
+  AUTH_PROVIDERS,
 } from "./serverConstants";
 import { makeid } from "./serverHelperFunctions";
 import { LoginUserResult } from "./serverConstants";
 import z from "zod";
 import Mailer from "./mailer";
 
+/* Credentials Auth Functions */
 export async function loginUser(email: string, password: string): Promise<LoginUserResult> {
   try {
     const redisClient = await RedisDB.getClient();
     let salt = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.PASSWORD_SALT);
     let hash = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.PASSWORD_HASH);
     if (!salt || !hash) return LoginUserResult.Failed;
-    let restricted = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.RESTRICTED);
-    if (restricted) return LoginUserResult.Restricted;
 
     let serverTimeMilis = Date.now();
     let loginBlockEndTime = await redisClient.HGET(
@@ -65,8 +65,12 @@ export async function registerNewUser(email: string, password: string, reCaptcha
     const redisClient = await RedisDB.getClient();
     let passwordData = createPasswordHash(password);
 
+    let userExists = await redisClient.EXISTS(REDIS_NAME_PATTERNS.USER_PRETAG + email);
+    if (userExists) throw Error(AUTHENTICATION_ERRORS.USER_ALREADY_EXISTS);
+
     status = await redisClient
       .MULTI()
+      .HSETNX(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.OAUTH_PROVIDER, AUTH_PROVIDERS.CREDENTIALS)
       .HSETNX(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.PASSWORD_SALT, passwordData.salt)
       .HSETNX(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.PASSWORD_HASH, passwordData.hash)
       .EXEC(true);
@@ -76,7 +80,7 @@ export async function registerNewUser(email: string, password: string, reCaptcha
   if (status)
     status.forEach((s: any) => {
       if (!s) {
-        throw Error(AUTHENTICATION_ERRORS.USER_ALREADY_EXISTS);
+        throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
       }
     });
 }
@@ -169,6 +173,33 @@ export async function updateUserPasswordWithRecoveryToken(
       throw Error(AUTHENTICATION_ERRORS.RECAPCHA_VALIDATION_FAILED);
     else throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   }
+}
+
+/*OAuth Functions */
+export async function checkLoginProvider(email: string, account_provider: string): Promise<LoginUserResult> {
+  try {
+    const redisClient = await RedisDB.getClient();
+
+    let restricted = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.RESTRICTED);
+    if (restricted) return LoginUserResult.Restricted;
+
+    let OAuthProvider = await redisClient.HGET(
+      REDIS_NAME_PATTERNS.USER_PRETAG + email,
+      REDIS_USER_FIELDS.OAUTH_PROVIDER,
+    );
+    if (OAuthProvider && OAuthProvider !== account_provider) return LoginUserResult.Failed;
+    else if (!OAuthProvider) {
+      await redisClient.HSET(
+        REDIS_NAME_PATTERNS.USER_PRETAG + email,
+        REDIS_USER_FIELDS.OAUTH_PROVIDER,
+        account_provider,
+      );
+    }
+  } catch (e) {
+    throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+  }
+
+  return LoginUserResult.Success;
 }
 
 /*Helper functions */

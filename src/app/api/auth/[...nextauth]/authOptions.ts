@@ -1,14 +1,15 @@
 import "server-only";
 import { loginUserSchema } from "@/lib/client/dataValidations";
-import { loginUser } from "@/lib/server/authentication";
+import { checkLoginProvider, loginUser } from "@/lib/server/authentication";
 import Credentials from "next-auth/providers/credentials";
 import { AuthOptions } from "next-auth";
-import { LoginUserResult } from "@/lib/server/serverConstants";
+import { AUTH_PROVIDERS, LoginUserResult } from "@/lib/server/serverConstants";
+import GoogleProvider from "next-auth/providers/google";
 
 const authOptions: AuthOptions = {
   providers: [
     Credentials({
-      name: "credentials",
+      id: AUTH_PROVIDERS.CREDENTIALS,
       credentials: {
         email: { type: "text" },
         password: { type: "password" },
@@ -25,14 +26,29 @@ const authOptions: AuthOptions = {
           return { id: email, email: email };
         } else if (success === LoginUserResult.Blocked) {
           throw new Error("Too many failed attempt.\nPlease try again later.");
-        } else if (success === LoginUserResult.Restricted) {
-          throw new Error("User account is restricted.");
         } else {
           throw new Error("Invalid username or password.\nPlease try again.");
         }
       },
     }),
+    GoogleProvider({
+      id: AUTH_PROVIDERS.GOOGLE,
+      clientId: process.env.OAUTH_GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.OAUTH_GOOGLE_CLIENT_SECRET!,
+    }),
   ],
+  callbacks: {
+    signIn: async ({ user, account, profile }) => {
+      if (!user.email || !account?.provider) return false;
+
+      let resutl = await checkLoginProvider(user.email, account.provider);
+
+      if (resutl === LoginUserResult.Success) return true;
+      else if (resutl === LoginUserResult.Restricted) throw new Error("User account restricted.");
+      else throw new Error("Another authentication option is associated with this account.");
+    },
+  },
+
   session: {
     strategy: "jwt",
   },
@@ -40,6 +56,7 @@ const authOptions: AuthOptions = {
 
   pages: {
     signIn: "/login",
+    error: "/login",
   },
 };
 

@@ -16,9 +16,13 @@ const icons = [
 
 export default function SocialMediaRefBar() {
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row flex-wrap">
       {icons.map((icon_name, key) => {
-        return <Image key={key} src={"/icons/social-buttons/" + icon_name} alt={icon_name} width={48} height={48} />;
+        return (
+          <button className="m-1 p-0" key={key}>
+            <Image key={key} src={"/icons/social-buttons/" + icon_name} alt={icon_name} width={48} height={48} />
+          </button>
+        );
       })}
     </div>
   );
