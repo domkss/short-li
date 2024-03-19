@@ -1,7 +1,7 @@
 export default function TermsOfService() {
   return (
     <div className="flex min-h-screen flex-row justify-center">
-      <div className="container flex flex-col p-4">
+      <div className="container mb-6 flex flex-col p-4">
         <div>
           <h1 className="text-3xl">Terms of Use for Sli.ink Link Shortener Service</h1>
 
@@ -200,6 +200,21 @@ export default function TermsOfService() {
                 contact@sli.ink
               </a>
               .
+            </li>
+          </ol>
+
+          <h1 className="mb-6 mt-16 text-3xl">Acknowledgments and Third-party software</h1>
+          <ol>
+            <li>
+              <strong>1. IP2Location LITE database</strong>
+              <br />
+              Sli.ink uses the IP2Location LITE database for
+              <a className="mx-1 text-blue-600" href="https://lite.ip2location.com">
+                IP geolocation
+              </a>
+              <br />
+              IP2Location is a registered trademark of Hexasoft Development Sdn Bhd. All other trademarks are the
+              property of their respective owners.
             </li>
           </ol>
         </div>
