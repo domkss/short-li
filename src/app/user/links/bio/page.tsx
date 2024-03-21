@@ -2,7 +2,9 @@
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import SocialMediaRefBar from "@/components/atomic/SocialMediaRefBar";
-import OrderableListLayout from "@/components/atomic/OrderableListLayout";
+import OrderableListLayout, { KeyedReactElement } from "@/components/atomic/OrderableListLayout";
+import { useState } from "react";
+import { cn } from "@/lib/client/uiHelperFunctions";
 
 export default function CustomBioDashboard() {
   /*
@@ -12,6 +14,22 @@ export default function CustomBioDashboard() {
   if (!isServer && (session.status !== "authenticated" || !session.data || !session.data.user))
     reactRouter.replace("/login");
 */
+
+  const [addButtonText, setAddButtonText] = useState("");
+
+  const btnList = [
+    {
+      id: "tw",
+      text: "Twitter",
+      bg_color: "bg-cyan-300",
+    },
+    {
+      id: "fa",
+      text: "Facebook",
+      bg_color: "bg-blue-300",
+    },
+  ];
+
   return (
     <main className="flex min-w-full flex-col">
       <div className="flex flex-col p-4">
@@ -24,20 +42,36 @@ export default function CustomBioDashboard() {
         </div>
         <div className="flex justify-center">
           <OrderableListLayout className="flex basis-full flex-col md:basis-2/3 xl:basis-1/3">
-            <div className="mt-2 rounded-md border border-gray-300 bg-cyan-200 px-5 py-3 text-center shadow-sm" id="1">
-              Twitter
-            </div>
-
-            <div className="mt-2 rounded-md border border-gray-300 bg-blue-200 px-5 py-3 text-center shadow-sm" id="2">
-              Facebook
-            </div>
+            {btnList
+              ? btnList.map(
+                  (item, key) =>
+                    (
+                      <div
+                        key={key}
+                        id={item.id}
+                        className={cn(
+                          "mt-2 rounded-md border border-gray-300 px-5 py-3 text-center shadow-sm",
+                          item.bg_color,
+                        )}
+                      >
+                        {item.text}
+                      </div>
+                    ) as KeyedReactElement,
+                )
+              : null}
           </OrderableListLayout>
         </div>
 
         <div className="flex justify-center py-2">
-          <button className="basis-full rounded-md border border-gray-300 px-5 py-3 shadow-sm md:basis-2/3 xl:basis-1/3">
-            + Add
-          </button>
+          <div className="basis-full rounded-md border border-gray-300 px-5 py-3 text-center shadow-sm md:basis-2/3 xl:basis-1/3">
+            <input
+              placeholder="+ Add"
+              className="border-gray-400 text-center placeholder-black focus:border-b-2 focus:placeholder-transparent focus:outline-none"
+              value={addButtonText}
+              onChange={(e) => setAddButtonText(e.target.value)}
+              onBlur={() => setAddButtonText("")}
+            />
+          </div>
         </div>
 
         <div className="mt-12 flex justify-center">

@@ -2,14 +2,16 @@ import React, { useEffect, useState, ReactElement } from "react";
 import { DragDropContext, Droppable, Draggable, DroppableProps } from "react-beautiful-dnd";
 import { cn } from "@/lib/client/uiHelperFunctions";
 interface Props {
-  children: KeyedReactElement[];
+  children: KeyedReactElement[] | null;
   className?: string;
+  isDragDisabled?: boolean;
 }
 
-type KeyedReactElement = React.ReactElement<{ id: string; className?: string }>;
+export type KeyedReactElement = React.ReactElement<{ id: string; className?: string }>;
 
-const OrderableListLayout: React.FC<Props> = ({ children, className }) => {
-  const [items, setItems] = useState<KeyedReactElement[]>(children);
+const OrderableListLayout: React.FC<Props> = ({ children, className, isDragDisabled = false }) => {
+  const [items, setItems] = useState<KeyedReactElement[] | null>(children);
+  if (!children) return null;
 
   const onDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -26,8 +28,8 @@ const OrderableListLayout: React.FC<Props> = ({ children, className }) => {
       <StrictModeDroppable droppableId="reorder-layout">
         {(provided: any) => (
           <div {...provided.droppableProps} ref={provided.innerRef} className={className}>
-            {items.map((item, index) => (
-              <Draggable key={item.props.id} draggableId={item.props.id} index={index}>
+            {items!.map((item, index) => (
+              <Draggable key={item.props.id} draggableId={item.props.id} index={index} isDragDisabled={isDragDisabled}>
                 {(provided: any) => (
                   <>
                     {React.cloneElement(item, {
