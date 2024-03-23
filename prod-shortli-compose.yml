@@ -8,7 +8,7 @@ services:
       - "6379"
     command: redis-server --save 20 1 --loglevel warning --requirepass X9bwp8j*GE3@
     volumes:
-      - redis:/data
+      - shortli_redis:/data
     networks:
       network:
         ipv4_address: 172.20.0.11
@@ -21,14 +21,14 @@ services:
     depends_on:
       - shortli-redis
     links:
-      - "shortli-redis:localhost"
+      - "shortli-redis:172.20.0.11"
     ports:
       - "3131:3000"
     networks:
       network:
         ipv4_address: 172.20.0.10
 volumes:
-  redis:
+  shortli_redis:
     driver: local
 
 networks:
