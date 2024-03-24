@@ -1,10 +1,17 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import React from "react";
 import SocialMediaRefBar from "@/components/atomic/SocialMediaRefBar";
 import OrderableListLayout, { KeyedReactElement } from "@/components/atomic/OrderableListLayout";
 import { useState } from "react";
 import { cn } from "@/lib/client/uiHelperFunctions";
+
+interface BtnListItem {
+  id: number;
+  text: string;
+  bg_color: string;
+}
 
 export default function CustomBioDashboard() {
   /*
@@ -17,18 +24,49 @@ export default function CustomBioDashboard() {
 
   const [addButtonText, setAddButtonText] = useState("");
 
-  const btnList = [
+  const [btnList, setBtnList] = useState<BtnListItem[]>([
     {
-      id: "tw",
+      id: 1,
       text: "Twitter",
       bg_color: "bg-cyan-300",
     },
     {
-      id: "fa",
+      id: 2,
       text: "Facebook",
       bg_color: "bg-blue-300",
     },
-  ];
+    {
+      id: 3,
+      text: "Youtube",
+      bg_color: "bg-red-300",
+    },
+  ]);
+
+  const onDragEnd = (result: any) => {
+    if (!result.destination) return;
+
+    const reorderedItems = Array.from(btnList);
+    const [reorderedItem] = reorderedItems.splice(result.source.index, 1);
+    reorderedItems.splice(result.destination.index, 0, reorderedItem);
+
+    setBtnList(reorderedItems);
+  };
+
+  const onAddBtn = (e: React.FocusEvent<HTMLInputElement, Element>) => {
+    {
+      if (e.target.value.trim().length > 0) {
+        setBtnList([
+          ...btnList,
+          {
+            id: btnList.length + 1,
+            text: e.target.value,
+            bg_color: "bg-cyan-300",
+          },
+        ]);
+        setAddButtonText("");
+      }
+    }
+  };
 
   return (
     <main className="flex min-w-full flex-col">
@@ -41,24 +79,23 @@ export default function CustomBioDashboard() {
           </div>
         </div>
         <div className="flex justify-center">
-          <OrderableListLayout className="flex basis-full flex-col md:basis-2/3 xl:basis-1/3">
-            {btnList
-              ? btnList.map(
-                  (item, key) =>
-                    (
-                      <div
-                        key={key}
-                        id={item.id}
-                        className={cn(
-                          "mt-2 rounded-md border border-gray-300 px-5 py-3 text-center shadow-sm",
-                          item.bg_color,
-                        )}
-                      >
-                        {item.text}
-                      </div>
-                    ) as KeyedReactElement,
-                )
-              : null}
+          <OrderableListLayout className="flex basis-full flex-col md:basis-2/3 xl:basis-1/3" onDragEnd={onDragEnd}>
+            {btnList &&
+              btnList.map(
+                (item, key) =>
+                  (
+                    <div
+                      key={key}
+                      id={item.id.toString()}
+                      className={cn(
+                        "mt-2 select-none rounded-md border border-gray-300 px-5 py-3 text-center shadow-sm",
+                        item.bg_color,
+                      )}
+                    >
+                      {item.text}
+                    </div>
+                  ) as KeyedReactElement,
+              )}
           </OrderableListLayout>
         </div>
 
@@ -69,7 +106,7 @@ export default function CustomBioDashboard() {
               className="border-gray-400 text-center placeholder-black focus:border-b-2 focus:placeholder-transparent focus:outline-none"
               value={addButtonText}
               onChange={(e) => setAddButtonText(e.target.value)}
-              onBlur={() => setAddButtonText("")}
+              onBlur={(e) => onAddBtn(e)}
             />
           </div>
         </div>

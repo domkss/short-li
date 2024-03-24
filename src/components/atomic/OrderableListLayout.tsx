@@ -1,7 +1,8 @@
-import React, { useEffect, useState, ReactElement } from "react";
-import { DragDropContext, Droppable, Draggable, DroppableProps } from "react-beautiful-dnd";
-import { cn } from "@/lib/client/uiHelperFunctions";
+import React, { useEffect, useState } from "react";
+import { DragDropContext, Droppable, Draggable, DroppableProps, OnDragEndResponder } from "react-beautiful-dnd";
+
 interface Props {
+  onDragEnd: OnDragEndResponder;
   children: KeyedReactElement[] | null;
   className?: string;
   isDragDisabled?: boolean;
@@ -9,26 +10,15 @@ interface Props {
 
 export type KeyedReactElement = React.ReactElement<{ id: string; className?: string }>;
 
-const OrderableListLayout: React.FC<Props> = ({ children, className, isDragDisabled = false }) => {
-  const [items, setItems] = useState<KeyedReactElement[] | null>(children);
+const OrderableListLayout: React.FC<Props> = ({ onDragEnd, children, className, isDragDisabled = false }) => {
   if (!children) return null;
-
-  const onDragEnd = (result: any) => {
-    if (!result.destination) return;
-
-    const reorderedItems = React.Children.toArray(items) as KeyedReactElement[];
-    const [reorderedItem] = reorderedItems.splice(result.source.index, 1);
-    reorderedItems.splice(result.destination.index, 0, reorderedItem);
-
-    setItems(reorderedItems);
-  };
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <StrictModeDroppable droppableId="reorder-layout">
         {(provided: any) => (
           <div {...provided.droppableProps} ref={provided.innerRef} className={className}>
-            {items!.map((item, index) => (
+            {children!.map((item, index) => (
               <Draggable key={item.props.id} draggableId={item.props.id} index={index} isDragDisabled={isDragDisabled}>
                 {(provided: any) => (
                   <>
