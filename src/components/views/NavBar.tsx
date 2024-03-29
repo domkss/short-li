@@ -1,6 +1,6 @@
 "use client";
 
-import { pathsWithHiddenNavbar, navBarLinks } from "@/lib/client/clientConstants";
+import { PATHS_WITH_HIDDEN_NAVBAR, NAV_BAR_LINKS } from "@/lib/client/clientConstants";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
@@ -13,7 +13,7 @@ function NavBar() {
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const { replace } = useRouter();
   const session = useSession();
-  if (pathsWithHiddenNavbar.some((path) => pathname.startsWith(path))) return null;
+  if (PATHS_WITH_HIDDEN_NAVBAR.some((path) => pathname.startsWith(path))) return null;
 
   return (
     <nav className="bg-gray-800">
@@ -73,7 +73,7 @@ function NavBar() {
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
                 {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
-                {navBarLinks.map((item) => (
+                {NAV_BAR_LINKS.map((item) => (
                   <Link
                     key={item.title}
                     href={item.path}
@@ -123,7 +123,7 @@ function NavBar() {
       {/* Mobile menu, show/hide based on menu state. */}
       <div className={cn("sm:hidden", { hidden: !mobileMenuOpened })} id="mobile-menu">
         <div className="space-y-1 px-2 pb-3 pt-2">
-          {navBarLinks.map((item) => (
+          {NAV_BAR_LINKS.map((item) => (
             <Link
               key={item.title}
               href={item.path}
