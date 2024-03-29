@@ -7,10 +7,15 @@ export const cn = (...classes: ClassValue[]) => twMerge(clsx(...classes));
 /*Utility functions */
 export const debounce = (fn: Function, ms = 300) => {
   let timeoutId: ReturnType<typeof setTimeout>;
-  return function (this: any, ...args: any[]) {
+  function executedFunction(this: any, ...args: any[]) {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn.apply(this, args), ms);
+  }
+
+  executedFunction.cancel = function () {
+    clearTimeout(timeoutId);
   };
+  return executedFunction;
 };
 
 export function addHttpstoURL(input: string): string {

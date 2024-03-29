@@ -4,8 +4,8 @@ import { useSession } from "next-auth/react";
 import React from "react";
 import SocialMediaRefBar from "@/components/atomic/SocialMediaRefBar";
 import OrderableListLayout, { KeyedReactElement } from "@/components/atomic/OrderableListLayout";
-import { useState } from "react";
-import { cn } from "@/lib/client/uiHelperFunctions";
+import { useState, useEffect, useCallback } from "react";
+import { debounce } from "@/lib/client/uiHelperFunctions";
 
 interface BtnListItem {
   id: number;
@@ -23,22 +23,25 @@ export default function CustomBioDashboard() {
 */
 
   const [addButtonText, setAddButtonText] = useState("");
+  const [addButtonSelectedColor, setAddButtonSelectedColor] = useState("#90cdf4");
+  const [addButtonTextInputFocused, setAddButtonTextInputFocused] = useState(false);
+  const [addButtonSelectedColorInputFocused, setAddButtonSelectedColorInputFocused] = useState(false);
 
   const [btnList, setBtnList] = useState<BtnListItem[]>([
     {
       id: 1,
       text: "Twitter",
-      bgColor: "red",
+      bgColor: "#90cdf4",
     },
     {
       id: 2,
       text: "Facebook",
-      bgColor: "blue",
+      bgColor: "#c3dafe",
     },
     {
       id: 3,
       text: "Youtube",
-      bgColor: "yellow",
+      bgColor: "#fc8181",
     },
   ]);
 
@@ -52,21 +55,40 @@ export default function CustomBioDashboard() {
     setBtnList(reorderedItems);
   };
 
-  const onAddBtn = (inputValue: string) => {
+  const onAddBtn = () => {
     {
-      if (inputValue.trim().length > 0) {
+      if (addButtonText.length > 0) {
         setBtnList([
           ...btnList,
           {
             id: btnList.length + 1,
-            text: inputValue,
-            bgColor: "yellow",
+            text: addButtonText,
+            bgColor: addButtonSelectedColor,
           },
         ]);
         setAddButtonText("");
       }
     }
   };
+
+  const debouncedSave = useCallback(
+    debounce(() => {
+      onAddBtn();
+    }, 1000),
+    [addButtonText, addButtonSelectedColor],
+  );
+
+  useEffect(() => {
+    if (addButtonSelectedColorInputFocused === true || addButtonTextInputFocused === true) {
+      debouncedSave.cancel();
+    }
+
+    if (addButtonSelectedColorInputFocused === false && addButtonTextInputFocused === false) {
+      debouncedSave();
+    }
+
+    return () => debouncedSave.cancel();
+  }, [addButtonTextInputFocused, addButtonSelectedColorInputFocused, debouncedSave]);
 
   return (
     <main className="flex min-w-full flex-col">
@@ -88,9 +110,7 @@ export default function CustomBioDashboard() {
                       key={key}
                       id={item.id.toString()}
                       style={{ backgroundColor: item.bgColor }}
-                      className={cn(
-                        "mt-2 select-none rounded-md border border-gray-300 px-5 py-3 text-center shadow-sm",
-                      )}
+                      className="mt-2 select-none rounded-md border border-gray-300 px-5 py-3 text-center shadow-sm"
                     >
                       {item.text}
                     </div>
@@ -105,20 +125,37 @@ export default function CustomBioDashboard() {
               placeholder="+ Add"
               className="border-gray-400 text-center placeholder-black focus:border-b-2 focus:placeholder-transparent focus:outline-none"
               value={addButtonText}
-              onChange={(e) => setAddButtonText(e.currentTarget.value)}
-              onBlur={(e) => onAddBtn(e.currentTarget.value)}
+              onFocus={() => setAddButtonTextInputFocused(true)}
+              onBlur={() => setAddButtonTextInputFocused(false)}
+              onChange={(e) => setAddButtonText(e.currentTarget.value.trim())}
               onKeyDown={(e) => {
-                if (e.key === "Enter") onAddBtn(e.currentTarget.value);
+                if (e.key === "Enter") onAddBtn();
               }}
             />
 
             <input
               type="color"
-              className="absolute right-3 top-2 h-8 w-10 cursor-pointer rounded-lg border border-gray-200 bg-white p-1 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:bg-slate-900"
+              list="presetColors"
+              className="absolute right-3 top-2 h-8 w-[4.5rem] cursor-pointer rounded-lg border border-gray-200 bg-white p-1 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:bg-slate-900"
               id="hs-color-input"
-              value="#2563eb"
+              value={addButtonSelectedColor}
+              onChange={(e) => setAddButtonSelectedColor(e.currentTarget.value.trim())}
+              onFocus={() => setAddButtonSelectedColorInputFocused(true)}
+              onSelect={() => setAddButtonSelectedColorInputFocused(false)}
+              onBlur={() => setAddButtonSelectedColorInputFocused(false)}
               title="Choose your color"
             />
+
+            <datalist id="presetColors">
+              <option>#90cdf4</option>
+              <option>#64eddf</option>
+              <option>#c6f6d5</option>
+              <option>#c3dafe</option>
+              <option>#f9a8d4</option>
+              <option>#b794f4</option>
+              <option>#fc8181</option>
+              <option>#faf089</option>
+            </datalist>
           </div>
         </div>
 
