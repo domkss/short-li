@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable, DroppableProps, OnDragEndResponder } from "react-beautiful-dnd";
+import { CSSProperties } from "react";
 
 interface Props {
   onDragEnd: OnDragEndResponder;
@@ -8,7 +9,7 @@ interface Props {
   isDragDisabled?: boolean;
 }
 
-export type KeyedReactElement = React.ReactElement<{ id: string; className?: string }>;
+export type KeyedReactElement = React.ReactElement<{ id: string; className?: string; style?: CSSProperties }>;
 
 const OrderableListLayout: React.FC<Props> = ({ onDragEnd, children, className, isDragDisabled = false }) => {
   if (!children) return null;
@@ -27,6 +28,10 @@ const OrderableListLayout: React.FC<Props> = ({ onDragEnd, children, className, 
                       ...provided.draggableProps,
                       ...provided.dragHandleProps,
                       className: item.props.className,
+                      style: {
+                        ...item.props.style,
+                        ...provided.draggableProps.style,
+                      },
                     })}
                   </>
                 )}
