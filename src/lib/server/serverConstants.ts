@@ -52,4 +52,5 @@ export enum RECAPTCHA_ACTIONS {
 export enum AUTH_PROVIDERS {
   CREDENTIALS = "credentials",
   GOOGLE = "google",
+  FACEBOOK = "facebook",
 }

@@ -16,7 +16,7 @@ const icons = [
 
 export default function SocialMediaRefBar() {
   return (
-    <div className="flex flex-row flex-wrap">
+    <div className="flex flex-row  flex-wrap justify-center">
       {icons.map((icon_name, key) => {
         return (
           <button className="m-1 p-0" key={key}>
