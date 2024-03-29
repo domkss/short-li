@@ -1,10 +1,11 @@
 import "server-only";
-import { loginUserSchema } from "@/lib/client/dataValidations";
+import { loginUserSchema, emailSchema } from "@/lib/client/dataValidations";
 import { checkLoginProvider, loginUser } from "@/lib/server/authentication";
 import Credentials from "next-auth/providers/credentials";
 import { AuthOptions } from "next-auth";
 import { AUTH_PROVIDERS, LoginUserResult } from "@/lib/server/serverConstants";
 import GoogleProvider from "next-auth/providers/google";
+import FacebookProvider from "next-auth/providers/facebook";
 
 const authOptions: AuthOptions = {
   providers: [
@@ -36,10 +37,17 @@ const authOptions: AuthOptions = {
       clientId: process.env.OAUTH_GOOGLE_CLIENT_ID!,
       clientSecret: process.env.OAUTH_GOOGLE_CLIENT_SECRET!,
     }),
+    FacebookProvider({
+      id: AUTH_PROVIDERS.FACEBOOK,
+      clientId: process.env.OAUTH_FACEBOOK_CLIENT_ID!,
+      clientSecret: process.env.OAUTH_FACEBOOK_CLIENT_SECRET!,
+    }),
   ],
   callbacks: {
     signIn: async ({ user, account, profile }) => {
-      if (!user.email || !account?.provider) return false;
+      if (!account?.provider) return false;
+
+      if (!user.email || !emailSchema.safeParse(user.email).success) throw new Error("Unable to access email address.");
 
       let resutl = await checkLoginProvider(user.email, account.provider);
 
