@@ -6,6 +6,7 @@ import SocialMediaRefBar from "@/components/atomic/SocialMediaRefBar";
 import OrderableListLayout, { KeyedReactElement } from "@/components/atomic/OrderableListLayout";
 import { useState, useEffect, useCallback } from "react";
 import { debounce } from "@/lib/client/uiHelperFunctions";
+import { COLOR_PICKER_SUGGESTED_COLORS } from "@/lib/client/clientConstants";
 
 interface BtnListItem {
   id: number;
@@ -150,14 +151,9 @@ export default function CustomBioDashboard() {
             />
 
             <datalist id="presetColors">
-              <option>#90cdf4</option>
-              <option>#64eddf</option>
-              <option>#c6f6d5</option>
-              <option>#c3dafe</option>
-              <option>#f9a8d4</option>
-              <option>#b794f4</option>
-              <option>#fc8181</option>
-              <option>#faf089</option>
+              {COLOR_PICKER_SUGGESTED_COLORS.map((item, key) => (
+                <option key={key}>{item}</option>
+              ))}
             </datalist>
           </div>
         </div>
