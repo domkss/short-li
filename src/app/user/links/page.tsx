@@ -34,15 +34,15 @@ export default function Dashboard() {
   const [nameInputValue, setNameInputValue] = useState("");
   const [contentLoadingFinished, setContentLoadingFinished] = useState(false);
 
+  const [searchWord, setSearchWord] = useState("");
+
   const resetDetailView = () => {
     setNameEditingView(false);
     setNameInputValue("");
   };
 
-  const searchListElements = debounce((event: ChangeEvent<HTMLInputElement>) => {
-    if (originalLinkList.length === 0) setOriginalLinkList(linkListItems);
-
-    let searchWord = event.target.value.toLowerCase();
+  const searchListElements = debounce(() => {
+    if (searchWord.trim().length === 0) return;
     let filteredList = originalLinkList.filter(
       (item) =>
         item.name.toLowerCase().includes(searchWord) ||
@@ -52,14 +52,20 @@ export default function Dashboard() {
     setLinkListItems(filteredList);
   }, 400);
 
+  useEffect(searchListElements, [searchWord, searchListElements]);
+
   async function getUserLinks() {
     let response = await fetch("/api/link");
     let data = await response.json();
     let linkList: LinkListItemType[] = data.linkDataList;
 
     if (data.success && linkList[0]?.shortURL) {
-      setOriginalLinkList([]);
+      setOriginalLinkList(data.linkDataList);
       setLinkListItems(data.linkDataList);
+      searchListElements();
+    } else {
+      setOriginalLinkList([]);
+      setLinkListItems([]);
     }
     setContentLoadingFinished(true);
   }
@@ -149,7 +155,8 @@ export default function Dashboard() {
                   className="min-w-[60%] rounded-md bg-gray-50 p-2 max-sm:w-full"
                   placeholder="Search"
                   onChange={(event) => {
-                    searchListElements(event);
+                    let searchWord = event.target.value.toLowerCase();
+                    setSearchWord(searchWord);
                   }}
                 />
               </div>
