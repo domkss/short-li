@@ -10,7 +10,7 @@ import { cn } from "@/lib/client/uiHelperFunctions";
 interface BtnListItem {
   id: number;
   text: string;
-  bg_color: string;
+  bgColor: string;
 }
 
 export default function CustomBioDashboard() {
@@ -28,17 +28,17 @@ export default function CustomBioDashboard() {
     {
       id: 1,
       text: "Twitter",
-      bg_color: "bg-cyan-300",
+      bgColor: "red",
     },
     {
       id: 2,
       text: "Facebook",
-      bg_color: "bg-blue-300",
+      bgColor: "blue",
     },
     {
       id: 3,
       text: "Youtube",
-      bg_color: "bg-red-300",
+      bgColor: "yellow",
     },
   ]);
 
@@ -52,15 +52,15 @@ export default function CustomBioDashboard() {
     setBtnList(reorderedItems);
   };
 
-  const onAddBtn = (e: React.FocusEvent<HTMLInputElement, Element>) => {
+  const onAddBtn = (inputValue: string) => {
     {
-      if (e.target.value.trim().length > 0) {
+      if (inputValue.trim().length > 0) {
         setBtnList([
           ...btnList,
           {
             id: btnList.length + 1,
-            text: e.target.value,
-            bg_color: "bg-cyan-300",
+            text: inputValue,
+            bgColor: "yellow",
           },
         ]);
         setAddButtonText("");
@@ -87,9 +87,9 @@ export default function CustomBioDashboard() {
                     <div
                       key={key}
                       id={item.id.toString()}
+                      style={{ backgroundColor: item.bgColor }}
                       className={cn(
                         "mt-2 select-none rounded-md border border-gray-300 px-5 py-3 text-center shadow-sm",
-                        item.bg_color,
                       )}
                     >
                       {item.text}
@@ -100,13 +100,24 @@ export default function CustomBioDashboard() {
         </div>
 
         <div className="flex justify-center py-2">
-          <div className="basis-full rounded-md border border-gray-300 px-5 py-3 text-center shadow-sm md:basis-2/3 xl:basis-1/3">
+          <div className="relative flex basis-full justify-center rounded-md border border-gray-300 px-5 py-3 shadow-sm md:basis-2/3 xl:basis-1/3">
             <input
               placeholder="+ Add"
               className="border-gray-400 text-center placeholder-black focus:border-b-2 focus:placeholder-transparent focus:outline-none"
               value={addButtonText}
-              onChange={(e) => setAddButtonText(e.target.value)}
-              onBlur={(e) => onAddBtn(e)}
+              onChange={(e) => setAddButtonText(e.currentTarget.value)}
+              onBlur={(e) => onAddBtn(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") onAddBtn(e.currentTarget.value);
+              }}
+            />
+
+            <input
+              type="color"
+              className="absolute right-3 top-2 h-8 w-10 cursor-pointer rounded-lg border border-gray-200 bg-white p-1 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:bg-slate-900"
+              id="hs-color-input"
+              value="#2563eb"
+              title="Choose your color"
             />
           </div>
         </div>
