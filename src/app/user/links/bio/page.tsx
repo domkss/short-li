@@ -57,7 +57,7 @@ export default function CustomBioDashboard() {
 
   const onAddBtn = () => {
     {
-      if (addButtonText.length > 0) {
+      if (addButtonText.trim().length > 0) {
         setBtnList([
           ...btnList,
           {
@@ -71,6 +71,7 @@ export default function CustomBioDashboard() {
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSave = useCallback(
     debounce(() => {
       onAddBtn();
@@ -127,7 +128,7 @@ export default function CustomBioDashboard() {
               value={addButtonText}
               onFocus={() => setAddButtonTextInputFocused(true)}
               onBlur={() => setAddButtonTextInputFocused(false)}
-              onChange={(e) => setAddButtonText(e.currentTarget.value.trim())}
+              onChange={(e) => setAddButtonText(e.currentTarget.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") onAddBtn();
               }}
@@ -139,9 +140,11 @@ export default function CustomBioDashboard() {
               className="absolute right-3 top-2 h-8 w-[4.5rem] cursor-pointer rounded-lg border border-gray-200 bg-white p-1 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:bg-slate-900"
               id="hs-color-input"
               value={addButtonSelectedColor}
-              onChange={(e) => setAddButtonSelectedColor(e.currentTarget.value.trim())}
+              onChange={(e) => {
+                setAddButtonSelectedColor(e.currentTarget.value.trim());
+                setAddButtonSelectedColorInputFocused(false);
+              }}
               onFocus={() => setAddButtonSelectedColorInputFocused(true)}
-              onSelect={() => setAddButtonSelectedColorInputFocused(false)}
               onBlur={() => setAddButtonSelectedColorInputFocused(false)}
               title="Choose your color"
             />
