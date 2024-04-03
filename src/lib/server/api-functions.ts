@@ -5,15 +5,17 @@ import { isValidHttpURL } from "../client/dataValidations";
 import { DefaultSession } from "next-auth";
 import { RedisClientType } from "redis";
 import GeoLocationService from "./GeoLocationService";
-import { makeid } from "./serverHelperFunctions";
+import { getRandomBase58String, formatShortLink } from "./serverHelperFunctions";
 import { LinkListItemType, Promisify } from "../common/Types";
 
-type URLCreatorOptions = {
+//Todo: Implement advanced link creation with more options
+type createShortURLOptions = {
   session: DefaultSession | null;
   linkCustomName?: string;
 };
+
 /*Link related CRUD functions */
-export async function createShortURL(longURL: string, options: URLCreatorOptions) {
+export async function createShortURL(longURL: string, options: createShortURLOptions) {
   if (longURL.length < 5 || longURL.length > 2048 || !isValidHttpURL(longURL))
     return REDIS_ERRORS.DATA_VALIDATION_ERROR;
 
@@ -26,7 +28,7 @@ export async function createShortURL(longURL: string, options: URLCreatorOptions
   var numberOfRetries = 0;
 
   do {
-    shortURL = makeid(lenght + Math.floor(numberOfRetries / 2));
+    shortURL = getRandomBase58String(lenght + Math.floor(numberOfRetries / 2));
     status = await redisClient.HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TARGET, longURL);
     if (status && options.session && options.session.user?.email) {
       let linkCustomName = options.linkCustomName;
@@ -136,22 +138,6 @@ export async function updateLinkCustomName(shortURL: string, newCustomName: stri
 }
 
 /*Helper functions */
-function formatShortLink(shortURL: string) {
-  const envType = process.env.NODE_ENV;
-
-  const includeHTTPProtocol = process.env.SHORT_URL_INCLUDE_HTTP_PROTOCOL === "true";
-
-  if (envType !== "production") {
-    return (
-      (includeHTTPProtocol ? "http://" : "") +
-      (process.env.SERVER_DOMAIN_NAME + ":" + process.env.SERVER_PORT + "/") +
-      shortURL
-    );
-  } else {
-    return (includeHTTPProtocol ? "https://" : "") + process.env.SERVER_DOMAIN_NAME + "/" + shortURL;
-  }
-}
-
 async function saveRedirectedUserCountryCode(redisClient: RedisClientType, shortURL: string, ip: string) {
   let countryCode = await GeoLocationService.getCountry(ip);
   redisClient.ZINCRBY(REDIS_NAME_PATTERNS.STATISTIC_COUNTRY_CODE + shortURL, 1, countryCode);
