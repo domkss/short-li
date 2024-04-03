@@ -7,6 +7,7 @@ import OrderableListLayout, { KeyedReactElement } from "@/components/atomic/Orde
 import { useState, useEffect, useCallback } from "react";
 import { debounce } from "@/lib/client/uiHelperFunctions";
 import { COLOR_PICKER_SUGGESTED_COLORS } from "@/lib/client/clientConstants";
+import Image from "next/image";
 
 interface BtnListItem {
   id: number;
@@ -95,7 +96,15 @@ export default function CustomBioDashboard() {
   return (
     <main className="flex min-w-full flex-col">
       <div className="flex flex-col p-4">
-        <div className="flex justify-center p-4">Picture</div>
+        <div className="flex justify-center p-4">
+          <Image
+            className="h-20 w-20 rounded-full p-1 ring-2 ring-gray-300 dark:ring-gray-500"
+            src="/temp_profilepic.jpg"
+            alt="Bordered avatar"
+            width={80}
+            height={80}
+          />
+        </div>
         <div className="my-2 flex justify-center">
           <div className="min-w-xl mb-6 text-gray-800 md:basis-2/3 xl:basis-1/3">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquam felis a nisi luctus, eget

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "bs58": "^5.0.0",
     "clsx": "^2.0.0",
     "copy-to-clipboard": "^3.3.3",
     "flag-icons": "^7.1.0",
