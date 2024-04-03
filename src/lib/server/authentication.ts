@@ -9,7 +9,7 @@ import {
   RECAPTCHA_ACTIONS,
   AUTH_PROVIDERS,
 } from "./serverConstants";
-import { makeid } from "./serverHelperFunctions";
+import { getRandomBase58String, verifyRecaptcha } from "./serverHelperFunctions";
 import { LoginUserResult } from "./serverConstants";
 import z from "zod";
 import Mailer from "./mailer";
@@ -96,7 +96,7 @@ export async function sendUserPasswordRecoveryToken(email: string, reCaptchaToke
     let reCaptchaValidationPassed = await verifyRecaptcha(reCaptchaToken, RECAPTCHA_ACTIONS.PW_RECOVERY_TOKEN_REQUEST);
     if (!reCaptchaValidationPassed) throw Error(AUTHENTICATION_ERRORS.RECAPCHA_VALIDATION_FAILED);
 
-    let recoveryToken = makeid(9);
+    let recoveryToken = getRandomBase58String(9);
     let tokenExpireTime = Date.now() + 1200000; //Current time + 20 minute
     redisClient
       .MULTI()
@@ -203,22 +203,6 @@ export async function checkLoginProvider(email: string, account_provider: string
 }
 
 /*Helper functions */
-const verifyRecaptcha = async (token: string, action: RECAPTCHA_ACTIONS) => {
-  const secretKey = process.env.RECAPCHA_SECRET_KEY;
-  var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + token;
-
-  let response = await fetch(verificationUrl, {
-    method: "POST",
-  });
-
-  if (response.ok) {
-    let data = await response.json();
-    if (data.success && data.score >= 0.5 && data.action === action) {
-      return true;
-    }
-  }
-  return false;
-};
 
 function createPasswordHash(password: string) {
   let salt = crypto.randomBytes(16).toString("hex");
