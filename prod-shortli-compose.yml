@@ -10,7 +10,7 @@ services:
     volumes:
       - shortli_redis:/data
     networks:
-      network:
+      sli-network:
         ipv4_address: 172.20.0.11
   shortli-app:
     build:
@@ -25,15 +25,16 @@ services:
     ports:
       - "3131:3000"
     networks:
-      network:
+      sli-network:
         ipv4_address: 172.20.0.10
 volumes:
   shortli_redis:
     driver: local
 
 networks:
-  network:
+  sli-network:
     driver: bridge
+    name: sli-network
     ipam:
       config:
         - subnet: 172.20.0.0/24
