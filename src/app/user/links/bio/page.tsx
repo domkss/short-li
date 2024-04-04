@@ -98,7 +98,7 @@ export default function CustomBioDashboard() {
       <div className="flex flex-col p-4">
         <div className="flex justify-center p-4">
           <Image
-            className="h-20 w-20 rounded-full p-1 ring-2 ring-gray-300 dark:ring-gray-500"
+            className="h-20 w-20 rounded-full p-1 ring-2 ring-gray-300"
             src="/temp_profilepic.jpg"
             alt="Bordered avatar"
             width={80}
@@ -147,7 +147,7 @@ export default function CustomBioDashboard() {
             <input
               type="color"
               list="presetColors"
-              className="absolute right-3 top-2 h-8 w-[4.5rem] cursor-pointer rounded-lg border border-gray-200 bg-white p-1 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:bg-slate-900"
+              className="absolute right-3 top-2 h-8 w-[4.5rem] cursor-pointer rounded-lg border border-gray-200 bg-white p-1 disabled:pointer-events-none disabled:opacity-50"
               id="hs-color-input"
               value={addButtonSelectedColor}
               onChange={(e) => {

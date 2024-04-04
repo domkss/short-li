@@ -319,7 +319,7 @@ export default function LoginPage() {
             {/*Form data validation view */}
             <div className={cn({ hidden: ![ViewType.RegisterView, ViewType.SetNewPasswordView].includes(viewType) })}>
               <div id="hs-strong-password-hints">
-                <h4 className="mb-2 text-sm font-semibold text-gray-800 dark:text-white">Form data validation:</h4>
+                <h4 className="mb-2 text-sm font-semibold text-gray-800">Form data validation:</h4>
                 <ul className="space-y-1 text-sm text-gray-500">
                   {/*Email format invalid*/}
                   <li
