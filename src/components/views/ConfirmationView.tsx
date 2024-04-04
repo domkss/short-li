@@ -19,7 +19,7 @@ export default function ConfirmationView(props: ConfirmationViewProps) {
           <div className="items-center md:flex">
             {props.iconSrc ? (
               <div className="mx-auto flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full border border-gray-300">
-                <Image src={props.iconSrc} width={55} height={55} alt="Delete icon" />
+                <Image src={props.iconSrc} priority width={55} height={55} alt="Delete icon" />
               </div>
             ) : null}
             <div className="mt-4 text-center md:ml-6 md:mt-0 md:text-left">

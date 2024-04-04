@@ -2,7 +2,8 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ChangeEvent, useEffect, useState } from "react";
+import React from "react";
+import { useEffect, useState } from "react";
 import {
   cn,
   progressUntilNextPowerOfTen,
@@ -10,6 +11,7 @@ import {
   debounce,
   nFormatter,
   countryBgColor,
+  range,
 } from "@/lib/client/uiHelperFunctions";
 import ConfirmationView from "@/components/views/ConfirmationView";
 import QRCodeSelectorView from "@/components/views/QRCodeSelectorView";
@@ -20,40 +22,27 @@ import LoadingSpinner from "@/components/atomic/LoadingSpinner";
 import "./session-map.css";
 
 export default function Dashboard() {
-  const LINK_ITEM_PER_PAGE = 10;
-  const [linkListFirstItemIndex, setLinkListFirstItemIndex] = useState(0);
+  const LIST_ITEM_PER_PAGE = 10;
+  const [firstDisplayedListItemIndex, setFirstDisplayedListItemIndex] = useState(0);
   const [originalLinkList, setOriginalLinkList] = useState<LinkListItemType[]>([]);
   const [linkListItems, setLinkListItems] = useState<LinkListItemType[]>([]);
-  const [deleteLinkViewActive, setDeleteLinkViewActive] = useState(false);
-  const [qrCodeViewActive, setQrCodeViewActive] = useState(false);
 
-  const numberOfLinkListPages = linkListItems.length / LINK_ITEM_PER_PAGE;
-  const linkListPageButtonKeys = [...Array.from(Array(Math.ceil(numberOfLinkListPages)).keys())];
-  const [activeLinkListItemIndex, setActiveLinkListItemIndex] = useState(0);
-  const [nameEditingView, setNameEditingView] = useState(false);
-  const [nameInputValue, setNameInputValue] = useState("");
-  const [contentLoadingFinished, setContentLoadingFinished] = useState(false);
-
+  const numberOfListPages = linkListItems.length / LIST_ITEM_PER_PAGE;
+  const listPageButtonKeys = [...Array.from(Array(Math.ceil(numberOfListPages)).keys())];
+  const [activeListItemIndex, setActiveListItemIndex] = useState(0);
   const [searchWord, setSearchWord] = useState("");
 
-  const resetDetailView = () => {
-    setNameEditingView(false);
-    setNameInputValue("");
-  };
+  const [indexesOfSelectedListItems, setIndexesOfSelectedListItems] = useState<number[]>([]);
+  const selectAllListItemCheckboxRef = React.createRef<HTMLInputElement>();
 
-  const searchListElements = debounce(() => {
-    if (searchWord.trim().length === 0) return;
-    let filteredList = originalLinkList.filter(
-      (item) =>
-        item.name.toLowerCase().includes(searchWord) ||
-        item.shortURL.toLowerCase().includes(searchWord) ||
-        item.target_url.toLowerCase().includes(searchWord),
-    );
-    setLinkListItems(filteredList);
-  }, 400);
+  const [nameEditingView, setNameEditingView] = useState(false);
+  const [nameInputValue, setNameInputValue] = useState("");
 
-  useEffect(searchListElements, [searchWord, searchListElements]);
+  const [deleteLinkViewState, setDeleteLinkViewState] = useState({ active: false, bulkDelete: false });
+  const [qrCodeViewActive, setQrCodeViewActive] = useState(false);
+  const [contentLoadingFinished, setContentLoadingFinished] = useState(false);
 
+  /* Api call functions */
   async function getUserLinks() {
     let response = await fetch("/api/link");
     let data = await response.json();
@@ -70,25 +59,37 @@ export default function Dashboard() {
     setContentLoadingFinished(true);
   }
 
-  async function deleteUserLink(shortURL: string) {
-    let result = await fetch("/api/link", {
-      method: "DELETE",
-      body: JSON.stringify({
-        url: shortURL,
-      }),
-    });
-    let data = await result.json();
-    if (data.success) {
-      getUserLinks();
-      if (activeLinkListItemIndex !== 0) {
-        setActiveLinkListItemIndex(activeLinkListItemIndex - 1);
-        if (activeLinkListItemIndex - 1 < linkListFirstItemIndex)
-          setLinkListFirstItemIndex(linkListFirstItemIndex - LINK_ITEM_PER_PAGE);
+  async function deleteUserLink(itemsToDelete: LinkListItemType[]) {
+    if (itemsToDelete.length === 0) return;
+
+    let deletedShortURLs = itemsToDelete.map((item) => item.shortURL);
+
+    await itemsToDelete.forEach(async (itemToDelete) => {
+      let result = await fetch("/api/link", {
+        method: "DELETE",
+        body: JSON.stringify({
+          url: itemToDelete.shortURL,
+        }),
+      });
+      let data = await result.json();
+      if (data && !data.success) {
+        //Todo: Show error if item deletion failed
       }
-      setDeleteLinkViewActive(false);
-    } else {
-      //Todo: Show error if item deletion failed
+    });
+
+    setIndexesOfSelectedListItems([]);
+
+    setOriginalLinkList(originalLinkList.filter((item) => !deletedShortURLs.includes(item.shortURL)));
+    setLinkListItems(linkListItems.filter((item) => !deletedShortURLs.includes(item.shortURL)));
+
+    if (activeListItemIndex !== 0) {
+      setActiveListItemIndex(activeListItemIndex - deletedShortURLs.length);
+
+      if (activeListItemIndex - deletedShortURLs.length < firstDisplayedListItemIndex)
+        setFirstDisplayedListItemIndex(firstDisplayedListItemIndex - LIST_ITEM_PER_PAGE);
     }
+
+    setDeleteLinkViewState({ ...deleteLinkViewState, active: false });
   }
 
   async function updateLinkItemCustomName(shortURL: string, newCustomName: string) {
@@ -103,7 +104,7 @@ export default function Dashboard() {
 
     if (data.success) {
       /*Handle name change on list items on client side instead reload all data from server */
-      let modifiedLinkListItem = linkListItems.at(activeLinkListItemIndex);
+      let modifiedLinkListItem = linkListItems.at(activeListItemIndex);
       if (modifiedLinkListItem) {
         modifiedLinkListItem.name = newCustomName;
         let modifiedOriginalLinkList = originalLinkList.filter((item) => item.shortURL !== shortURL);
@@ -112,22 +113,86 @@ export default function Dashboard() {
         let modifiedLinkList = linkListItems.filter((item) => item.shortURL !== shortURL);
         modifiedLinkList.unshift(modifiedLinkListItem);
         setLinkListItems(modifiedLinkList);
-        setActiveLinkListItemIndex(0);
-        setLinkListFirstItemIndex(0);
+        setActiveListItemIndex(0);
+        setFirstDisplayedListItemIndex(0);
       }
     }
   }
 
+  /* Authentication check and redirect*/
   const reactRouter = useRouter();
   const session = useSession();
   let isServer = typeof window === "undefined" ? true : false;
   if (!isServer && (session.status !== "authenticated" || !session.data || !session.data.user))
     reactRouter.replace("/login");
 
+  /* Get user link list */
   useEffect(() => {
     getUserLinks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /* List filtering functions */
+  const searchListElements = debounce(() => {
+    if (searchWord.trim().length === 0) {
+      setLinkListItems(originalLinkList);
+      return;
+    }
+    let filteredList = originalLinkList.filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchWord) ||
+        item.shortURL.toLowerCase().includes(searchWord) ||
+        item.target_url.toLowerCase().includes(searchWord),
+    );
+    setLinkListItems(filteredList);
+  }, 400);
+
+  useEffect(searchListElements, [searchWord, searchListElements]);
+
+  /* Select all list item checkbox state updater*/
+  useEffect(() => {
+    if (!selectAllListItemCheckboxRef.current) return;
+    //Nothing is selected from the current page
+    if (indexesOfSelectedListItems.length === 0) {
+      selectAllListItemCheckboxRef.current.indeterminate = false;
+      selectAllListItemCheckboxRef.current.checked = false;
+      return;
+    }
+
+    let numberOfDisplayedListItems =
+      firstDisplayedListItemIndex + LIST_ITEM_PER_PAGE < linkListItems.length
+        ? LIST_ITEM_PER_PAGE
+        : linkListItems.length - firstDisplayedListItemIndex;
+
+    let displayedListItemIndexes = range(numberOfDisplayedListItems, firstDisplayedListItemIndex);
+
+    //One or more element is selected from a hidden list page, unselect them
+    if (
+      indexesOfSelectedListItems.some(
+        (index) => index < firstDisplayedListItemIndex || index >= firstDisplayedListItemIndex + LIST_ITEM_PER_PAGE,
+      )
+    ) {
+      let newSelectedIndexList = indexesOfSelectedListItems.filter((index) => displayedListItemIndexes.includes(index));
+      setIndexesOfSelectedListItems(newSelectedIndexList);
+    }
+
+    //Every item is selected from the current page
+    if (displayedListItemIndexes.every((index) => indexesOfSelectedListItems.includes(index))) {
+      selectAllListItemCheckboxRef.current.indeterminate = false;
+      selectAllListItemCheckboxRef.current.checked = true;
+    }
+    //At least one but not every item selected from the current page
+    else if (displayedListItemIndexes.some((index) => indexesOfSelectedListItems.includes(index))) {
+      selectAllListItemCheckboxRef.current.indeterminate = true;
+      selectAllListItemCheckboxRef.current.checked = false;
+    }
+  }, [indexesOfSelectedListItems, selectAllListItemCheckboxRef, firstDisplayedListItemIndex, linkListItems.length]);
+
+  /* Helper functions */
+  const resetDetailedView = () => {
+    setNameEditingView(false);
+    setNameInputValue("");
+  };
 
   return (
     <main className="flex flex-grow flex-col">
@@ -147,13 +212,46 @@ export default function Dashboard() {
                   className="m-3 rounded-2xl border-2 border-blue-500 bg-blue-500 p-2 text-white"
                   onClick={() => reactRouter.replace("/")}
                 >
-                  + Add link
+                  + Create Link
                 </button>
               </div>
               {/*Search bar*/}
-              <div className="mt-3 flex">
+              <div className="mt-3 flex flex-row items-center">
                 <input
-                  className="min-w-[60%] rounded-md bg-gray-50 p-2 max-sm:w-full"
+                  type="checkbox"
+                  className="mx-1 h-4 w-4 rounded border-gray-300 bg-gray-100 accent-teal-600 focus:border-0 focus:ring-2 focus:ring-teal-500"
+                  ref={selectAllListItemCheckboxRef}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    if (e.currentTarget.checked) {
+                      setIndexesOfSelectedListItems(
+                        range(
+                          linkListItems.length >= LIST_ITEM_PER_PAGE ? LIST_ITEM_PER_PAGE : linkListItems.length,
+                          firstDisplayedListItemIndex,
+                        ),
+                      );
+                    } else {
+                      setIndexesOfSelectedListItems([]);
+                    }
+                  }}
+                />
+                <button
+                  id="delet-link-button"
+                  className="mx-2"
+                  disabled={indexesOfSelectedListItems.length === 0}
+                  onClick={() => setDeleteLinkViewState({ ...deleteLinkViewState, active: true, bulkDelete: true })}
+                >
+                  <Image
+                    className={cn({ grayscale: indexesOfSelectedListItems.length === 0 })}
+                    src="/icons/delete_icon.svg"
+                    width={25}
+                    height={25}
+                    alt="Edit pencil icon"
+                  />
+                </button>
+
+                <input
+                  className="ml-auto min-w-[60%] rounded-md bg-gray-50 p-2 max-sm:w-full"
                   placeholder="Search"
                   onChange={(event) => {
                     let searchWord = event.target.value.toLowerCase();
@@ -170,7 +268,7 @@ export default function Dashboard() {
                   return (
                     <li
                       className={
-                        linkListFirstItemIndex <= key && linkListFirstItemIndex + LINK_ITEM_PER_PAGE > key
+                        firstDisplayedListItemIndex <= key && firstDisplayedListItemIndex + LIST_ITEM_PER_PAGE > key
                           ? ""
                           : "hidden"
                       }
@@ -179,15 +277,30 @@ export default function Dashboard() {
                       <button
                         className={cn(
                           "flex min-w-full border-b-[1px] border-slate-100 text-left shadow-sm hover:bg-blue-200",
-                          { "bg-emerald-200": key === activeLinkListItemIndex },
+                          { "bg-emerald-200": key === activeListItemIndex },
                         )}
                         onClick={() => {
-                          resetDetailView();
-                          setActiveLinkListItemIndex(key);
+                          resetDetailedView();
+                          setActiveListItemIndex(key);
                         }}
                       >
                         <div className="flex flex-row flex-nowrap items-center">
-                          <span className="ml-4">{key + 1 + "."}</span>
+                          <input
+                            checked={indexesOfSelectedListItems.includes(key)}
+                            key={key}
+                            type="checkbox"
+                            className="ml-4 mr-2 h-4 w-4 rounded border-gray-300 bg-gray-100 accent-teal-600 focus:ring-2 focus:ring-teal-500"
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              if (e.currentTarget.checked) {
+                                setIndexesOfSelectedListItems([...indexesOfSelectedListItems, key]);
+                              } else {
+                                setIndexesOfSelectedListItems([
+                                  ...indexesOfSelectedListItems.filter((item) => item != key),
+                                ]);
+                              }
+                            }}
+                          />
                           <div className="flex flex-col overflow-hidden overflow-ellipsis whitespace-nowrap">
                             <span className="px-2">{item.name}</span>
                             <span className="px-2">{item.shortURL}</span>
@@ -204,27 +317,27 @@ export default function Dashboard() {
             {/*Link pagination bar */}
             <div className="flex-0 mt-2 flex flex-row justify-center max-sm:mb-8">
               <ul className="flex flex-1 flex-row flex-wrap items-center justify-center border-b-2 shadow-sm">
-                {linkListPageButtonKeys.map((key) => (
+                {listPageButtonKeys.map((key) => (
                   <li key={key}>
                     <button
                       className={cn(
                         "border-t-[3px] border-transparent p-3",
                         {
-                          "border-blue-400 font-semibold": linkListFirstItemIndex === key * LINK_ITEM_PER_PAGE,
+                          "border-blue-400 font-semibold": firstDisplayedListItemIndex === key * LIST_ITEM_PER_PAGE,
                         },
                         {
-                          "hover:border-slate-300": linkListFirstItemIndex !== key * LINK_ITEM_PER_PAGE,
+                          "hover:border-slate-300": firstDisplayedListItemIndex !== key * LIST_ITEM_PER_PAGE,
                         },
                         {
                           hidden:
-                            numberOfLinkListPages > 9 &&
+                            numberOfListPages > 9 &&
                             !generateVisiblePaginationButtonKeys(
-                              linkListPageButtonKeys,
-                              linkListFirstItemIndex / LINK_ITEM_PER_PAGE,
+                              listPageButtonKeys,
+                              firstDisplayedListItemIndex / LIST_ITEM_PER_PAGE,
                             ).includes(key),
                         },
                       )}
-                      onClick={() => setLinkListFirstItemIndex(key * LINK_ITEM_PER_PAGE)}
+                      onClick={() => setFirstDisplayedListItemIndex(key * LIST_ITEM_PER_PAGE)}
                     >
                       {(key + 1).toString().padStart(2, "0")}
                     </button>
@@ -248,14 +361,14 @@ export default function Dashboard() {
                         "border-b-2 border-gray-400": nameEditingView,
                       },
                     )}
-                    value={nameInputValue.length > 0 ? nameInputValue : linkListItems.at(activeLinkListItemIndex)?.name}
+                    value={nameInputValue.length > 0 ? nameInputValue : linkListItems.at(activeListItemIndex)?.name}
                     onChange={(event) => {
                       setNameInputValue(event.target.value);
                     }}
                     onKeyDown={(event) => {
                       if (event.key === "Enter") {
                         if (nameEditingView) {
-                          let currentItem = linkListItems.at(activeLinkListItemIndex);
+                          let currentItem = linkListItems.at(activeListItemIndex);
                           if (currentItem?.shortURL && nameInputValue.length > 0)
                             updateLinkItemCustomName(currentItem?.shortURL, nameInputValue);
                         }
@@ -270,7 +383,7 @@ export default function Dashboard() {
                       className="ml-2 mr-4"
                       onClick={() => {
                         if (nameEditingView) {
-                          let currentItem = linkListItems.at(activeLinkListItemIndex);
+                          let currentItem = linkListItems.at(activeListItemIndex);
                           if (currentItem?.shortURL && nameInputValue.length > 0)
                             updateLinkItemCustomName(currentItem?.shortURL, nameInputValue);
                         }
@@ -279,7 +392,13 @@ export default function Dashboard() {
                     >
                       <Image src="/icons/edit_pencil.svg" width={24} height={24} alt="Edit pencil icon" />
                     </button>
-                    <button id="delet-link-button" className="mx-2" onClick={() => setDeleteLinkViewActive(true)}>
+                    <button
+                      id="delet-link-button"
+                      className="mx-2"
+                      onClick={() =>
+                        setDeleteLinkViewState({ ...deleteLinkViewState, active: true, bulkDelete: false })
+                      }
+                    >
                       <Image src="/icons/delete_icon.svg" width={24} height={24} alt="Edit pencil icon" />
                     </button>
                   </div>
@@ -294,11 +413,11 @@ export default function Dashboard() {
                         <div
                           className="ml-1 cursor-pointer"
                           onClick={() => {
-                            let content = linkListItems.at(activeLinkListItemIndex)?.shortURL?.trim();
+                            let content = linkListItems.at(activeListItemIndex)?.shortURL?.trim();
                             if (content) copyToClypboard(content);
                           }}
                         >
-                          {linkListItems.at(activeLinkListItemIndex)?.shortURL}
+                          {linkListItems.at(activeListItemIndex)?.shortURL}
                           <Image
                             className="ml-1 inline-block w-6"
                             src="/icons/copy_blue.svg"
@@ -327,7 +446,7 @@ export default function Dashboard() {
                       className="flex-1 rounded-md bg-transparent p-1"
                       rows={4}
                       readOnly={true}
-                      value={linkListItems.at(activeLinkListItemIndex)?.target_url}
+                      value={linkListItems.at(activeListItemIndex)?.target_url}
                     />
                   </div>
                 </div>
@@ -361,7 +480,7 @@ export default function Dashboard() {
                         fill="transparent"
                         strokeDasharray="252"
                         strokeDashoffset={`calc(252 - (252 * ${progressUntilNextPowerOfTen(
-                          Number(linkListItems.at(activeLinkListItemIndex)?.redirect_count),
+                          Number(linkListItems.at(activeListItemIndex)?.redirect_count),
                         )}) / 100)`}
                       ></circle>
 
@@ -373,7 +492,7 @@ export default function Dashboard() {
                         textAnchor="middle"
                         alignmentBaseline="middle"
                       >
-                        {nFormatter(Number(linkListItems.at(activeLinkListItemIndex)?.redirect_count), 1)}
+                        {nFormatter(Number(linkListItems.at(activeListItemIndex)?.redirect_count), 1)}
                       </text>
                     </svg>
                   </div>
@@ -385,7 +504,7 @@ export default function Dashboard() {
                     valueByCountryMap={
                       new Map(
                         linkListItems
-                          .at(activeLinkListItemIndex)
+                          .at(activeListItemIndex)
                           ?.click_by_country.map((obj) => [
                             obj.value as CountryCodeType,
                             { value: obj.score, className: countryBgColor(obj.score) },
@@ -417,16 +536,26 @@ export default function Dashboard() {
 
           {/*Delete link view */}
           <div>
-            {deleteLinkViewActive ? (
+            {deleteLinkViewState.active ? (
               <ConfirmationView
                 title="Delete link?"
-                detailedMessage={`Are you sure you want to delete the selected link and its associated data?\nThis action cannot be undone.`}
+                detailedMessage={
+                  deleteLinkViewState.bulkDelete
+                    ? `Are you sure you want to delete the selected ${indexesOfSelectedListItems.length} link and their associated data?\nThis action cannot be undone.`
+                    : `Are you sure you want to delete this link and its associated data?\nThis action cannot be undone.`
+                }
                 proccedButtonText="Delete"
                 iconSrc="/icons/delete_undraw.svg"
-                onCancel={() => setDeleteLinkViewActive(false)}
-                onProceed={() => {
-                  let itemToDelete = linkListItems.at(activeLinkListItemIndex);
-                  if (itemToDelete?.shortURL) deleteUserLink(itemToDelete?.shortURL);
+                onCancel={() => setDeleteLinkViewState({ ...deleteLinkViewState, active: false })}
+                onProceed={async () => {
+                  if (deleteLinkViewState.bulkDelete) {
+                    let itemsToDelete = indexesOfSelectedListItems.map((index) => linkListItems.at(index));
+                    itemsToDelete = itemsToDelete.filter((item) => item !== undefined);
+                    deleteUserLink(itemsToDelete as LinkListItemType[]);
+                  } else {
+                    let itemToDelete = linkListItems.at(activeListItemIndex);
+                    if (itemToDelete) deleteUserLink([itemToDelete]);
+                  }
                 }}
               />
             ) : null}
@@ -435,7 +564,7 @@ export default function Dashboard() {
           <div>
             {qrCodeViewActive ? (
               <QRCodeSelectorView
-                shortURL={linkListItems[activeLinkListItemIndex].shortURL}
+                shortURL={linkListItems[activeListItemIndex].shortURL}
                 onCloseClicked={() => {
                   setQrCodeViewActive(false);
                 }}
