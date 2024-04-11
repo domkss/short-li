@@ -12,6 +12,7 @@ import Image from "next/image";
 interface BtnListItem {
   id: number;
   text: string;
+  url: string;
   bgColor: string;
 }
 
@@ -33,16 +34,19 @@ export default function CustomBioDashboard() {
     {
       id: 1,
       text: "Twitter",
+      url: "https://x.com",
       bgColor: "#90cdf4",
     },
     {
       id: 2,
       text: "Facebook",
+      url: "https://facebook.com",
       bgColor: "#c3dafe",
     },
     {
       id: 3,
       text: "Youtube",
+      url: "https://youtube.com",
       bgColor: "#fc8181",
     },
   ]);
@@ -65,6 +69,7 @@ export default function CustomBioDashboard() {
           {
             id: btnList.length + 1,
             text: addButtonText,
+            url: "",
             bgColor: addButtonSelectedColor,
           },
         ]);
@@ -121,6 +126,7 @@ export default function CustomBioDashboard() {
                       key={key}
                       id={item.id.toString()}
                       style={{ backgroundColor: item.bgColor }}
+                      onClick={() => window.open(item.url, "_blank")}
                       className="mt-2 select-none rounded-md border border-gray-300 px-5 py-3 text-center shadow-sm"
                     >
                       {item.text}
@@ -131,39 +137,45 @@ export default function CustomBioDashboard() {
         </div>
 
         <div className="flex justify-center py-2">
-          <div className="relative flex basis-full justify-center rounded-md border border-gray-300 px-5 py-3 shadow-sm md:basis-2/3 xl:basis-1/3">
-            <input
-              placeholder="+ Add"
-              className="border-gray-400 text-center placeholder-black focus:border-b-2 focus:placeholder-transparent focus:outline-none"
-              value={addButtonText}
-              onFocus={() => setAddButtonTextInputFocused(true)}
-              onBlur={() => setAddButtonTextInputFocused(false)}
-              onChange={(e) => setAddButtonText(e.currentTarget.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") onAddBtn();
-              }}
-            />
+          <div className="relative flex basis-full flex-row rounded-md border border-gray-300 px-2 py-2 shadow-sm md:basis-2/3 xl:basis-1/3">
+            <div className="mx-3 flex basis-full flex-col">
+              <div className="ml-2 flex hidden flex-1 justify-start text-sm">Name</div>
+              <div className="flex flex-1 justify-start">
+                <input
+                  placeholder="+ Add"
+                  className="ml-2 block w-full border-gray-400 px-2 placeholder-black focus:border-b-2 focus:placeholder-transparent focus:outline-none"
+                  value={addButtonText}
+                  onFocus={() => setAddButtonTextInputFocused(true)}
+                  onBlur={() => setAddButtonTextInputFocused(false)}
+                  onChange={(e) => setAddButtonText(e.currentTarget.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") onAddBtn();
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-end">
+              <input
+                type="color"
+                list="presetColors"
+                className="h-8 w-[4.5rem] cursor-pointer rounded-lg border border-gray-200 bg-white p-1 disabled:pointer-events-none disabled:opacity-50"
+                id="hs-color-input"
+                value={addButtonSelectedColor}
+                onChange={(e) => {
+                  setAddButtonSelectedColor(e.currentTarget.value.trim());
+                  setAddButtonSelectedColorInputFocused(false);
+                }}
+                onFocus={() => setAddButtonSelectedColorInputFocused(true)}
+                onBlur={() => setAddButtonSelectedColorInputFocused(false)}
+                title="Choose your color"
+              />
 
-            <input
-              type="color"
-              list="presetColors"
-              className="absolute right-3 top-2 h-8 w-[4.5rem] cursor-pointer rounded-lg border border-gray-200 bg-white p-1 disabled:pointer-events-none disabled:opacity-50"
-              id="hs-color-input"
-              value={addButtonSelectedColor}
-              onChange={(e) => {
-                setAddButtonSelectedColor(e.currentTarget.value.trim());
-                setAddButtonSelectedColorInputFocused(false);
-              }}
-              onFocus={() => setAddButtonSelectedColorInputFocused(true)}
-              onBlur={() => setAddButtonSelectedColorInputFocused(false)}
-              title="Choose your color"
-            />
-
-            <datalist id="presetColors">
-              {COLOR_PICKER_SUGGESTED_COLORS.map((item, key) => (
-                <option key={key}>{item}</option>
-              ))}
-            </datalist>
+              <datalist id="presetColors">
+                {COLOR_PICKER_SUGGESTED_COLORS.map((item, key) => (
+                  <option key={key}>{item}</option>
+                ))}
+              </datalist>
+            </div>
           </div>
         </div>
 
