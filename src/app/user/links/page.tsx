@@ -209,7 +209,7 @@ export default function Dashboard() {
                 </div>
                 {/*Todo: Create detailed link add page with more options, until then just redirect to the main page */}
                 <button
-                  className="m-3 rounded-2xl border-2 border-blue-500 bg-blue-500 p-2 text-white"
+                  className="m-3 rounded-lg border-0 bg-blue-500 p-2 text-white shadow-sm"
                   onClick={() => reactRouter.replace("/")}
                 >
                   + Create Link
@@ -430,7 +430,7 @@ export default function Dashboard() {
                     </div>
                     <div className="mx-3 my-2 flex flex-row justify-center max-sm:mx-0">
                       <button
-                        className="m-2 inline-flex items-center rounded-2xl bg-blue-500 p-2 text-white"
+                        className="m-2 inline-flex items-center rounded-xl border-0 bg-blue-500 p-2 text-white shadow-sm"
                         onClick={() => setQrCodeViewActive(true)}
                       >
                         <Image className="mx-1" src="/icons/qr_code_icon.svg" width={28} height={28} alt=""></Image>
