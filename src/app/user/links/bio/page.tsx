@@ -8,6 +8,8 @@ import { useState, useEffect, useCallback } from "react";
 import { debounce } from "@/lib/client/uiHelperFunctions";
 import { COLOR_PICKER_SUGGESTED_COLORS } from "@/lib/client/clientConstants";
 import Image from "next/image";
+import { cn } from "@/lib/client/uiHelperFunctions";
+import { isValidHttpURL } from "@/lib/client/dataValidations";
 
 interface BtnListItem {
   id: number;
@@ -25,8 +27,10 @@ export default function CustomBioDashboard() {
     reactRouter.replace("/login");
 */
 
-  const [addButtonText, setAddButtonText] = useState("");
-  const [addButtonSelectedColor, setAddButtonSelectedColor] = useState("#90cdf4");
+  const [newLinkItemName, setNewLinkItemName] = useState("");
+  const [addNewItemButtonInputText, setAddNewItemButtonInputText] = useState("");
+  const [addNewItemSelectedColor, setAddNewItemSelectedColor] = useState("#90cdf4");
+
   const [addButtonTextInputFocused, setAddButtonTextInputFocused] = useState(false);
   const [addButtonSelectedColorInputFocused, setAddButtonSelectedColorInputFocused] = useState(false);
 
@@ -61,29 +65,44 @@ export default function CustomBioDashboard() {
     setBtnList(reorderedItems);
   };
 
-  const onAddBtn = () => {
+  const addNewLinkItem = () => {
     {
-      if (addButtonText.trim().length > 0) {
+      if (addNewItemButtonInputText.trim().length < 1) {
+        setNewLinkItemName("");
+        return;
+      }
+
+      if (newLinkItemName.trim().length < 1) {
+        setNewLinkItemName(addNewItemButtonInputText);
+        setAddNewItemButtonInputText("https://");
+        return;
+      }
+
+      if (isValidHttpURL(addNewItemButtonInputText)) {
         setBtnList([
           ...btnList,
           {
             id: btnList.length + 1,
-            text: addButtonText,
-            url: "",
-            bgColor: addButtonSelectedColor,
+            text: newLinkItemName,
+            url: addNewItemButtonInputText,
+            bgColor: addNewItemSelectedColor,
           },
         ]);
-        setAddButtonText("");
+      } else {
+        //Todo: Throw error
       }
+
+      setAddNewItemButtonInputText("");
+      setNewLinkItemName("");
     }
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSave = useCallback(
     debounce(() => {
-      onAddBtn();
+      addNewLinkItem();
     }, 1000),
-    [addButtonText, addButtonSelectedColor],
+    [addNewItemButtonInputText, addNewItemSelectedColor],
   );
 
   useEffect(() => {
@@ -139,17 +158,21 @@ export default function CustomBioDashboard() {
         <div className="flex justify-center py-2">
           <div className="relative flex basis-full flex-row rounded-md border border-gray-300 px-2 py-2 shadow-sm md:basis-2/3 xl:basis-1/3">
             <div className="mx-3 flex basis-full flex-col">
-              <div className="ml-2 flex hidden flex-1 justify-start text-sm">Name</div>
+              <div className={cn("ml-2 flex flex-1 justify-start text-sm", { hidden: newLinkItemName.length < 1 })}>
+                {newLinkItemName}
+              </div>
               <div className="flex flex-1 justify-start">
                 <input
                   placeholder="+ Add"
                   className="ml-2 block w-full border-gray-400 px-2 placeholder-black focus:border-b-2 focus:placeholder-transparent focus:outline-none"
-                  value={addButtonText}
+                  value={addNewItemButtonInputText}
                   onFocus={() => setAddButtonTextInputFocused(true)}
-                  onBlur={() => setAddButtonTextInputFocused(false)}
-                  onChange={(e) => setAddButtonText(e.currentTarget.value)}
+                  onBlur={() => {
+                    setAddButtonTextInputFocused(false);
+                  }}
+                  onChange={(e) => setAddNewItemButtonInputText(e.currentTarget.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") onAddBtn();
+                    if (e.key === "Enter") addNewLinkItem();
                   }}
                 />
               </div>
@@ -160,9 +183,9 @@ export default function CustomBioDashboard() {
                 list="presetColors"
                 className="h-8 w-[4.5rem] cursor-pointer rounded-lg border border-gray-200 bg-white p-1 disabled:pointer-events-none disabled:opacity-50"
                 id="hs-color-input"
-                value={addButtonSelectedColor}
+                value={addNewItemSelectedColor}
                 onChange={(e) => {
-                  setAddButtonSelectedColor(e.currentTarget.value.trim());
+                  setAddNewItemSelectedColor(e.currentTarget.value.trim());
                   setAddButtonSelectedColorInputFocused(false);
                 }}
                 onFocus={() => setAddButtonSelectedColorInputFocused(true)}
@@ -177,10 +200,6 @@ export default function CustomBioDashboard() {
               </datalist>
             </div>
           </div>
-        </div>
-
-        <div className="mt-12 flex justify-center">
-          <SocialMediaRefBar />
         </div>
       </div>
     </main>
