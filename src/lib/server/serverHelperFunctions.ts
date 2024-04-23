@@ -3,7 +3,6 @@ import { randomBytes } from "crypto";
 import base58 from "bs58";
 import { RECAPTCHA_ACTIONS } from "./serverConstants";
 
-/*Helper functions */
 export function getRandomBase58String(length: number) {
   const BUFFER_SIZE = 512;
   if (!length || typeof length !== "number") throw new Error('base62 length must be a number "' + length + '"');

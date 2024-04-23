@@ -29,14 +29,14 @@ export const loginUserSchema = z.object({
 export const registerUserSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
-  reCaptchaToken: reCaptchaTokenSchema,
+  recaptcha_token: reCaptchaTokenSchema,
 });
 
 export const passwordRecoverySchema = z.object({
   email: emailSchema,
-  reCaptchaToken: reCaptchaTokenSchema,
-  recoveryToken: recoveryTokenSchema,
-  newPassword: passwordSchema.optional(),
+  recaptcha_token: reCaptchaTokenSchema,
+  recovery_token: recoveryTokenSchema,
+  new_password: passwordSchema.optional(),
 });
 
 export const urlSchema = z.object({
@@ -48,5 +48,5 @@ export const shortURLSchema = z.object({
     .string()
     .min(1)
     .transform((string) => string.split("/").pop()),
-  newCustomName: z.string().min(1).optional(),
+  new_custom_name: z.string().min(1).optional(),
 });

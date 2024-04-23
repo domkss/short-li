@@ -22,6 +22,7 @@ import LoadingSpinner from "@/components/atomic/LoadingSpinner";
 import "./session-map.css";
 
 export default function Dashboard() {
+  //#region State variables
   const LIST_ITEM_PER_PAGE = 10;
   const [firstDisplayedListItemIndex, setFirstDisplayedListItemIndex] = useState(0);
   const [originalLinkList, setOriginalLinkList] = useState<LinkListItemType[]>([]);
@@ -41,16 +42,17 @@ export default function Dashboard() {
   const [deleteLinkViewState, setDeleteLinkViewState] = useState({ active: false, bulkDelete: false });
   const [qrCodeViewActive, setQrCodeViewActive] = useState(false);
   const [contentLoadingFinished, setContentLoadingFinished] = useState(false);
+  //#endregion
 
-  /* Api call functions */
+  //#region Api call functions
   async function getUserLinks() {
     let response = await fetch("/api/link");
     let data = await response.json();
-    let linkList: LinkListItemType[] = data.linkDataList;
+    let linkList: LinkListItemType[] = data.link_data_list;
 
     if (data.success && linkList[0]?.shortURL) {
-      setOriginalLinkList(data.linkDataList);
-      setLinkListItems(data.linkDataList);
+      setOriginalLinkList(data.link_data_list);
+      setLinkListItems(data.link_data_list);
       searchListElements();
     } else {
       setOriginalLinkList([]);
@@ -97,7 +99,7 @@ export default function Dashboard() {
       method: "PATCH",
       body: JSON.stringify({
         url: shortURL,
-        newCustomName: newCustomName,
+        new_custom_name: newCustomName,
       }),
     });
     let data = await result.json();
@@ -118,13 +120,15 @@ export default function Dashboard() {
       }
     }
   }
+  //#endregion
 
-  /* Authentication check and redirect*/
+  //#region Authentication check and redirect
   const reactRouter = useRouter();
   const session = useSession();
   let isServer = typeof window === "undefined" ? true : false;
   if (!isServer && (session.status !== "authenticated" || !session.data || !session.data.user))
     reactRouter.replace("/login");
+  //#endregion
 
   /* Get user link list */
   useEffect(() => {
@@ -132,7 +136,7 @@ export default function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* List filtering functions */
+  //#region List filtering function
   const searchListElements = debounce(() => {
     if (searchWord.trim().length === 0) {
       setLinkListItems(originalLinkList);
@@ -148,8 +152,9 @@ export default function Dashboard() {
   }, 400);
 
   useEffect(searchListElements, [searchWord, searchListElements]);
+  //#endregion
 
-  /* Select all list item checkbox state updater*/
+  //Select all list item checkbox state updater
   useEffect(() => {
     if (!selectAllListItemCheckboxRef.current) return;
     //Nothing is selected from the current page
@@ -188,7 +193,6 @@ export default function Dashboard() {
     }
   }, [indexesOfSelectedListItems, selectAllListItemCheckboxRef, firstDisplayedListItemIndex, linkListItems.length]);
 
-  /* Helper functions */
   const resetDetailedView = () => {
     setNameEditingView(false);
     setNameInputValue("");
