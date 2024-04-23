@@ -1,9 +1,10 @@
-/*Redis constants*/
+//#region Redis constants
 export enum REDIS_NAME_PATTERNS {
   LINK_PRETAG = "link:",
   USER_PRETAG = "user:",
   USER_LINKS = "user:links:",
   STATISTIC_COUNTRY_CODE = "statistic:countries:",
+  BIO_PRETAG = "bio:",
 }
 
 export enum REDIS_LINK_FIELDS {
@@ -22,6 +23,11 @@ export enum REDIS_USER_FIELDS {
   RECOVERY_TOKEN_EXPIRY_TIME = "recovery_token_expiry_date",
   INVALID_RECOVERY_TOKEN_COUNTER = "invalid_recovery_counter",
   OAUTH_PROVIDER = "oauth_provider",
+  BIO_PAGE_ID = "bio_page_id",
+}
+
+export enum REDIS_BIO_FIELDS {
+  DESCRIPTION = "description",
 }
 
 export enum REDIS_ERRORS {
@@ -30,8 +36,9 @@ export enum REDIS_ERRORS {
   DATA_VALIDATION_ERROR = "Input data validation error",
   ACCESS_DENIED_ERROR = "Access dennied",
 }
+//#endregion
 
-/*Login constants*/
+//#region Login constants
 export enum AUTHENTICATION_ERRORS {
   USER_ALREADY_EXISTS = "This email address is already registered",
   RECAPCHA_VALIDATION_FAILED = "ReCaptcha validation failed",
@@ -54,3 +61,4 @@ export enum AUTH_PROVIDERS {
   GOOGLE = "google",
   FACEBOOK = "facebook",
 }
+//#endregion

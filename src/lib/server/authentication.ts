@@ -14,7 +14,7 @@ import { LoginUserResult } from "./serverConstants";
 import z from "zod";
 import Mailer from "./mailer";
 
-/* Credentials Auth Functions */
+//#region Credentials Auth Functions
 export async function loginUser(email: string, password: string): Promise<LoginUserResult> {
   try {
     const redisClient = await RedisDB.getClient();
@@ -174,8 +174,9 @@ export async function updateUserPasswordWithRecoveryToken(
     else throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   }
 }
+//#endregion
 
-/*OAuth Functions */
+//#region OAuth Functions
 export async function checkLoginProvider(email: string, account_provider: string): Promise<LoginUserResult> {
   try {
     const redisClient = await RedisDB.getClient();
@@ -201,8 +202,9 @@ export async function checkLoginProvider(email: string, account_provider: string
 
   return LoginUserResult.Success;
 }
+//#endregion
 
-/*Helper functions */
+//#region Helper functions
 
 function createPasswordHash(password: string) {
   let salt = crypto.randomBytes(16).toString("hex");
@@ -213,3 +215,4 @@ function createPasswordHash(password: string) {
 function isPasswordValid(password: string, salt: string, hash: string) {
   return hash === crypto.pbkdf2Sync(password, salt, 1000, 64, `sha512`).toString(`hex`);
 }
+//#endregion

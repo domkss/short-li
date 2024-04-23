@@ -1,7 +1,7 @@
 export const NAV_BAR_LINKS = [
   { title: "URL Shortener", path: "/", authRequired: false },
   { title: "My Links", path: "/user/links", authRequired: true },
-  { title: "Link-in-bio", path: "/user/links/bio", authRequired: true },
+  { title: "Link-in-bio", path: "/user/links/link-in-bio", authRequired: true },
 ];
 
 export const PATHS_WITH_HIDDEN_NAVBAR = ["/s/"];

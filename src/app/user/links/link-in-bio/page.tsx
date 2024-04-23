@@ -2,7 +2,6 @@
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import React from "react";
-import SocialMediaRefBar from "@/components/atomic/SocialMediaRefBar";
 import OrderableListLayout, { KeyedReactElement } from "@/components/atomic/OrderableListLayout";
 import { useState, useEffect, useCallback } from "react";
 import { debounce } from "@/lib/client/uiHelperFunctions";
@@ -10,13 +9,7 @@ import { COLOR_PICKER_SUGGESTED_COLORS } from "@/lib/client/clientConstants";
 import Image from "next/image";
 import { cn } from "@/lib/client/uiHelperFunctions";
 import { isValidHttpURL } from "@/lib/client/dataValidations";
-
-interface BtnListItem {
-  id: number;
-  text: string;
-  url: string;
-  bgColor: string;
-}
+import { LinkInBioButtonItem } from "@/lib/common/Types";
 
 export default function CustomBioDashboard() {
   /*
@@ -27,34 +20,42 @@ export default function CustomBioDashboard() {
     reactRouter.replace("/login");
 */
 
+  const [btnList, setBtnList] = useState<LinkInBioButtonItem[]>([]);
+
+  //#region Page Data States
+  const [bio_page_url, setBio_page_url] = useState("");
+  const [descriptionText, setDescriptionText] = useState("");
+  //#endregion
+
+  //#region Add Link Button states
   const [newLinkItemName, setNewLinkItemName] = useState("");
   const [addNewItemButtonInputText, setAddNewItemButtonInputText] = useState("");
   const [addNewItemSelectedColor, setAddNewItemSelectedColor] = useState("#90cdf4");
-
   const [addButtonTextInputFocused, setAddButtonTextInputFocused] = useState(false);
   const [addButtonSelectedColorInputFocused, setAddButtonSelectedColorInputFocused] = useState(false);
+  //#endregion
 
-  const [btnList, setBtnList] = useState<BtnListItem[]>([
-    {
-      id: 1,
-      text: "Twitter",
-      url: "https://x.com",
-      bgColor: "#90cdf4",
-    },
-    {
-      id: 2,
-      text: "Facebook",
-      url: "https://facebook.com",
-      bgColor: "#c3dafe",
-    },
-    {
-      id: 3,
-      text: "Youtube",
-      url: "https://youtube.com",
-      bgColor: "#fc8181",
-    },
-  ]);
+  //#region Get Data
+  async function getPageData() {
+    let response = await fetch("/api/link-in-bio");
+    let data = await response.json();
+    let page_url: string = data.page_url;
+    let description: string = data.description;
+    let linkInBioLinkButtons: LinkInBioButtonItem[] = data.link_buttons;
 
+    if (data.success) {
+      setBio_page_url(page_url);
+      setDescriptionText(description);
+      setBtnList(linkInBioLinkButtons);
+    }
+  }
+
+  useEffect(() => {
+    getPageData();
+  }, []);
+  //#endregion
+
+  //#region UI control functions
   const onDragEnd = (result: any) => {
     if (!result.destination) return;
 
@@ -96,7 +97,9 @@ export default function CustomBioDashboard() {
       setNewLinkItemName("");
     }
   };
+  //#endregion
 
+  //#region UX enhance functions
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSave = useCallback(
     debounce(() => {
@@ -104,7 +107,6 @@ export default function CustomBioDashboard() {
     }, 1000),
     [addNewItemButtonInputText, addNewItemSelectedColor],
   );
-
   useEffect(() => {
     if (addButtonSelectedColorInputFocused === true || addButtonTextInputFocused === true) {
       debouncedSave.cancel();
@@ -116,6 +118,7 @@ export default function CustomBioDashboard() {
 
     return () => debouncedSave.cancel();
   }, [addButtonTextInputFocused, addButtonSelectedColorInputFocused, debouncedSave]);
+  //#endregion
 
   return (
     <main className="flex min-w-full flex-col">
@@ -129,11 +132,9 @@ export default function CustomBioDashboard() {
             height={80}
           />
         </div>
+        <div className="my-2 flex justify-center">{bio_page_url}</div>
         <div className="my-2 flex justify-center">
-          <div className="min-w-xl mb-6 text-gray-800 md:basis-2/3 xl:basis-1/3">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquam felis a nisi luctus, eget
-            convallis urna volutpat. Sed ullamcorper elit id enim lacinia, at feugiat lorem efficitur.
-          </div>
+          <div className="min-w-xl mb-6 text-gray-800 md:basis-2/3 xl:basis-1/3">{descriptionText}</div>
         </div>
         <div className="flex justify-center">
           <OrderableListLayout className="flex basis-full flex-col md:basis-2/3 xl:basis-1/3" onDragEnd={onDragEnd}>

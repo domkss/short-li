@@ -1,55 +1,51 @@
 import "server-only";
 import RedisDB from "./redisDB";
-import { REDIS_ERRORS, REDIS_NAME_PATTERNS, REDIS_LINK_FIELDS } from "./serverConstants";
+import { REDIS_ERRORS, REDIS_NAME_PATTERNS, REDIS_LINK_FIELDS, REDIS_BIO_FIELDS } from "./serverConstants";
 import { isValidHttpURL } from "../client/dataValidations";
 import { DefaultSession } from "next-auth";
 import { RedisClientType } from "redis";
 import GeoLocationService from "./GeoLocationService";
 import { getRandomBase58String, formatShortLink } from "./serverHelperFunctions";
-import { LinkListItemType, Promisify } from "../common/Types";
+import { LinkListItemType, Promisify, LinkInBioButtonItem, CreateShortURLOptions } from "../common/Types";
+import { REDIS_USER_FIELDS } from "./serverConstants";
 
-//Todo: Implement advanced link creation with more options
-type createShortURLOptions = {
-  session: DefaultSession | null;
-  linkCustomName?: string;
-};
-
-/*Link related CRUD functions */
-export async function createShortURL(longURL: string, options: createShortURLOptions) {
+//#region Link related CRUD functions
+export async function createShortURL(longURL: string, options: CreateShortURLOptions) {
   if (longURL.length < 5 || longURL.length > 2048 || !isValidHttpURL(longURL))
     return REDIS_ERRORS.DATA_VALIDATION_ERROR;
 
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
-  var status = false;
-  var shortURL: string;
-  var lenght = 4;
-  var numberOfRetries = 0;
+  let status = false;
+  let shortURL: string;
+  let lenght = 4;
+  let numberOfRetries = 0;
 
   do {
     shortURL = getRandomBase58String(lenght + Math.floor(numberOfRetries / 2));
     status = await redisClient.HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TARGET, longURL);
-    if (status && options.session && options.session.user?.email) {
-      let linkCustomName = options.linkCustomName;
-      if (!linkCustomName)
-        linkCustomName = `Link ${(
-          (await redisClient.SCARD(REDIS_NAME_PATTERNS.USER_LINKS + options.session.user?.email)) + 1
-        ).toString()}.`;
-
-      redisClient
-        .MULTI()
-        .HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.NAME, linkCustomName)
-        .HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TRACKED, "1")
-        .SADD(REDIS_NAME_PATTERNS.USER_LINKS + options.session.user?.email, shortURL)
-        .EXEC(false);
-    } else {
-      redisClient.EXPIRE(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, 15552000);
-    }
     numberOfRetries++;
   } while (status !== true && numberOfRetries <= 8);
 
-  if (numberOfRetries > 6) throw Error(REDIS_ERRORS.REDIS_DB_WRITE_ERROR);
+  if (status !== true) throw Error(REDIS_ERRORS.REDIS_DB_WRITE_ERROR);
+
+  if (options.session && options.session.user?.email) {
+    let linkCustomName = options.linkCustomName;
+    if (!linkCustomName)
+      linkCustomName = `Link ${(
+        (await redisClient.SCARD(REDIS_NAME_PATTERNS.USER_LINKS + options.session.user?.email)) + 1
+      ).toString()}.`;
+
+    redisClient
+      .MULTI()
+      .HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.NAME, linkCustomName)
+      .HSETNX(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TRACKED, "1")
+      .SADD(REDIS_NAME_PATTERNS.USER_LINKS + options.session.user?.email, shortURL)
+      .EXEC(false);
+  } else {
+    redisClient.EXPIRE(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, 15552000);
+  }
 
   return formatShortLink(shortURL);
 }
@@ -136,8 +132,80 @@ export async function updateLinkCustomName(shortURL: string, newCustomName: stri
 
   return status;
 }
+//#endregion
 
-/*Helper functions */
+//#region Link-in-Bio Page CRUD functions
+export async function getCurrentUserLinkInBioPageId(session: DefaultSession) {
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  let pageId = await redisClient.HGET(
+    REDIS_NAME_PATTERNS.USER_PRETAG + session.user?.email,
+    REDIS_USER_FIELDS.BIO_PAGE_ID,
+  );
+
+  if (!pageId) {
+    let status = false;
+    let lenght = 4;
+    let numberOfRetries = 0;
+
+    do {
+      pageId = getRandomBase58String(lenght + Math.floor(numberOfRetries / 2));
+
+      status = await redisClient.HSETNX(
+        REDIS_NAME_PATTERNS.BIO_PRETAG + pageId,
+        REDIS_BIO_FIELDS.DESCRIPTION,
+        "Description",
+      );
+      numberOfRetries++;
+    } while (status !== true && numberOfRetries <= 8);
+
+    if (status !== true) throw Error(REDIS_ERRORS.REDIS_DB_WRITE_ERROR);
+    await redisClient.HSETNX(
+      REDIS_NAME_PATTERNS.USER_PRETAG + session.user?.email,
+      REDIS_USER_FIELDS.BIO_PAGE_ID,
+      pageId,
+    );
+  }
+
+  return pageId;
+}
+
+export async function getLinkInBioDescription(pageId: string) {
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+  let description = await redisClient.HGET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.DESCRIPTION);
+  return description;
+}
+
+export async function getLinkInBioLinkButtons(pageId: string) {
+  let temp: LinkInBioButtonItem[] = [
+    {
+      id: 1,
+      text: "Twitter",
+      url: "https://x.com",
+      bgColor: "#90cdf4",
+    },
+    {
+      id: 2,
+      text: "Facebook",
+      url: "https://facebook.com",
+      bgColor: "#c3dafe",
+    },
+    {
+      id: 3,
+      text: "Youtube",
+      url: "https://youtube.com",
+      bgColor: "#fc8181",
+    },
+  ];
+
+  return temp;
+}
+
+//#endregion
+
+//Helper functions
 async function saveRedirectedUserCountryCode(redisClient: RedisClientType, shortURL: string, ip: string) {
   let countryCode = await GeoLocationService.getCountry(ip);
   redisClient.ZINCRBY(REDIS_NAME_PATTERNS.STATISTIC_COUNTRY_CODE + shortURL, 1, countryCode);
