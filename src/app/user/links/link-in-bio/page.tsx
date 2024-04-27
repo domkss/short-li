@@ -69,7 +69,7 @@ export default function CustomBioDashboard() {
     const reorderedItems = Array.from(btnList);
     const [reorderedItem] = reorderedItems.splice(result.source.index, 1);
     reorderedItems.splice(result.destination.index, 0, reorderedItem);
-
+    patchBioButtonList(reorderedItems);
     setBtnList(reorderedItems);
   };
 
@@ -90,7 +90,7 @@ export default function CustomBioDashboard() {
         let newBtnList = [
           ...btnList,
           {
-            id: btnList.length + 1,
+            id: Math.max(...btnList.map((item) => item.id)) + 1,
             text: newLinkItemName,
             url: addNewItemButtonInputText,
             bgColor: addNewItemSelectedColor,
