@@ -1,4 +1,6 @@
-import { DefaultSession } from "next-auth";
+import { Session } from "next-auth";
+import { z } from "zod";
+import { emailSchema } from "../client/dataValidations";
 
 export type LinkListItemType = {
   name: string;
@@ -21,6 +23,14 @@ export interface LinkInBioButtonItem {
 
 //Todo: Implement advanced link creation with more options
 export type CreateShortURLOptions = {
-  session: DefaultSession | null;
+  session: SessionWithEmail | null;
   linkCustomName?: string;
 };
+
+export interface SessionWithEmail extends Session {
+  user: {
+    name?: string | null;
+    email: z.infer<typeof emailSchema>;
+    image?: string | null;
+  };
+}

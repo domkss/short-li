@@ -2,12 +2,12 @@ import "server-only";
 import RedisDB from "./redisDB";
 import { REDIS_ERRORS, REDIS_NAME_PATTERNS, REDIS_LINK_FIELDS, REDIS_BIO_FIELDS } from "./serverConstants";
 import { isValidHttpURL } from "../client/dataValidations";
-import { DefaultSession } from "next-auth";
 import { RedisClientType } from "redis";
 import GeoLocationService from "./GeoLocationService";
 import { getRandomBase58String, formatShortLink } from "./serverHelperFunctions";
 import { LinkListItemType, Promisify, LinkInBioButtonItem, CreateShortURLOptions } from "../common/Types";
 import { REDIS_USER_FIELDS } from "./serverConstants";
+import { SessionWithEmail } from "../common/Types";
 
 //#region Link related CRUD functions
 export async function createShortURL(longURL: string, options: CreateShortURLOptions) {
@@ -67,7 +67,7 @@ export async function getDestinationURL(shortURL: string, ip?: string) {
   }
 }
 
-export async function getAllUserLinks(session: DefaultSession) {
+export async function getAllUserLinks(session: SessionWithEmail) {
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   let userShortURLs = await redisClient.SMEMBERS(REDIS_NAME_PATTERNS.USER_LINKS + session.user?.email);
@@ -103,7 +103,7 @@ export async function getAllUserLinks(session: DefaultSession) {
   return (await Promise.all(arrayOfPromises)) as LinkListItemType[];
 }
 
-export async function deleteShortURL(shortURL: string, session: DefaultSession) {
+export async function deleteShortURL(shortURL: string, session: SessionWithEmail) {
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
@@ -120,7 +120,7 @@ export async function deleteShortURL(shortURL: string, session: DefaultSession) 
   return status;
 }
 
-export async function updateLinkCustomName(shortURL: string, newCustomName: string, session: DefaultSession) {
+export async function setLinkCustomName(shortURL: string, newCustomName: string, session: SessionWithEmail) {
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
@@ -135,7 +135,7 @@ export async function updateLinkCustomName(shortURL: string, newCustomName: stri
 //#endregion
 
 //#region Link-in-Bio Page CRUD functions
-export async function getCurrentUserLinkInBioPageId(session: DefaultSession) {
+export async function getCurrentUserLinkInBioPageId(session: SessionWithEmail) {
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
@@ -174,33 +174,76 @@ export async function getCurrentUserLinkInBioPageId(session: DefaultSession) {
 export async function getLinkInBioDescription(pageId: string) {
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
   let description = await redisClient.HGET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.DESCRIPTION);
   return description;
 }
 
-export async function getLinkInBioLinkButtons(pageId: string) {
-  let temp: LinkInBioButtonItem[] = [
-    {
-      id: 1,
-      text: "Twitter",
-      url: "https://x.com",
-      bgColor: "#90cdf4",
-    },
-    {
-      id: 2,
-      text: "Facebook",
-      url: "https://facebook.com",
-      bgColor: "#c3dafe",
-    },
-    {
-      id: 3,
-      text: "Youtube",
-      url: "https://youtube.com",
-      bgColor: "#fc8181",
-    },
-  ];
+export async function setLinkInBioDescription(newDescription: string, session: SessionWithEmail) {
+  let pageId = await getCurrentUserLinkInBioPageId(session);
 
-  return temp;
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  let status = await redisClient.HSET(
+    REDIS_NAME_PATTERNS.BIO_PRETAG + pageId,
+    REDIS_BIO_FIELDS.DESCRIPTION,
+    newDescription,
+  );
+
+  if (!status) throw Error(REDIS_ERRORS.REDIS_DB_WRITE_ERROR);
+
+  return status;
+}
+
+export async function getLinkInBioLinkButtons(pageId: string) {
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  let linkButtonList: LinkInBioButtonItem[] = [];
+
+  let buttonIDsOrderedJSONString = await redisClient.HGET(
+    REDIS_NAME_PATTERNS.BIO_PRETAG + pageId,
+    REDIS_BIO_FIELDS.BUTTON_ID_LIST_ORDERED,
+  );
+  if (!buttonIDsOrderedJSONString) return [];
+
+  let buttonIDsOrderedArray: Number[] = JSON.parse(buttonIDsOrderedJSONString);
+
+  for (let item_id of buttonIDsOrderedArray) {
+    let buttonJSONString = await redisClient.HGET(
+      REDIS_NAME_PATTERNS.BIO_PRETAG + pageId,
+      REDIS_BIO_FIELDS.BUTTON + item_id,
+    );
+
+    if (!buttonJSONString) continue;
+
+    let button: LinkInBioButtonItem = JSON.parse(buttonJSONString);
+    linkButtonList.push(button);
+  }
+
+  return linkButtonList;
+}
+
+export async function setLinkInBioLinkButtons(linkInBioButtonList: LinkInBioButtonItem[], session: SessionWithEmail) {
+  let pageId = await getCurrentUserLinkInBioPageId(session);
+
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  for (let item of linkInBioButtonList) {
+    await redisClient.HSET(
+      REDIS_NAME_PATTERNS.BIO_PRETAG + pageId,
+      REDIS_BIO_FIELDS.BUTTON + item.id,
+      JSON.stringify(item),
+    );
+  }
+
+  await redisClient.HSET(
+    REDIS_NAME_PATTERNS.BIO_PRETAG + pageId,
+    REDIS_BIO_FIELDS.BUTTON_ID_LIST_ORDERED,
+    JSON.stringify(linkInBioButtonList.map((item) => item.id)),
+  );
 }
 
 //#endregion
