@@ -29,7 +29,7 @@ export enum REDIS_USER_FIELDS {
 export enum REDIS_BIO_FIELDS {
   DESCRIPTION = "description",
   BUTTON = "button:",
-  BUTTON_ID_LIST_ORDERED = "button_id_list_ordered",
+  BUTTON_ID_LIST = "button_id_list_ordered",
 }
 
 export enum REDIS_ERRORS {
