@@ -9,6 +9,7 @@ import {
 import { getServerSession } from "next-auth";
 import authOptions from "../auth/[...nextauth]/authOptions";
 import { formatShortLink } from "@/lib/server/serverHelperFunctions";
+import { isSessionWithEmail } from "@/lib/client/dataValidations";
 
 //Get User Links
 export async function GET(req: NextRequest) {
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   let pageId = searchParams.get("id");
 
-  if (!pageId && session) {
+  if (!pageId && isSessionWithEmail(session)) {
     try {
       pageId = await getCurrentUserLinkInBioPageId(session);
     } catch (_) {

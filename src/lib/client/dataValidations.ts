@@ -1,4 +1,6 @@
+import { Session } from "next-auth";
 import { z } from "zod";
+import { SessionWithEmail } from "../common/Types";
 
 /*Data validation checkers */
 
@@ -50,3 +52,9 @@ export const shortURLSchema = z.object({
     .transform((string) => string.split("/").pop()),
   new_custom_name: z.string().min(1).optional(),
 });
+
+export function isSessionWithEmail(session: Session | null): session is SessionWithEmail {
+  if (!session || !session.user || !session.user.email) return false;
+
+  return emailSchema.safeParse(session.user.email).success;
+}
