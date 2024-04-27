@@ -53,6 +53,15 @@ export const shortURLSchema = z.object({
   new_custom_name: z.string().min(1).optional(),
 });
 
+export const linkInBioButtonItemsSchema = z
+  .object({
+    id: z.number(),
+    text: z.string(),
+    url: z.string().url(),
+    bgColor: z.string().regex(/^#(?:[0-9a-fA-F]{3}){1,2}$/),
+  })
+  .array();
+
 export function isSessionWithEmail(session: Session | null): session is SessionWithEmail {
   if (!session || !session.user || !session.user.email) return false;
 

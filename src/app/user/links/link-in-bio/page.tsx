@@ -35,7 +35,7 @@ export default function CustomBioDashboard() {
   const [addButtonSelectedColorInputFocused, setAddButtonSelectedColorInputFocused] = useState(false);
   //#endregion
 
-  //#region Get Data
+  //#region GET/POST Data
   async function getPageData() {
     let response = await fetch("/api/link-in-bio");
     let data = await response.json();
@@ -47,6 +47,13 @@ export default function CustomBioDashboard() {
       setBio_page_url(page_url);
       setDescriptionText(description);
       setBtnList(linkInBioLinkButtons);
+    }
+  }
+
+  async function patchBioButtonList(newBtnList: LinkInBioButtonItem[]) {
+    let response = await fetch("/api/link-in-bio", { method: "PATCH", body: JSON.stringify(newBtnList) });
+    if (!response.ok) {
+      //Todo: Display error
     }
   }
 
@@ -80,7 +87,7 @@ export default function CustomBioDashboard() {
       }
 
       if (isValidHttpURL(addNewItemButtonInputText)) {
-        setBtnList([
+        let newBtnList = [
           ...btnList,
           {
             id: btnList.length + 1,
@@ -88,9 +95,12 @@ export default function CustomBioDashboard() {
             url: addNewItemButtonInputText,
             bgColor: addNewItemSelectedColor,
           },
-        ]);
+        ];
+
+        patchBioButtonList(newBtnList);
+        setBtnList(newBtnList);
       } else {
-        //Todo: Throw error
+        //Todo: Display error
       }
 
       setAddNewItemButtonInputText("");
