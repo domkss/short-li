@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import React from "react";
 import OrderableListLayout, { KeyedReactElement } from "@/components/atomic/OrderableListLayout";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { debounce } from "@/lib/client/uiHelperFunctions";
 import { COLOR_PICKER_SUGGESTED_COLORS } from "@/lib/client/clientConstants";
 import Image from "next/image";
@@ -23,7 +23,7 @@ export default function CustomBioDashboard() {
   const [btnList, setBtnList] = useState<LinkInBioButtonItem[]>([]);
 
   //#region Page Data States
-  const [bio_page_url, setBio_page_url] = useState("");
+  const [bioPageUrl, setBioPageUrl] = useState("");
   const [descriptionText, setDescriptionText] = useState("");
   //#endregion
 
@@ -33,6 +33,8 @@ export default function CustomBioDashboard() {
   const [addNewItemSelectedColor, setAddNewItemSelectedColor] = useState("#90cdf4");
   const [addButtonTextInputFocused, setAddButtonTextInputFocused] = useState(false);
   const [addButtonSelectedColorInputFocused, setAddButtonSelectedColorInputFocused] = useState(false);
+  const addButtonInputRef = useRef<HTMLInputElement>(null);
+
   //#endregion
 
   //#region GET/POST Data
@@ -44,7 +46,7 @@ export default function CustomBioDashboard() {
     let linkInBioLinkButtons: LinkInBioButtonItem[] = data.link_buttons;
 
     if (data.success) {
-      setBio_page_url(page_url);
+      setBioPageUrl(page_url);
       setDescriptionText(description);
       setBtnList(linkInBioLinkButtons);
     }
@@ -83,6 +85,7 @@ export default function CustomBioDashboard() {
       if (newLinkItemName.trim().length < 1) {
         setNewLinkItemName(addNewItemButtonInputText);
         setAddNewItemButtonInputText("https://");
+        addButtonInputRef.current?.focus();
         return;
       }
 
@@ -142,7 +145,7 @@ export default function CustomBioDashboard() {
             height={80}
           />
         </div>
-        <div className="my-2 flex justify-center">{bio_page_url}</div>
+        <div className="my-2 flex justify-center">{bioPageUrl}</div>
         <div className="my-2 flex justify-center">
           <div className="min-w-xl mb-6 text-gray-800 md:basis-2/3 xl:basis-1/3">{descriptionText}</div>
         </div>
@@ -157,9 +160,24 @@ export default function CustomBioDashboard() {
                       id={item.id.toString()}
                       style={{ backgroundColor: item.bgColor }}
                       onClick={() => window.open(item.url, "_blank")}
-                      className="mt-2 select-none rounded-md border border-gray-300 px-5 py-3 text-center shadow-sm"
+                      className="mt-2 flex select-none rounded-md border border-gray-300 px-5 py-3 shadow-sm"
                     >
-                      {item.text}
+                      <div className="flex-1">
+                        <button
+                          id="delet-link-button"
+                          className="mx-2"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            let newBtnList = btnList.filter((i) => i.id != item.id);
+                            patchBioButtonList(newBtnList);
+                            setBtnList(newBtnList);
+                          }}
+                        >
+                          <Image src="/icons/delete_icon.svg" width={25} height={25} alt="Edit pencil icon" />
+                        </button>
+                      </div>
+                      <div className="text-center">{item.text}</div>
+                      <div className="flex-1"></div>
                     </div>
                   ) as KeyedReactElement,
               )}
@@ -174,6 +192,7 @@ export default function CustomBioDashboard() {
               </div>
               <div className="flex flex-1 justify-start">
                 <input
+                  ref={addButtonInputRef}
                   placeholder="+ Add"
                   className="ml-2 block w-full border-gray-400 px-2 placeholder-black focus:border-b-2 focus:placeholder-transparent focus:outline-none"
                   value={addNewItemButtonInputText}

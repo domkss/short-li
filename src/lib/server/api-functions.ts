@@ -229,21 +229,17 @@ export async function setLinkInBioLinkButtons(
   linkInBioButtonList: LinkInBioButtonItem[],
   session: SessionWithEmail,
 ): Promise<boolean> {
-  let results: number[] = [];
-
   let pageId = await getCurrentUserLinkInBioPageId(session);
 
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   for (let button of linkInBioButtonList) {
-    let result = await redisClient.HSET(
+    await redisClient.HSET(
       REDIS_NAME_PATTERNS.BIO_PRETAG + pageId,
       REDIS_BIO_FIELDS.BUTTON + button.id,
       JSON.stringify(button),
     );
-
-    results.push(result);
   }
 
   let Old_Button_IDs_List_JSON_String = await redisClient.HGET(
@@ -253,12 +249,11 @@ export async function setLinkInBioLinkButtons(
 
   let New_Button_IDs_List = linkInBioButtonList.map((item) => item.id);
 
-  let result = await redisClient.HSET(
+  await redisClient.HSET(
     REDIS_NAME_PATTERNS.BIO_PRETAG + pageId,
     REDIS_BIO_FIELDS.BUTTON_ID_LIST,
     JSON.stringify(New_Button_IDs_List),
   );
-  results.push(result);
 
   //Delete removed items from the hash
   if (Old_Button_IDs_List_JSON_String) {
@@ -270,8 +265,7 @@ export async function setLinkInBioLinkButtons(
       await redisClient.HDEL(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.BUTTON + item_id);
     }
   }
-
-  return results.reduce((accumulator, currentValue) => accumulator * currentValue, 1) !== 0;
+  return true;
 }
 
 //#endregion

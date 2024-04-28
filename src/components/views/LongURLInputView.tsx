@@ -94,7 +94,7 @@ export default function LongURLInput() {
             type="button"
             onClick={() => onSubmitClick()}
             className={cn(
-              "absolute bottom-2.5 end-2.5 flex items-center justify-center rounded-lg bg-emerald-500 px-4 py-2 text-white",
+              "absolute bottom-2.5 end-2.5 flex select-none items-center justify-center rounded-lg bg-emerald-500 px-4 py-2 text-white",
               {
                 "flex items-center hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-blue-400":
                   progressStatus != ProgressState.Loading,
@@ -139,10 +139,13 @@ export default function LongURLInput() {
         <button
           type="button"
           onClick={() => onSubmitClick()}
-          className={cn("flex min-w-[50%] items-center justify-center rounded-lg bg-emerald-500 py-2 text-white", {
-            "hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-blue-400":
-              progressStatus != ProgressState.Loading,
-          })}
+          className={cn(
+            "flex min-w-[50%] select-none items-center justify-center rounded-lg bg-emerald-500 py-2 text-white",
+            {
+              "hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-blue-400":
+                progressStatus != ProgressState.Loading,
+            },
+          )}
           disabled={progressStatus == ProgressState.Loading}
         >
           <div
