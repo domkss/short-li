@@ -4,14 +4,14 @@ import { createShortURL, deleteShortURL, getAllUserLinks, setLinkCustomName } fr
 import { REDIS_ERRORS } from "@/lib/server/serverConstants";
 import { getServerSession } from "next-auth";
 import authOptions from "../auth/[...nextauth]/authOptions";
-import { shortURLSchema, urlSchema } from "@/lib/client/dataValidations";
+import { shortURLSchema, longURLSchema } from "@/lib/client/dataValidations";
 import { StatusCodes as HTTPStatusCode } from "http-status-codes";
 import { isSessionWithEmail } from "@/lib/client/dataValidations";
 
 //Create Short URL
 export async function POST(req: NextRequest) {
   const content = await req.json();
-  const parsedContent = urlSchema.safeParse(content);
+  const parsedContent = longURLSchema.safeParse(content);
   if (!parsedContent.success) return Response.json({ success: false }, { status: HTTPStatusCode.BAD_REQUEST });
 
   const session = await getServerSession(authOptions);

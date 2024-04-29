@@ -8,13 +8,13 @@ import { StatusCodes as HTTPStatusCode } from "http-status-codes";
 export async function POST(req: NextRequest) {
   const content = await req.json();
   const parsedContent = registerUserSchema.safeParse(content);
-  if (!parsedContent.success || !parsedContent.data.reCaptchaToken)
+  if (!parsedContent.success || !parsedContent.data.recaptcha_token)
     return Response.json(
       { success: false, error: "Invalid email, password or reCaptchaToken" },
       { status: HTTPStatusCode.BAD_REQUEST },
     );
   try {
-    await registerNewUser(parsedContent.data.email, parsedContent.data.password, parsedContent.data.reCaptchaToken);
+    await registerNewUser(parsedContent.data.email, parsedContent.data.password, parsedContent.data.recaptcha_token);
     return Response.json({ success: true, user: { email: parsedContent.data.email } }, { status: HTTPStatusCode.OK });
   } catch (e) {
     if (e instanceof Error && e.message === AUTHENTICATION_ERRORS.RECAPCHA_VALIDATION_FAILED) {

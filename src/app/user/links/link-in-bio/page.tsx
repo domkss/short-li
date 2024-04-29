@@ -9,7 +9,7 @@ import { COLOR_PICKER_SUGGESTED_COLORS } from "@/lib/client/clientConstants";
 import Image from "next/image";
 import { cn } from "@/lib/client/uiHelperFunctions";
 import { isValidHttpURL } from "@/lib/client/dataValidations";
-import { LinkInBioButtonItem } from "@/lib/common/Types";
+import { LinkInBioButtonItem, LinkInBioPatchSchema } from "@/lib/common/Types";
 
 export default function CustomBioDashboard() {
   /*
@@ -54,20 +54,33 @@ export default function CustomBioDashboard() {
   }
 
   async function patchBioButtonList(newBtnList: LinkInBioButtonItem[]) {
-    let response = await fetch("/api/link-in-bio", { method: "PATCH", body: JSON.stringify(newBtnList) });
+    let requestBody: LinkInBioPatchSchema = {
+      newButtonList: newBtnList,
+    };
+
+    let response = await fetch("/api/link-in-bio", {
+      method: "PATCH",
+      body: JSON.stringify(requestBody),
+    });
     if (!response.ok) {
       //Todo: Display error
     }
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const patchBioDescription = useCallback(
-    debounce((newDescription: string) => {
-      console.log(newDescription);
-      //let response = await fetch("/api/link-in-bio", { method: "PATCH", body: JSON.stringify(newDescription) });
-      //if (!response.ok) {
-      //Todo: Display error
-      //}
-    }, 1000),
+    debounce(async (newDescription: string) => {
+      let requestBody: LinkInBioPatchSchema = {
+        newDescription: newDescription.trim(),
+      };
+      let response = await fetch("/api/link-in-bio", {
+        method: "PATCH",
+        body: JSON.stringify(requestBody),
+      });
+      if (!response.ok) {
+        //Todo: Display error
+      }
+    }, 700),
     [],
   );
 
@@ -161,8 +174,8 @@ export default function CustomBioDashboard() {
             disabled={descriptionTextAreaDisabled}
             value={descriptionText}
             onChange={(e) => {
-              setDescriptionText(e.currentTarget.value);
-              patchBioDescription(e.currentTarget.value);
+              patchBioDescription(e.target.value);
+              setDescriptionText(e.target.value);
             }}
             className={cn(
               "min-w-xl mb-6 rounded-md border border-gray-500 p-1 text-gray-800 md:basis-2/3 xl:basis-1/3",

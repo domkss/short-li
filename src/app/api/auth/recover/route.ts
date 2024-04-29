@@ -14,17 +14,17 @@ export async function POST(req: NextRequest) {
     return Response.json({ success: false, error: "Invalid email" }, { status: HTTPStatusCode.BAD_REQUEST });
 
   try {
-    if (parsedContent.data.recoveryToken && parsedContent.data.newPassword) {
+    if (parsedContent.data.recovery_token && parsedContent.data.new_password) {
       let status = await updateUserPasswordWithRecoveryToken(
         parsedContent.data.email,
-        parsedContent.data.recoveryToken,
-        parsedContent.data.newPassword,
+        parsedContent.data.recovery_token,
+        parsedContent.data.new_password,
       );
 
       if (!status)
         return Response.json({ success: false, error: "Invalid password reset token" }, { status: HTTPStatusCode.OK });
     } else {
-      await sendUserPasswordRecoveryToken(parsedContent.data.email, parsedContent.data.reCaptchaToken);
+      await sendUserPasswordRecoveryToken(parsedContent.data.email, parsedContent.data.recaptcha_token);
     }
     return Response.json({ success: true }, { status: HTTPStatusCode.OK });
   } catch (e) {

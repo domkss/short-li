@@ -3,8 +3,8 @@ import { useState } from "react";
 import { isValidHttpURL } from "@/lib/client/dataValidations";
 import Image from "next/image";
 import copyToClypboard from "copy-to-clipboard";
-import { useSession } from "next-auth/react";
 import { cn, addHttpstoURL } from "@/lib/client/uiHelperFunctions";
+import { LongURLSchema } from "@/lib/common/Types";
 
 enum ProgressState {
   NotStarted,
@@ -17,7 +17,6 @@ export default function LongURLInput() {
   const [progressStatus, setProgressStatus] = useState<ProgressState>(0);
   const [inputChanged, setInputChanged] = useState<Boolean>(true);
   const [copied, setCopied] = useState(false);
-  const session = useSession();
 
   async function onSubmitClick() {
     if (urlInputContent.trim().length < 1) return;
@@ -33,13 +32,12 @@ export default function LongURLInput() {
     if (!isValidHttpURL(constructedUrl)) return;
 
     setProgressStatus(ProgressState.Loading);
-
+    let requestBody: LongURLSchema = {
+      url: constructedUrl,
+    };
     let result = await fetch("/api/link", {
       method: "POST",
-      body: JSON.stringify({
-        url: constructedUrl,
-        user: session.data?.user,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     const data = await result.json();

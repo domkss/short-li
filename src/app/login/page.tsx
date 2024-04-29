@@ -14,6 +14,7 @@ import {
 import { cn } from "@/lib/client/uiHelperFunctions";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { AUTH_PROVIDERS, RECAPTCHA_ACTIONS } from "@/lib/server/serverConstants";
+import { PasswordRecoverySchema, RegisterUserSchema } from "@/lib/common/Types";
 
 enum ViewType {
   LoginView,
@@ -70,14 +71,14 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-
+      let requestBody: RegisterUserSchema = {
+        email: email,
+        password: password,
+        recaptcha_token: reCaptchaToken,
+      };
       let result = await fetch("/api/auth/register", {
         method: "POST",
-        body: JSON.stringify({
-          email: email,
-          password: password,
-          reCaptchaToken: reCaptchaToken,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       let data = await result.json();
@@ -125,13 +126,13 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-
+      let requestBody: PasswordRecoverySchema = {
+        email: email,
+        recaptcha_token: reCaptchaToken,
+      };
       let result = await fetch("/api/auth/recover", {
         method: "POST",
-        body: JSON.stringify({
-          email: email,
-          reCaptchaToken: reCaptchaToken,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       let data = await result.json();
@@ -143,10 +144,11 @@ export default function LoginPage() {
       if (!passwordRecoverySchema.safeParse(formData).success) return;
 
       setLoading(true);
+      let requestBody: PasswordRecoverySchema = formData;
 
       let result = await fetch("/api/auth/recover", {
         method: "POST",
-        body: JSON.stringify(formData),
+        body: JSON.stringify(requestBody),
       });
 
       let data = await result.json();
