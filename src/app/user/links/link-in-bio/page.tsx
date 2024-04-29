@@ -25,6 +25,7 @@ export default function CustomBioDashboard() {
   //#region Page Data States
   const [bioPageUrl, setBioPageUrl] = useState("");
   const [descriptionText, setDescriptionText] = useState("");
+  const [descriptionTextAreaDisabled, setDescriptionTextAreaDisabled] = useState(false);
   //#endregion
 
   //#region Add Link Button states
@@ -58,6 +59,17 @@ export default function CustomBioDashboard() {
       //Todo: Display error
     }
   }
+
+  const patchBioDescription = useCallback(
+    debounce((newDescription: string) => {
+      console.log(newDescription);
+      //let response = await fetch("/api/link-in-bio", { method: "PATCH", body: JSON.stringify(newDescription) });
+      //if (!response.ok) {
+      //Todo: Display error
+      //}
+    }, 1000),
+    [],
+  );
 
   useEffect(() => {
     getPageData();
@@ -114,23 +126,21 @@ export default function CustomBioDashboard() {
 
   //#region UX enhance functions
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedSave = useCallback(
-    debounce(() => {
-      addNewLinkItem();
-    }, 1000),
-    [addNewItemButtonInputText, addNewItemSelectedColor],
-  );
+  const debouncedNewButtonSave = useCallback(debounce(addNewLinkItem, 1000), [
+    addNewItemButtonInputText,
+    addNewItemSelectedColor,
+  ]);
   useEffect(() => {
     if (addButtonSelectedColorInputFocused === true || addButtonTextInputFocused === true) {
-      debouncedSave.cancel();
+      debouncedNewButtonSave.cancel();
     }
 
     if (addButtonSelectedColorInputFocused === false && addButtonTextInputFocused === false) {
-      debouncedSave();
+      debouncedNewButtonSave();
     }
 
-    return () => debouncedSave.cancel();
-  }, [addButtonTextInputFocused, addButtonSelectedColorInputFocused, debouncedSave]);
+    return () => debouncedNewButtonSave.cancel();
+  }, [addButtonTextInputFocused, addButtonSelectedColorInputFocused, debouncedNewButtonSave]);
   //#endregion
 
   return (
@@ -147,7 +157,21 @@ export default function CustomBioDashboard() {
         </div>
         <div className="my-2 flex justify-center">{bioPageUrl}</div>
         <div className="my-2 flex justify-center">
-          <div className="min-w-xl mb-6 text-gray-800 md:basis-2/3 xl:basis-1/3">{descriptionText}</div>
+          <textarea
+            disabled={descriptionTextAreaDisabled}
+            value={descriptionText}
+            onChange={(e) => {
+              setDescriptionText(e.currentTarget.value);
+              patchBioDescription(e.currentTarget.value);
+            }}
+            className={cn(
+              "min-w-xl mb-6 rounded-md border border-gray-500 p-1 text-gray-800 md:basis-2/3 xl:basis-1/3",
+              {
+                "pointer-events-none cursor-default resize-none border-none bg-transparent":
+                  descriptionTextAreaDisabled,
+              },
+            )}
+          />
         </div>
         <div className="flex justify-center">
           <OrderableListLayout className="flex basis-full flex-col md:basis-2/3 xl:basis-1/3" onDragEnd={onDragEnd}>

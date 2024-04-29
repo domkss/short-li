@@ -3,13 +3,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   cn,
   progressUntilNextPowerOfTen,
   generateVisiblePaginationButtonKeys,
-  debounce,
   nFormatter,
+  debounce,
   countryBgColor,
   range,
 } from "@/lib/client/uiHelperFunctions";
@@ -53,7 +53,6 @@ export default function Dashboard() {
     if (data.success && linkList[0]?.shortURL) {
       setOriginalLinkList(data.link_data_list);
       setLinkListItems(data.link_data_list);
-      searchListElements();
     } else {
       setOriginalLinkList([]);
       setLinkListItems([]);
@@ -137,21 +136,26 @@ export default function Dashboard() {
   }, []);
 
   //#region List filtering function
-  const searchListElements = debounce(() => {
-    if (searchWord.trim().length === 0) {
-      setLinkListItems(originalLinkList);
-      return;
-    }
-    let filteredList = originalLinkList.filter(
-      (item) =>
-        item.name.toLowerCase().includes(searchWord) ||
-        item.shortURL.toLowerCase().includes(searchWord) ||
-        item.target_url.toLowerCase().includes(searchWord),
-    );
-    setLinkListItems(filteredList);
-  }, 400);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const searchListElements = useCallback(
+    debounce((searchWord: string, originalLinkList: LinkListItemType[]) => {
+      if (searchWord.trim().length === 0) {
+        setLinkListItems(originalLinkList);
+      }
+      let filteredList = originalLinkList.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchWord) ||
+          item.shortURL.toLowerCase().includes(searchWord) ||
+          item.target_url.toLowerCase().includes(searchWord),
+      );
+      setLinkListItems(filteredList);
+    }, 400),
+    [],
+  );
 
-  useEffect(searchListElements, [searchWord, searchListElements]);
+  useEffect(() => {
+    searchListElements(searchWord, originalLinkList);
+  }, [searchWord, originalLinkList, searchListElements]);
   //#endregion
 
   //Select all list item checkbox state updater
