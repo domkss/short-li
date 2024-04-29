@@ -16,7 +16,7 @@ import {
 import ConfirmationView from "@/components/views/ConfirmationView";
 import QRCodeSelectorView from "@/components/views/QRCodeSelectorView";
 import { SessionMap, CountryCodeType } from "session-country-map";
-import { LinkListItemType } from "@/lib/common/Types";
+import { LinkListItemType, ShortURLSchema } from "@/lib/common/Types";
 import copyToClypboard from "copy-to-clipboard";
 import LoadingSpinner from "@/components/atomic/LoadingSpinner";
 import "./session-map.css";
@@ -66,11 +66,13 @@ export default function Dashboard() {
     let deletedShortURLs = itemsToDelete.map((item) => item.shortURL);
 
     await itemsToDelete.forEach(async (itemToDelete) => {
+      let requestBody: ShortURLSchema = {
+        url: itemToDelete.shortURL,
+      };
+
       let result = await fetch("/api/link", {
         method: "DELETE",
-        body: JSON.stringify({
-          url: itemToDelete.shortURL,
-        }),
+        body: JSON.stringify(requestBody),
       });
       let data = await result.json();
       if (data && !data.success) {
@@ -94,12 +96,14 @@ export default function Dashboard() {
   }
 
   async function updateLinkItemCustomName(shortURL: string, newCustomName: string) {
+    let requestBody: ShortURLSchema = {
+      url: shortURL,
+      new_custom_name: newCustomName,
+    };
+
     let result = await fetch("/api/link", {
       method: "PATCH",
-      body: JSON.stringify({
-        url: shortURL,
-        new_custom_name: newCustomName,
-      }),
+      body: JSON.stringify(requestBody),
     });
     let data = await result.json();
 

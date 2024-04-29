@@ -1,6 +1,14 @@
 import { Session } from "next-auth";
 import { z } from "zod";
-import { emailSchema } from "../client/dataValidations";
+import {
+  emailSchema,
+  linkInBioPatchSchema,
+  registerUserSchema,
+  shortURLSchema,
+  longURLSchema,
+  passwordRecoverySchema,
+  loginUserSchema,
+} from "../client/dataValidations";
 
 export type LinkListItemType = {
   name: string;
@@ -34,3 +42,15 @@ export interface SessionWithEmail extends Session {
     image?: string | null;
   };
 }
+
+export type LongURLSchema = z.infer<typeof longURLSchema>;
+
+export type ShortURLSchema = z.infer<typeof shortURLSchema>;
+
+export type LoginUserSchema = z.infer<typeof loginUserSchema>;
+
+export type RegisterUserSchema = z.infer<typeof registerUserSchema>;
+
+export type PasswordRecoverySchema = z.infer<typeof passwordRecoverySchema>;
+
+export type LinkInBioPatchSchema = z.infer<typeof linkInBioPatchSchema>;

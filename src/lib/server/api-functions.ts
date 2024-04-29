@@ -185,15 +185,9 @@ export async function setLinkInBioDescription(newDescription: string, session: S
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
-  let status = await redisClient.HSET(
-    REDIS_NAME_PATTERNS.BIO_PRETAG + pageId,
-    REDIS_BIO_FIELDS.DESCRIPTION,
-    newDescription,
-  );
+  await redisClient.HSET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.DESCRIPTION, newDescription);
 
-  if (!status) throw Error(REDIS_ERRORS.REDIS_DB_WRITE_ERROR);
-
-  return status;
+  return true;
 }
 
 export async function getLinkInBioLinkButtons(pageId: string) {
