@@ -5,6 +5,7 @@ import {
   getCurrentUserLinkInBioPageId,
   getLinkInBioDescription,
   getLinkInBioLinkButtons,
+  isPageIdInUse,
   setLinkInBioDescription,
   setLinkInBioLinkButtons,
 } from "@/lib/server/api-functions";
@@ -30,12 +31,13 @@ export async function GET(req: NextRequest) {
     return Response.json({ success: false }, { status: HTTPStatusCode.BAD_REQUEST });
   }
 
-  let description = await getLinkInBioDescription(pageId);
-  let linkInBioLinkButtons = await getLinkInBioLinkButtons(pageId);
-
-  if (!description) {
+  let isPageIdExists = await isPageIdInUse(pageId);
+  if (!isPageIdExists) {
     return Response.json({ success: false }, { status: HTTPStatusCode.GONE });
   }
+
+  let description = await getLinkInBioDescription(pageId);
+  let linkInBioLinkButtons = await getLinkInBioLinkButtons(pageId);
 
   return Response.json({
     success: true,

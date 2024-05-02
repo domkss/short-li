@@ -152,11 +152,8 @@ export async function getCurrentUserLinkInBioPageId(session: SessionWithEmail) {
     do {
       pageId = getRandomBase58String(lenght + Math.floor(numberOfRetries / 2));
 
-      status = await redisClient.HSETNX(
-        REDIS_NAME_PATTERNS.BIO_PRETAG + pageId,
-        REDIS_BIO_FIELDS.DESCRIPTION,
-        "Description",
-      );
+      await redisClient.HSETNX(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.DESCRIPTION, "Description");
+      status = await redisClient.HSETNX(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.IN_USE, "1");
       numberOfRetries++;
     } while (status !== true && numberOfRetries <= 8);
 
@@ -169,6 +166,14 @@ export async function getCurrentUserLinkInBioPageId(session: SessionWithEmail) {
   }
 
   return pageId;
+}
+
+export async function isPageIdInUse(pageId: string): Promise<boolean> {
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+  let result = await redisClient.HGET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.IN_USE);
+
+  return result === "1";
 }
 
 export async function getLinkInBioDescription(pageId: string) {
@@ -184,6 +189,8 @@ export async function setLinkInBioDescription(newDescription: string, session: S
 
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  await redisClient.HSETNX(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.IN_USE, "1");
 
   await redisClient.HSET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.DESCRIPTION, newDescription);
 
@@ -227,6 +234,8 @@ export async function setLinkInBioLinkButtons(
 
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  await redisClient.HSETNX(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.IN_USE, "1");
 
   for (let button of linkInBioButtonList) {
     await redisClient.HSET(
