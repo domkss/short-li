@@ -33,6 +33,10 @@ export async function GET(req: NextRequest) {
   let description = await getLinkInBioDescription(pageId);
   let linkInBioLinkButtons = await getLinkInBioLinkButtons(pageId);
 
+  if (!description) {
+    return Response.json({ success: false }, { status: HTTPStatusCode.GONE });
+  }
+
   return Response.json({
     success: true,
     page_url: formatShortLink("s/" + pageId),

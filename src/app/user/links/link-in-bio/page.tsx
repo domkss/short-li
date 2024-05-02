@@ -2,14 +2,14 @@
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import React from "react";
-import OrderableListLayout, { KeyedReactElement } from "@/components/atomic/OrderableListLayout";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { debounce } from "@/lib/client/uiHelperFunctions";
 import { COLOR_PICKER_SUGGESTED_COLORS } from "@/lib/client/clientConstants";
-import Image from "next/image";
 import { cn } from "@/lib/client/uiHelperFunctions";
 import { isValidHttpURL } from "@/lib/client/dataValidations";
 import { LinkInBioButtonItem, LinkInBioPatchSchema } from "@/lib/common/Types";
+import LinkTreeView from "@/components/views/LinkTreeView";
+import LoadingSpinner from "@/components/atomic/LoadingSpinner";
 
 export default function CustomBioDashboard() {
   /*
@@ -19,13 +19,11 @@ export default function CustomBioDashboard() {
   if (!isServer && (session.status !== "authenticated" || !session.data || !session.data.user))
     reactRouter.replace("/login");
 */
-
-  const [btnList, setBtnList] = useState<LinkInBioButtonItem[]>([]);
-
   //#region Page Data States
+  const [btnList, setBtnList] = useState<LinkInBioButtonItem[]>([]);
   const [bioPageUrl, setBioPageUrl] = useState("");
   const [descriptionText, setDescriptionText] = useState("");
-  const [descriptionTextAreaDisabled, setDescriptionTextAreaDisabled] = useState(false);
+  const [contentLoadingFinished, setContentLoadingFinished] = useState(false);
   //#endregion
 
   //#region Add Link Button states
@@ -51,6 +49,7 @@ export default function CustomBioDashboard() {
       setDescriptionText(description);
       setBtnList(linkInBioLinkButtons);
     }
+    setContentLoadingFinished(true);
   }
 
   async function patchBioButtonList(newBtnList: LinkInBioButtonItem[]) {
@@ -118,7 +117,7 @@ export default function CustomBioDashboard() {
         let newBtnList = [
           ...btnList,
           {
-            id: Math.max(...btnList.map((item) => item.id)) + 1,
+            id: btnList.length > 0 ? Math.max(...btnList.map((item) => item.id)) + 1 : 1,
             text: newLinkItemName,
             url: addNewItemButtonInputText,
             bgColor: addNewItemSelectedColor,
@@ -156,70 +155,27 @@ export default function CustomBioDashboard() {
   }, [addButtonTextInputFocused, addButtonSelectedColorInputFocused, debouncedNewButtonSave]);
   //#endregion
 
+  //Return Loading Spinner
+  if (!contentLoadingFinished)
+    return (
+      <div className="my-auto">
+        <LoadingSpinner />
+      </div>
+    );
+
   return (
     <main className="flex min-w-full flex-col">
       <div className="flex flex-col p-4">
-        <div className="flex justify-center p-4">
-          <Image
-            className="h-20 w-20 rounded-full p-1 ring-2 ring-gray-300"
-            src="/temp_profilepic.jpg"
-            alt="Bordered avatar"
-            width={80}
-            height={80}
-          />
-        </div>
-        <div className="my-2 flex justify-center">{bioPageUrl}</div>
-        <div className="my-2 flex justify-center">
-          <textarea
-            disabled={descriptionTextAreaDisabled}
-            value={descriptionText}
-            onChange={(e) => {
-              patchBioDescription(e.target.value);
-              setDescriptionText(e.target.value);
-            }}
-            className={cn(
-              "min-w-xl mb-6 rounded-md border border-gray-500 p-1 text-gray-800 md:basis-2/3 xl:basis-1/3",
-              {
-                "pointer-events-none cursor-default resize-none border-none bg-transparent":
-                  descriptionTextAreaDisabled,
-              },
-            )}
-          />
-        </div>
-        <div className="flex justify-center">
-          <OrderableListLayout className="flex basis-full flex-col md:basis-2/3 xl:basis-1/3" onDragEnd={onDragEnd}>
-            {btnList &&
-              btnList.map(
-                (item, key) =>
-                  (
-                    <div
-                      key={key}
-                      id={item.id.toString()}
-                      style={{ backgroundColor: item.bgColor }}
-                      onClick={() => window.open(item.url, "_blank")}
-                      className="mt-2 flex select-none rounded-md border border-gray-300 px-5 py-3 shadow-sm"
-                    >
-                      <div className="flex-1">
-                        <button
-                          id="delet-link-button"
-                          className="mx-2"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            let newBtnList = btnList.filter((i) => i.id != item.id);
-                            patchBioButtonList(newBtnList);
-                            setBtnList(newBtnList);
-                          }}
-                        >
-                          <Image src="/icons/delete_icon.svg" width={25} height={25} alt="Edit pencil icon" />
-                        </button>
-                      </div>
-                      <div className="text-center">{item.text}</div>
-                      <div className="flex-1"></div>
-                    </div>
-                  ) as KeyedReactElement,
-              )}
-          </OrderableListLayout>
-        </div>
+        <LinkTreeView
+          btnList={btnList}
+          setBtnList={setBtnList}
+          patchBioButtonList={patchBioButtonList}
+          descriptionText={descriptionText}
+          setDescriptionText={setDescriptionText}
+          patchBioDescription={patchBioDescription}
+          onDragEnd={onDragEnd}
+          bioPageUrl={bioPageUrl}
+        />
 
         <div className="flex justify-center py-2">
           <div className="relative flex basis-full flex-row rounded-md border border-gray-300 px-2 py-2 shadow-sm md:basis-2/3 xl:basis-1/3">

@@ -1,5 +1,17 @@
+import { useState, useEffect } from "react";
+
 export default function LoadingSpinner() {
-  return (
+  const [showSpinner, setShowSpinner] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSpinner(true);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return showSpinner ? (
     <div className="flex flex-col items-center" role="status">
       <svg
         aria-hidden="true"
@@ -19,5 +31,5 @@ export default function LoadingSpinner() {
       </svg>
       <span>Loading...</span>
     </div>
-  );
+  ) : null;
 }
