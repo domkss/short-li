@@ -3,6 +3,7 @@ import { LinkInBioButtonItem, LinkInBioPatchSchema } from "@/lib/common/Types";
 import { cn } from "@/lib/client/uiHelperFunctions";
 import Image from "next/image";
 import copyToClypboard from "copy-to-clipboard";
+import { useRouter } from "next/navigation";
 
 type LinkTreeViewProps = {
   bioPageUrl?: string;
@@ -20,6 +21,8 @@ type LinkTreeViewProps = {
 };
 
 export default function LinkTreeView(props: LinkTreeViewProps) {
+  const router = useRouter();
+
   return (
     <div>
       <div className="m2-4 flex justify-center">
@@ -73,7 +76,7 @@ export default function LinkTreeView(props: LinkTreeViewProps) {
                     key={key}
                     id={item.id.toString()}
                     style={{ backgroundColor: item.bgColor }}
-                    onClick={() => window.open(item.url, "_blank")}
+                    onClick={() => (props.immutableView ? router.push(item.url) : window.open(item.url, "_blank"))}
                     className="mt-2 flex cursor-pointer select-none rounded-md border border-gray-300 px-5 py-3 shadow-sm"
                   >
                     <div className="flex-1">
