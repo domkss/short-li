@@ -39,6 +39,7 @@ export default function LinkTreeView(props: LinkTreeViewProps) {
           alt="Bordered avatar"
           width={80}
           height={80}
+          priority
         />
       </div>
 

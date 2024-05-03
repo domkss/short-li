@@ -265,6 +265,7 @@ export default function Dashboard() {
                   width={25}
                   height={25}
                   alt="Edit pencil icon"
+                  priority
                 />
               </button>
 
@@ -408,14 +409,14 @@ export default function Dashboard() {
                       setNameEditingView(!nameEditingView);
                     }}
                   >
-                    <Image src="/icons/edit_pencil.svg" width={24} height={24} alt="Edit pencil icon" />
+                    <Image src="/icons/edit_pencil.svg" width={24} height={24} alt="Edit pencil icon" priority />
                   </button>
                   <button
                     id="delet-link-button"
                     className="mx-2"
                     onClick={() => setDeleteLinkViewState({ ...deleteLinkViewState, active: true, bulkDelete: false })}
                   >
-                    <Image src="/icons/delete_icon.svg" width={24} height={24} alt="Edit pencil icon" />
+                    <Image src="/icons/delete_icon.svg" width={24} height={24} alt="Edit pencil icon" priority />
                   </button>
                 </div>
               </div>
@@ -440,6 +441,7 @@ export default function Dashboard() {
                           width={32}
                           height={32}
                           alt="copy-icon"
+                          priority
                         />
                       </div>
                     </div>
@@ -449,7 +451,14 @@ export default function Dashboard() {
                       className="m-2 inline-flex items-center rounded-xl border-0 bg-blue-500 p-2 text-white shadow-sm"
                       onClick={() => setQrCodeViewActive(true)}
                     >
-                      <Image className="mx-1" src="/icons/qr_code_icon.svg" width={28} height={28} alt=""></Image>
+                      <Image
+                        className="mx-1"
+                        src="/icons/qr_code_icon.svg"
+                        width={28}
+                        height={28}
+                        alt="QR_Logo"
+                        priority
+                      />
                       <span className="mx-1">Get QR Code</span>
                     </button>
                   </div>

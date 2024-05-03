@@ -119,6 +119,7 @@ export default function LongURLInput() {
                 width={32}
                 height={32}
                 alt="copy-icon"
+                priority
               />
             </div>
             <div
@@ -165,6 +166,7 @@ export default function LongURLInput() {
               width={32}
               height={32}
               alt="copy-icon"
+              priority
             />
           </div>
           <div
