@@ -24,6 +24,7 @@ export default function CustomBioDashboard() {
   const [bioPageUrl, setBioPageUrl] = useState("");
   const [descriptionText, setDescriptionText] = useState("");
   const [contentLoadingFinished, setContentLoadingFinished] = useState(false);
+  const [avatarImage, setAvatarImage] = useState<string>("");
   //#endregion
 
   //#region Add Link Button states
@@ -38,18 +39,33 @@ export default function CustomBioDashboard() {
 
   //#region GET/POST Data
   async function getPageData() {
-    let response = await fetch("/api/link-in-bio");
-    let data = await response.json();
-    let page_url: string = data.page_url;
-    let description: string = data.description;
-    let linkInBioLinkButtons: LinkInBioButtonItem[] = data.link_buttons;
+    let page_data_response = await fetch("/api/link-in-bio");
 
-    if (data.success) {
-      setBioPageUrl(page_url);
-      setDescriptionText(description);
-      setBtnList(linkInBioLinkButtons);
+    if (page_data_response.ok) {
+      let page_data = await page_data_response.json();
+      let page_url: string = page_data.page_url;
+      let page_description: string = page_data.description;
+      let link_buttons: LinkInBioButtonItem[] = page_data.link_buttons;
+
+      if (page_data.success) {
+        setBioPageUrl(page_url);
+        setDescriptionText(page_description);
+        setBtnList(link_buttons);
+      }
+      getUserAvatar();
     }
+
     setContentLoadingFinished(true);
+  }
+
+  async function getUserAvatar() {
+    let avatar_response = await fetch("/api/link-in-bio/avatar");
+    if (avatar_response.ok) {
+      if (avatarImage) URL.revokeObjectURL(avatarImage);
+      let avatar_blob = await avatar_response.blob();
+      const imageUrl = URL.createObjectURL(avatar_blob);
+      setAvatarImage(imageUrl);
+    }
   }
 
   async function patchBioButtonList(newBtnList: LinkInBioButtonItem[]) {
@@ -62,6 +78,22 @@ export default function CustomBioDashboard() {
       body: JSON.stringify(requestBody),
     });
     if (!response.ok) {
+      //Todo: Display error
+    }
+  }
+
+  async function postProfilePicture(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    let response = await fetch("/api/link-in-bio/avatar", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      getUserAvatar();
+    } else {
       //Todo: Display error
     }
   }
@@ -85,6 +117,13 @@ export default function CustomBioDashboard() {
 
   useEffect(() => {
     getPageData();
+
+    return () => {
+      if (avatarImage) {
+        URL.revokeObjectURL(avatarImage);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   //#endregion
 
@@ -173,6 +212,8 @@ export default function CustomBioDashboard() {
           descriptionText={descriptionText}
           setDescriptionText={setDescriptionText}
           patchBioDescription={patchBioDescription}
+          avatarImage={avatarImage}
+          patchProfilePicture={postProfilePicture}
           onDragEnd={onDragEnd}
           bioPageUrl={bioPageUrl}
         />

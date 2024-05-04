@@ -163,12 +163,14 @@ export async function getCurrentUserLinkInBioPageId(session: SessionWithEmail) {
       REDIS_USER_FIELDS.BIO_PAGE_ID,
       pageId,
     );
+  } else {
+    await redisClient.HSETNX(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.IN_USE, "1");
   }
 
   return pageId;
 }
 
-export async function isPageIdInUse(pageId: string): Promise<boolean> {
+export async function isPageIdExists(pageId: string): Promise<boolean> {
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   let result = await redisClient.HGET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.IN_USE);
@@ -180,8 +182,7 @@ export async function getLinkInBioDescription(pageId: string) {
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
-  let description = await redisClient.HGET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.DESCRIPTION);
-  return description;
+  return redisClient.HGET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.DESCRIPTION);
 }
 
 export async function setLinkInBioDescription(newDescription: string, session: SessionWithEmail) {
@@ -189,8 +190,6 @@ export async function setLinkInBioDescription(newDescription: string, session: S
 
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
-
-  await redisClient.HSETNX(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.IN_USE, "1");
 
   await redisClient.HSET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.DESCRIPTION, newDescription);
 
@@ -235,8 +234,6 @@ export async function setLinkInBioLinkButtons(
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
-  await redisClient.HSETNX(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.IN_USE, "1");
-
   for (let button of linkInBioButtonList) {
     await redisClient.HSET(
       REDIS_NAME_PATTERNS.BIO_PRETAG + pageId,
@@ -268,6 +265,23 @@ export async function setLinkInBioLinkButtons(
       await redisClient.HDEL(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.BUTTON + item_id);
     }
   }
+  return true;
+}
+
+export async function getLinkInBioAvatar(pageId: string): Promise<string | undefined> {
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  return redisClient.HGET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.AVATAR);
+}
+
+export async function setLinkInBioAvatar(base58EncodedImage: string, session: SessionWithEmail) {
+  let pageId = await getCurrentUserLinkInBioPageId(session);
+
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+  await redisClient.HSET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.AVATAR, base58EncodedImage);
+
   return true;
 }
 
