@@ -63,8 +63,14 @@ export default function CustomBioDashboard() {
     if (avatar_response.ok) {
       if (avatarImage) URL.revokeObjectURL(avatarImage);
       let avatar_blob = await avatar_response.blob();
-      const imageUrl = URL.createObjectURL(avatar_blob);
-      setAvatarImage(imageUrl);
+
+      let reader = new FileReader();
+      reader.onloadend = function () {
+        let base64data = reader.result as string;
+        setAvatarImage(base64data);
+        return;
+      };
+      reader.readAsDataURL(avatar_blob);
     }
   }
 
