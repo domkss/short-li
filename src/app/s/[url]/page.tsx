@@ -38,9 +38,14 @@ export default function LinkTreePage() {
     let avatar_response = await fetch("/api/link-in-bio/avatar");
     if (avatar_response.ok) {
       let avatar_blob = await avatar_response.blob();
-      const imageUrl = URL.createObjectURL(avatar_blob);
-      console.log(avatar_blob);
-      setAvatarImage(imageUrl);
+
+      let reader = new FileReader();
+      reader.onloadend = function () {
+        let base64data = reader.result as string;
+        setAvatarImage(base64data);
+        return;
+      };
+      reader.readAsDataURL(avatar_blob);
     }
 
     setContentLoadingFinished(true);
