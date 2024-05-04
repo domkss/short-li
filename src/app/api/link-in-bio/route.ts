@@ -5,7 +5,7 @@ import {
   getCurrentUserLinkInBioPageId,
   getLinkInBioDescription,
   getLinkInBioLinkButtons,
-  isPageIdInUse,
+  isPageIdExists,
   setLinkInBioDescription,
   setLinkInBioLinkButtons,
 } from "@/lib/server/api-functions";
@@ -31,8 +31,9 @@ export async function GET(req: NextRequest) {
     return Response.json({ success: false }, { status: HTTPStatusCode.BAD_REQUEST });
   }
 
-  let isPageIdExists = await isPageIdInUse(pageId);
-  if (!isPageIdExists) {
+  /* Check if the page still exists and not restricted */
+  let pageExists = await isPageIdExists(pageId);
+  if (!pageExists) {
     return Response.json({ success: false }, { status: HTTPStatusCode.GONE });
   }
 
@@ -56,9 +57,17 @@ export async function PATCH(req: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (isSessionWithEmail(session)) {
-    if (parsedContent.data.newButtonList) await setLinkInBioLinkButtons(parsedContent.data.newButtonList, session);
-    if (typeof parsedContent.data.newDescription === "string")
+    /* Check if the page still exists and not restricted */
+    let pageId = await getCurrentUserLinkInBioPageId(session);
+    let pageExists = await isPageIdExists(pageId);
+    if (!pageExists) return Response.json({ success: false }, { status: HTTPStatusCode.GONE });
+
+    if (parsedContent.data.newButtonList) {
+      await setLinkInBioLinkButtons(parsedContent.data.newButtonList, session);
+    }
+    if (typeof parsedContent.data.newDescription === "string") {
       await setLinkInBioDescription(parsedContent.data.newDescription, session);
+    }
 
     return Response.json({ success: true });
   } else {

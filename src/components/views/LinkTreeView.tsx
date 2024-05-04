@@ -1,9 +1,12 @@
 import OrderableListLayout, { KeyedReactElement } from "@/components/atomic/OrderableListLayout";
-import { LinkInBioButtonItem, LinkInBioPatchSchema } from "@/lib/common/Types";
+import { LinkInBioButtonItem } from "@/lib/common/Types";
 import { cn } from "@/lib/client/uiHelperFunctions";
 import Image from "next/image";
 import copyToClypboard from "copy-to-clipboard";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
+import { ChangeEvent } from "react";
+import DefaultProfilePicture from "/public/icons/temp_profilepic.svg";
 
 type LinkTreeViewProps = {
   bioPageUrl?: string;
@@ -14,6 +17,8 @@ type LinkTreeViewProps = {
   descriptionText: string;
   setDescriptionText?: (value: string) => void;
   patchBioDescription?: (value: string) => void;
+  avatarImage: string;
+  patchProfilePicture?: (file: File) => void;
 
   onDragEnd?: (result: any) => void;
 
@@ -22,6 +27,7 @@ type LinkTreeViewProps = {
 
 export default function LinkTreeView(props: LinkTreeViewProps) {
   const router = useRouter();
+  const profilePictureFileInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div>
@@ -36,14 +42,35 @@ export default function LinkTreeView(props: LinkTreeViewProps) {
         </div>
       </div>
       <div className="flex justify-center p-4">
-        <Image
-          className="h-20 w-20 rounded-full p-1 ring-2 ring-gray-300"
-          src="/temp_profilepic.jpg"
-          alt="Bordered avatar"
-          width={80}
-          height={80}
-          priority
-        />
+        {!props.immutableView ? (
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            ref={profilePictureFileInputRef}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              const file = event.target.files?.[0];
+              if (file) props.patchProfilePicture?.(file);
+            }}
+          />
+        ) : null}
+
+        <button
+          disabled={props.immutableView}
+          className={cn("border-none bg-transparent", { hidden: props.immutableView && !props.avatarImage })}
+          onClick={() => {
+            profilePictureFileInputRef.current?.click();
+          }}
+        >
+          <Image
+            className="h-20 w-20 rounded-full p-1 ring-2 ring-gray-300"
+            src={props.avatarImage || DefaultProfilePicture}
+            alt="Avatar"
+            width={80}
+            height={80}
+            priority
+          />
+        </button>
       </div>
 
       <div className="mb-2 flex justify-center">
@@ -77,6 +104,15 @@ export default function LinkTreeView(props: LinkTreeViewProps) {
                     id={item.id.toString()}
                     style={{ backgroundColor: item.bgColor }}
                     onClick={() => (props.immutableView ? router.push(item.url) : window.open(item.url, "_blank"))}
+                    onKeyDown={(event) => {
+                      if (props.immutableView) {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          router.push(item.url);
+                        }
+                      }
+                    }}
+                    tabIndex={props.immutableView ? 0 : undefined}
                     className="mt-2 flex cursor-pointer select-none rounded-md border border-gray-300 px-5 py-3 shadow-sm"
                   >
                     <div className="flex-1">
