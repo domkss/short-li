@@ -81,14 +81,19 @@ export default function LoginPage() {
         body: JSON.stringify(requestBody),
       });
 
-      let data = await result.json();
-
-      if (!data.success || !data.user) {
-        setErrorText(data.error);
+      if (!result.ok) {
+        setErrorText(result.statusText);
         setLoading(false);
       } else {
-        setLoading(false);
-        handleSubmit(e, ViewType.LoginView);
+        let data = await result.json();
+
+        if (!data.success || !data.user) {
+          setErrorText(data.error);
+          setLoading(false);
+        } else {
+          setLoading(false);
+          handleSubmit(e, ViewType.LoginView);
+        }
       }
     } else if (currentViewType === ViewType.LoginView) {
       if (!loginUserSchema.safeParse({ email: email, password: password }).success) return;
@@ -134,30 +139,43 @@ export default function LoginPage() {
         method: "POST",
         body: JSON.stringify(requestBody),
       });
-
-      let data = await result.json();
-      if (!data.success) setErrorText(data.error);
-      else setViewType(ViewType.SetNewPasswordView);
-      setLoading(false);
+      if (!result.ok) {
+        setErrorText(result.statusText);
+        setLoading(false);
+      } else {
+        let data = await result.json();
+        if (!data.success) setErrorText(data.error);
+        else setViewType(ViewType.SetNewPasswordView);
+        setLoading(false);
+      }
     } else if (currentViewType === ViewType.SetNewPasswordView) {
-      let formData = { email: email, recoveryToken: passwRecoveryToken, newPassword: password };
+      let formData: PasswordRecoverySchema = {
+        email: email,
+        recovery_token: passwRecoveryToken,
+        new_password: password,
+      };
       if (!passwordRecoverySchema.safeParse(formData).success) return;
 
       setLoading(true);
-      let requestBody: PasswordRecoverySchema = formData;
+      let requestBody = formData;
 
       let result = await fetch("/api/auth/recover", {
         method: "POST",
         body: JSON.stringify(requestBody),
       });
 
-      let data = await result.json();
-      if (!data.success) {
-        setErrorText(data.error);
+      if (!result.ok) {
+        setErrorText(result.statusText);
         setLoading(false);
       } else {
-        setLoading(false);
-        handleSubmit(e, ViewType.LoginView);
+        let data = await result.json();
+        if (!data.success) {
+          setErrorText(data.error);
+          setLoading(false);
+        } else {
+          setLoading(false);
+          handleSubmit(e, ViewType.LoginView);
+        }
       }
     }
   }

@@ -40,11 +40,15 @@ export default function LongURLInput() {
       body: JSON.stringify(requestBody),
     });
 
-    const data = await result.json();
-    if (data.success && data.url) {
-      setUrlInputContent(data.url);
+    if (result.ok) {
+      const data = await result.json();
+      if (data.success && data.url) {
+        setUrlInputContent(data.url);
+      } else {
+        setUrlInputContent("Unable to construct the short URL. Please try again later.");
+      }
     } else {
-      setUrlInputContent("Unable to construct the short URL. Please try again later.");
+      setUrlInputContent("Request failed: " + result.statusText);
     }
 
     setInputChanged(false);

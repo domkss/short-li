@@ -55,15 +55,25 @@ export default function Dashboard() {
   //#region GET/POST Data
   async function getUserLinks() {
     let response = await fetch("/api/link");
-    let data = await response.json();
-    let linkList: LinkListItemType[] = data.link_data_list;
+    if (response.ok) {
+      let data = await response.json();
+      let linkList: LinkListItemType[] = data.link_data_list;
 
-    if (data.success && linkList[0]?.shortURL) {
-      setOriginalLinkList(data.link_data_list);
-      setLinkListItems(data.link_data_list);
+      if (data.success) {
+        if (linkList[0]?.shortURL) {
+          setOriginalLinkList(data.link_data_list);
+          setLinkListItems(data.link_data_list);
+        } else {
+          setOriginalLinkList([]);
+          setLinkListItems([]);
+        }
+      } else {
+        //Todo: Error message popup
+        setOriginalLinkList([]);
+        setLinkListItems([]);
+      }
     } else {
-      setOriginalLinkList([]);
-      setLinkListItems([]);
+      //Todo: Display Status Text or error message
     }
     setContentLoadingFinished(true);
   }
@@ -82,9 +92,13 @@ export default function Dashboard() {
         method: "DELETE",
         body: JSON.stringify(requestBody),
       });
-      let data = await result.json();
-      if (data && !data.success) {
-        //Todo: Show error if item deletion failed
+      if (result.ok) {
+        let data = await result.json();
+        if (data && !data.success) {
+          //Todo: Display error message
+        }
+      } else {
+        //Todo: Display Status Text or error message
       }
     });
 
@@ -113,22 +127,28 @@ export default function Dashboard() {
       method: "PATCH",
       body: JSON.stringify(requestBody),
     });
-    let data = await result.json();
+    if (result.ok) {
+      let data = await result.json();
 
-    if (data.success) {
-      /*Handle name change on list items on client side instead reload all data from server */
-      let modifiedLinkListItem = linkListItems.at(activeListItemIndex);
-      if (modifiedLinkListItem) {
-        modifiedLinkListItem.name = newCustomName;
-        let modifiedOriginalLinkList = originalLinkList.filter((item) => item.shortURL !== shortURL);
-        modifiedOriginalLinkList.unshift(modifiedLinkListItem);
-        setOriginalLinkList(modifiedOriginalLinkList);
-        let modifiedLinkList = linkListItems.filter((item) => item.shortURL !== shortURL);
-        modifiedLinkList.unshift(modifiedLinkListItem);
-        setLinkListItems(modifiedLinkList);
-        setActiveListItemIndex(0);
-        setFirstDisplayedListItemIndex(0);
+      if (data.success) {
+        /*Handle name change on list items on client side instead reload all data from server */
+        let modifiedLinkListItem = linkListItems.at(activeListItemIndex);
+        if (modifiedLinkListItem) {
+          modifiedLinkListItem.name = newCustomName;
+          let modifiedOriginalLinkList = originalLinkList.filter((item) => item.shortURL !== shortURL);
+          modifiedOriginalLinkList.unshift(modifiedLinkListItem);
+          setOriginalLinkList(modifiedOriginalLinkList);
+          let modifiedLinkList = linkListItems.filter((item) => item.shortURL !== shortURL);
+          modifiedLinkList.unshift(modifiedLinkListItem);
+          setLinkListItems(modifiedLinkList);
+          setActiveListItemIndex(0);
+          setFirstDisplayedListItemIndex(0);
+        }
+      } else {
+        //Todo: Display error message
       }
+    } else {
+      //Todo: Display Status Text or error message
     }
   }
 
