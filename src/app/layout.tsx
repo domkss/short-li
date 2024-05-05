@@ -4,7 +4,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import AuthProvider from "@/components/providers/AuthProvider";
 
-export const inter = Inter({ subsets: ["latin-ext"] });
+export const inter = Inter({ subsets: ["latin-ext"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "ShortLi",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} min-h-screen antialiased`}>
+      <body className={`${inter.variable} min-h-screen font-sans antialiased`}>
         <AuthProvider>
           <div className="mx-auto flex min-h-screen max-w-[2560px] flex-col">
             <NavBar />
