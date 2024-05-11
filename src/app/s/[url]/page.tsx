@@ -37,7 +37,7 @@ export default function LinkTreePage() {
       router.replace("/");
     }
 
-    let avatar_response = await fetch("/api/link-in-bio/avatar");
+    let avatar_response = await fetch("/api/link-in-bio/avatar?id=" + pageId);
     if (avatar_response.ok) {
       let avatar_blob = await avatar_response.blob();
 
