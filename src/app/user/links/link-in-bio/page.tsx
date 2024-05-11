@@ -12,13 +12,12 @@ import LinkTreeView from "@/components/views/LinkTreeView";
 import LoadingSpinner from "@/components/atomic/LoadingSpinner";
 
 export default function CustomBioDashboard() {
-  /*
   const reactRouter = useRouter();
   const session = useSession();
   let isServer = typeof window === "undefined" ? true : false;
   if (!isServer && (session.status !== "authenticated" || !session.data || !session.data.user))
     reactRouter.replace("/login");
-*/
+
   //#region Page Data States
   const [btnList, setBtnList] = useState<LinkInBioButtonItem[]>([]);
   const [bioPageUrl, setBioPageUrl] = useState("");

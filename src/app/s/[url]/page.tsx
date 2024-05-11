@@ -3,7 +3,9 @@ import LinkTreeView from "@/components/views/LinkTreeView";
 import { useEffect, useState } from "react";
 import { LinkInBioButtonItem } from "@/lib/common/Types";
 import LoadingSpinner from "@/components/atomic/LoadingSpinner";
-import { RedirectType, redirect, usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
+import Logo from "/public/icons/shortli_logo.svg";
 
 export default function LinkTreePage() {
   const [btnList, setBtnList] = useState<LinkInBioButtonItem[]>([]);
@@ -35,7 +37,7 @@ export default function LinkTreePage() {
       router.replace("/");
     }
 
-    let avatar_response = await fetch("/api/link-in-bio/avatar");
+    let avatar_response = await fetch("/api/link-in-bio/avatar?id=" + pageId);
     if (avatar_response.ok) {
       let avatar_blob = await avatar_response.blob();
 
@@ -72,7 +74,7 @@ export default function LinkTreePage() {
     );
 
   return (
-    <div className="flex min-w-full flex-col">
+    <div className="flex min-w-full flex-grow flex-col">
       <div className="p-4">
         <LinkTreeView
           btnList={btnList}
@@ -81,6 +83,18 @@ export default function LinkTreePage() {
           avatarImage={avatarImage}
           immutableView
         />
+      </div>
+      <div className="flex-1" />
+      <div className="flex flex-row-reverse p-4">
+        <button
+          className="flex max-w-[150px] flex-row items-center rounded-md border bg-purple-100 p-2 text-sm shadow-md"
+          onClick={() => {
+            router.push("/");
+          }}
+        >
+          <Image src={Logo} width={42} height={16} alt="" />
+          <div className="text-right">Create Your Own Page</div>
+        </button>
       </div>
     </div>
   );
