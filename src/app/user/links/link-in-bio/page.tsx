@@ -51,16 +51,20 @@ export default function CustomBioDashboard() {
         setDescriptionText(page_description);
         setBtnList(link_buttons);
       }
-      getUserAvatar();
+      getUserAvatar(page_url);
     }
 
     setContentLoadingFinished(true);
   }
 
-  async function getUserAvatar() {
-    let avatar_response = await fetch("/api/link-in-bio/avatar");
+  async function getUserAvatar(pageUrl: string) {
+    let pageId = pageUrl.split("/").pop();
+    let avatar_response = await fetch("/api/link-in-bio/avatar?id=" + pageId);
     if (avatar_response.ok) {
-      if (avatarImage) URL.revokeObjectURL(avatarImage);
+      if (avatarImage) {
+        URL.revokeObjectURL(avatarImage);
+        setAvatarImage("");
+      }
       let avatar_blob = await avatar_response.blob();
 
       let reader = new FileReader();
@@ -97,7 +101,7 @@ export default function CustomBioDashboard() {
     });
 
     if (response.ok) {
-      getUserAvatar();
+      getUserAvatar(bioPageUrl);
     } else {
       //Todo: Display error
     }
@@ -126,6 +130,7 @@ export default function CustomBioDashboard() {
     return () => {
       if (avatarImage) {
         URL.revokeObjectURL(avatarImage);
+        setAvatarImage("");
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

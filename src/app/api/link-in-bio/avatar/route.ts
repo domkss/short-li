@@ -13,27 +13,19 @@ import {
 } from "@/lib/server/api-functions";
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-
   const searchParams = req.nextUrl.searchParams;
   let pageId = searchParams.get("id");
 
-  if (!pageId && isSessionWithEmail(session)) {
-    try {
-      pageId = await getCurrentUserLinkInBioPageId(session);
-    } catch (_) {
-      return Response.json({ success: false }, { status: HTTPStatusCode.INTERNAL_SERVER_ERROR });
-    }
-  } else if (!pageId) {
+  if (!pageId) {
     return Response.json({ success: false }, { status: HTTPStatusCode.BAD_REQUEST });
   }
 
   let pageExists = await isPageIdExists(pageId);
   if (!pageExists) return Response.json({ success: false }, { status: HTTPStatusCode.GONE });
 
-  const base85EncodedImage = await getLinkInBioAvatar(pageId);
-  if (!base85EncodedImage) return Response.json({ success: false }, { status: HTTPStatusCode.NOT_FOUND });
-  let buffer = decodeBase64Image(base85EncodedImage);
+  const base64EncodedImage = await getLinkInBioAvatar(pageId);
+  if (!base64EncodedImage) return Response.json({ success: false }, { status: HTTPStatusCode.NOT_FOUND });
+  let buffer = decodeBase64Image(base64EncodedImage);
 
   return new Response(buffer, { status: HTTPStatusCode.OK, headers: { "Content-Type": "image/webp" } });
 }

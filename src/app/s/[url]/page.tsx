@@ -59,6 +59,7 @@ export default function LinkTreePage() {
     return () => {
       if (avatarImage) {
         URL.revokeObjectURL(avatarImage);
+        setAvatarImage("");
       }
     };
 
