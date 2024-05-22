@@ -18,8 +18,8 @@ export default function ConfirmationView(props: ConfirmationViewProps) {
         <div className="fixed inset-x-0 bottom-0 z-50 mx-4 mb-4 rounded-lg bg-white p-4 shadow-lg md:relative md:mx-auto md:max-w-md">
           <div className="items-center md:flex">
             {props.iconSrc ? (
-              <div className="mx-auto flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full border border-gray-300">
-                <Image src={props.iconSrc} priority width={55} height={55} alt="Delete icon" />
+              <div className="mx-auto flex h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-full border border-gray-300">
+                <Image src={props.iconSrc} priority width={65} height={65} alt="Delete icon" />
               </div>
             ) : null}
             <div className="mt-4 text-center md:ml-6 md:mt-0 md:text-left">
