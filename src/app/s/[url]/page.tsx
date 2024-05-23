@@ -85,7 +85,7 @@ export default function LinkTreePage() {
           immutableView
         />
       </div>
-      <div className="flex-1" />
+      <div className="flex-1 max-sm:max-h-80" />
       <div className="flex flex-row-reverse p-4">
         <button
           className="flex max-w-[150px] flex-row items-center rounded-md border bg-purple-100 p-2 text-sm shadow-md"
