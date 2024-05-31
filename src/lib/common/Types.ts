@@ -10,6 +10,11 @@ import {
   loginUserSchema,
 } from "../client/dataValidations";
 
+export const enum Role {
+  Admin = "Admin",
+  User = "User",
+}
+
 export type LinkListItemType = {
   name: string;
   target_url: string;
@@ -40,6 +45,7 @@ export interface SessionWithEmail extends Session {
     name?: string | null;
     email: z.infer<typeof emailSchema>;
     image?: string | null;
+    role: Role[];
   };
 }
 

@@ -1,10 +1,12 @@
 import "server-only";
 import { loginUserSchema, emailSchema } from "@/lib/client/dataValidations";
-import { checkLoginProvider, loginUser } from "@/lib/server/authentication";
+import { checkLoginProvider, getUserRoles, loginUser } from "@/lib/server/authentication";
 import Credentials from "next-auth/providers/credentials";
 import { AuthOptions } from "next-auth";
 import { AUTH_PROVIDERS, LoginUserResult } from "@/lib/server/serverConstants";
 import GoogleProvider from "next-auth/providers/google";
+import { Role } from "@/lib/common/Types";
+import { AdapterUser } from "next-auth/adapters";
 
 const authOptions: AuthOptions = {
   providers: [
@@ -53,6 +55,15 @@ const authOptions: AuthOptions = {
       if (resutl === LoginUserResult.Success) return true;
       else if (resutl === LoginUserResult.Restricted) throw new Error("User account restricted.");
       else throw new Error("Another authentication option is associated with this account.");
+    },
+    jwt: async ({ token, user }) => {
+      let adapterUser = user as AdapterUser;
+      if (adapterUser && adapterUser.email) token.role = getUserRoles(adapterUser);
+      return token;
+    },
+    session: async ({ session, token }) => {
+      session.user.role = token.role;
+      return session;
     },
   },
 

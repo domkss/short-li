@@ -13,6 +13,8 @@ function NavBar() {
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const { replace } = useRouter();
   const session = useSession();
+
+  //Hide navbar on specified paths
   if (PATHS_WITH_HIDDEN_NAVBAR.some((path) => pathname.startsWith(path))) return null;
 
   return (
@@ -73,23 +75,24 @@ function NavBar() {
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
                 {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
-                {NAV_BAR_LINKS.map((item) => (
-                  <Link
-                    key={item.title}
-                    href={item.path}
-                    className={cn(
-                      pathname === item.path
-                        ? "rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
-                        : "rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white",
-                      {
-                        hidden: item.authRequired && session.status !== "authenticated",
-                      },
-                    )}
-                    aria-current="page"
-                  >
-                    {item.title}
-                  </Link>
-                ))}
+                {NAV_BAR_LINKS.map((item) => {
+                  if (item.requiredRole && !session.data?.user.role.includes(item.requiredRole)) return null;
+
+                  return (
+                    <Link
+                      key={item.title}
+                      href={item.path}
+                      className={cn(
+                        pathname === item.path
+                          ? "rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+                          : "rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white",
+                      )}
+                      aria-current="page"
+                    >
+                      {item.title}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -123,26 +126,27 @@ function NavBar() {
       {/* Mobile menu, show/hide based on menu state. */}
       <div className={cn("sm:hidden", { hidden: !mobileMenuOpened })} id="mobile-menu">
         <div className="space-y-1 px-2 pb-3 pt-2">
-          {NAV_BAR_LINKS.map((item) => (
-            <Link
-              key={item.title}
-              href={item.path}
-              className={cn(
-                pathname === item.path
-                  ? "block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white"
-                  : "block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white",
-                {
-                  hidden: item.authRequired && session.status !== "authenticated",
-                },
-              )}
-              onClick={() => {
-                setMobileMenuOpened(!mobileMenuOpened);
-              }}
-              aria-current="page"
-            >
-              {item.title}
-            </Link>
-          ))}
+          {NAV_BAR_LINKS.map((item) => {
+            if (item.requiredRole && !session.data?.user.role.includes(item.requiredRole)) return null;
+
+            return (
+              <Link
+                key={item.title}
+                href={item.path}
+                className={cn(
+                  pathname === item.path
+                    ? "block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white"
+                    : "block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white",
+                )}
+                onClick={() => {
+                  setMobileMenuOpened(!mobileMenuOpened);
+                }}
+                aria-current="page"
+              >
+                {item.title}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </nav>

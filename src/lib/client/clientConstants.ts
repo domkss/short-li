@@ -1,7 +1,10 @@
-export const NAV_BAR_LINKS = [
-  { title: "URL Shortener", path: "/", authRequired: false },
-  { title: "My Links", path: "/user/links", authRequired: true },
-  { title: "Link-in-bio", path: "/user/links/link-in-bio", authRequired: true },
+import { Role } from "@/lib/common/Types";
+
+export const NAV_BAR_LINKS: { title: string; path: string; requiredRole?: Role }[] = [
+  { title: "URL Shortener", path: "/" },
+  { title: "Admin", path: "/admin", requiredRole: Role.Admin },
+  { title: "My Links", path: "/user/links", requiredRole: Role.User },
+  { title: "Link-in-bio", path: "/user/links/link-in-bio", requiredRole: Role.User },
 ];
 
 export const PATHS_WITH_HIDDEN_NAVBAR = ["/s/"];

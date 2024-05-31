@@ -13,6 +13,8 @@ import { getRandomBase58String, verifyRecaptcha } from "./serverHelperFunctions"
 import { LoginUserResult } from "./serverConstants";
 import z from "zod";
 import Mailer from "./mailer";
+import { Role, SessionWithEmail } from "../common/Types";
+import { AdapterUser } from "next-auth/adapters";
 
 //#region Credentials Auth Functions
 export async function loginUser(email: string, password: string): Promise<LoginUserResult> {
@@ -204,6 +206,24 @@ export async function checkLoginProvider(email: string, account_provider: string
 }
 //#endregion
 
+//#region User Role Handling
+export function getUserRoles(user: AdapterUser): Role[] {
+  let userRoles = [Role.User];
+
+  if (getAdminEmails().includes(user.email)) {
+    userRoles.push(Role.Admin);
+  }
+
+  return userRoles;
+}
+
+function getAdminEmails() {
+  const adminEmails = process.env.ADMIN_EMAILS;
+  return adminEmails ? adminEmails.split(",") : [];
+}
+
+//#endregion
+
 //#region Helper functions
 
 function createPasswordHash(password: string) {
@@ -215,4 +235,5 @@ function createPasswordHash(password: string) {
 function isPasswordValid(password: string, salt: string, hash: string) {
   return hash === crypto.pbkdf2Sync(password, salt, 1000, 64, `sha512`).toString(`hex`);
 }
+
 //#endregion
