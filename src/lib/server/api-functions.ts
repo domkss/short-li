@@ -5,7 +5,7 @@ import { isValidHttpURL } from "../client/dataValidations";
 import { RedisClientType } from "redis";
 import GeoLocationService from "./GeoLocationService";
 import { getRandomBase58String, formatShortLink } from "./serverHelperFunctions";
-import { LinkListItemType, Promisify, LinkInBioButtonItem, CreateShortURLOptions } from "../common/Types";
+import { LinkListItemType, Promisify, LinkInBioButtonItem, CreateShortURLOptions, Role } from "../common/Types";
 import { REDIS_USER_FIELDS } from "./serverConstants";
 import { SessionWithEmail } from "../common/Types";
 
@@ -283,6 +283,74 @@ export async function setLinkInBioAvatar(base58EncodedImage: string, session: Se
   await redisClient.HSET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.AVATAR, base58EncodedImage);
 
   return true;
+}
+
+//#endregion
+
+//#region Admin Functions
+
+async function getAllUserEmail(session: SessionWithEmail) {
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+}
+
+async function getAllShortLinkData(session: SessionWithEmail) {
+  //Throw error if the user is not an Admin
+  if (!session.user.role.includes(Role.Admin)) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
+
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  let cursor = 0;
+  const shortLinks: string[] = [];
+
+  do {
+    let results = await redisClient.SCAN(0, {
+      MATCH: "link:*",
+      COUNT: 1000,
+    });
+
+    cursor = results.cursor;
+    const keys: string[] = results.keys;
+
+    keys.forEach((key) => {
+      // Check if the key contains another colon after 'link:'
+      if (!key.includes(":", 5)) {
+        // Skip the first 5 characters 'link:'
+        shortLinks.push(key);
+      }
+    });
+  } while (cursor !== 0);
+
+  let linkList: Promisify<LinkListItemType>[] = [];
+
+  for (const shortURL of shortLinks) {
+    let name = redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.NAME);
+    let target_url = redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TARGET);
+    let redirect_count = redisClient.HGET(
+      REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL,
+      REDIS_LINK_FIELDS.REDIRECT_COUNTER,
+    );
+
+    linkList.push({
+      shortURL: Promise.resolve(formatShortLink(shortURL)),
+      name: name,
+      target_url: target_url,
+      redirect_count: redirect_count,
+      click_by_country: Promise.resolve([]),
+    });
+  }
+
+  const arrayOfPromises: Promise<{ [key: string]: any }>[] = linkList.map((obj) =>
+    Promise.all(Object.values(obj)).then((resolvedValues: any[]) => {
+      const resolvedObject: { [key: string]: any } = {};
+      Object.keys(obj).forEach((key, index) => {
+        resolvedObject[key] = resolvedValues[index];
+      });
+      return resolvedObject;
+    }),
+  );
+  return (await Promise.all(arrayOfPromises)) as LinkListItemType[];
 }
 
 //#endregion
