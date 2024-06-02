@@ -1,79 +1,120 @@
 "use client";
-import React, { useState, ChangeEvent } from "react";
-
-// Define Types for Users and Short Links
-interface User {
-  email: string;
-}
-
-interface ShortLink {
-  link: string;
-  user?: string;
-}
+import { LinkListItemType, Role } from "@/lib/common/Types";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import React, { useState, ChangeEvent, useEffect } from "react";
 
 // Combined Item Type (optional fields)
-interface Item {
+interface ListItem {
   email?: string;
-  link?: string;
-  user?: string;
+  linkName?: string;
+  shortLink?: string;
+  targetUrl?: string;
+  redirectCount?: string;
 }
 
-// Dummy Data for Users and Short Links
-const users: User[] = [{ email: "user1@example.com" }, { email: "user2@example.com" }, { email: "user3@example.com" }];
-
-const shortLinks: ShortLink[] = [
-  { link: "http://sli.ink/abcd", user: "user1@example.com" },
-  { link: "http://sli.ink/efgh" },
-  { link: "http://sli.ink/ijkl", user: "user2@example.com" },
-];
-
-// Combine Users and Short Links into a Single List
-const items: Item[] = [
-  ...users.map((user) => ({ email: user.email })),
-  ...shortLinks.map((link) => ({ link: link.link, user: link.user })),
-];
-
 // Item Component
-const ItemComponent: React.FC<Item> = ({ email, link, user }) => (
+const ItemComponent: React.FC<ListItem> = (item) => (
   <div className="mb-2 rounded-lg bg-white p-4 shadow">
-    {email && <div className="font-semibold">Email: {email}</div>}
-    {link && <div className="font-semibold">Link: {link}</div>}
-    {user && <div className="text-sm text-gray-500">Created by: {user}</div>}
+    {item.email && <div className="font-semibold">User: {item.email}</div>}
+    {item.linkName && <div className="font-semibold">Name: {item.linkName}</div>}
+    {item.shortLink && <div className="font-semibold">Short Link: {item.shortLink}</div>}
+    {item.targetUrl && <div className="font-semibold">Link Target: {item.targetUrl}</div>}
+    {item.shortLink && <div className="font-semibold">Click Count: {item.redirectCount ? item.redirectCount : 0}</div>}
   </div>
 );
 
 // Main Component
 const AdminPage: React.FC = () => {
+  const [items, setItems] = useState<ListItem[]>([]);
+  const [numberOfUsers, setNumberOfUsers] = useState(0);
+  const [numberOfShortenedLinks, setNumberOfShortenedLinks] = useState(0);
+
   const [filter, setFilter] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
+
+  //#region Authentication check and redirect
+  const reactRouter = useRouter();
+  const session = useSession();
+  let isServer = typeof window === "undefined" ? true : false;
+  if (
+    !isServer &&
+    (session.status !== "authenticated" ||
+      !session.data ||
+      !session.data.user ||
+      !session.data.user.role.includes(Role.Admin))
+  )
+    reactRouter.replace("/login");
+  //#endregion
 
   // Handle filter change
   const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value);
-    setCurrentPage(1); // Reset to first page on filter change
   };
 
   // Filtered and paginated items
   const filteredItems = items.filter(
-    (item) => (item.email && item.email.includes(filter)) || (item.link && item.link.includes(filter)),
+    (item) => (item.email && item.email.includes(filter)) || (item.shortLink && item.shortLink.includes(filter)),
   );
 
   const paginatedItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
 
+  async function getPageData() {
+    let response = await fetch("/api/admin");
+    if (response.ok) {
+      let data = await response.json();
+
+      if (data.success) {
+        let shortLinks: LinkListItemType[] = data.all_short_links_data;
+        let userEmails: string[] = data.user_emails;
+        setNumberOfShortenedLinks(shortLinks.length);
+        setNumberOfUsers(userEmails.length);
+
+        let listItems: ListItem[] = [];
+        listItems.push(...userEmails.map((email) => ({ email: email })));
+        listItems.push(
+          ...shortLinks.map((link_data) => ({
+            linkName: link_data.name,
+            shortLink: link_data.shortURL,
+            targetUrl: link_data.target_url,
+            redirectCount: link_data.redirect_count,
+          })),
+        );
+        console.log(listItems);
+
+        setItems(listItems);
+      } else {
+        //Todo: Display Status Text or error message
+        setItems([]);
+        setNumberOfShortenedLinks(0);
+        setNumberOfUsers(0);
+      }
+    } else {
+      //Todo: Display Status Text or error message
+    }
+  }
+
+  useEffect(() => {
+    getPageData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <main className="container mx-auto p-4">
       {/* Statistics */}
-      <div className="mb-8 grid grid-cols-2 gap-4">
-        <div className="rounded-lg bg-blue-100 p-6 text-center shadow">
-          <div className="text-5xl font-bold text-blue-500">1500</div>
-          <div className="mt-2 text-gray-600">Number of Users</div>
-        </div>
-        <div className="rounded-lg bg-blue-100 p-6 text-center shadow">
-          <div className="text-5xl font-bold text-blue-500">500</div>
-          <div className="mt-2 text-gray-600">Number of Shortened Links</div>
+      <div className="mb-8 flex justify-center">
+        <div className="grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="transform rounded-xl bg-gradient-to-r from-blue-100 to-blue-300 p-6 text-center shadow-md">
+            <div className="text-5xl font-bold text-blue-700">{numberOfUsers}</div>
+            <div className="mt-2 text-lg text-gray-700">Number of Users</div>
+          </div>
+          <div className="transform rounded-xl bg-gradient-to-r from-blue-100 to-blue-300 p-6 text-center shadow-md">
+            <div className="text-5xl font-bold text-blue-700">{numberOfShortenedLinks}</div>
+            <div className="mt-2 text-lg text-gray-700">Number of Shortened Links</div>
+          </div>
         </div>
       </div>
       {/* Filter Input */}

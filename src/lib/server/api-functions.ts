@@ -289,12 +289,38 @@ export async function setLinkInBioAvatar(base58EncodedImage: string, session: Se
 
 //#region Admin Functions
 
-async function getAllUserEmail(session: SessionWithEmail) {
+export async function getAllUserEmail(session: SessionWithEmail) {
+  //Throw error if the user is not an Admin
+  if (!session.user.role.includes(Role.Admin)) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
+
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  let cursor = 0;
+  const userEmails: string[] = [];
+
+  do {
+    let results = await redisClient.SCAN(0, {
+      MATCH: REDIS_NAME_PATTERNS.USER_PRETAG + "*",
+      COUNT: 1000,
+    });
+
+    cursor = results.cursor;
+    const keys: string[] = results.keys;
+
+    keys.forEach((key) => {
+      key = key.substring(REDIS_NAME_PATTERNS.USER_PRETAG.length);
+      // Check if the key contains another colon after 'user:'
+      if (!key.includes(":")) {
+        userEmails.push(key);
+      }
+    });
+  } while (cursor !== 0);
+
+  return userEmails;
 }
 
-async function getAllShortLinkData(session: SessionWithEmail) {
+export async function getAllShortLinkData(session: SessionWithEmail) {
   //Throw error if the user is not an Admin
   if (!session.user.role.includes(Role.Admin)) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
 
@@ -306,7 +332,7 @@ async function getAllShortLinkData(session: SessionWithEmail) {
 
   do {
     let results = await redisClient.SCAN(0, {
-      MATCH: "link:*",
+      MATCH: REDIS_NAME_PATTERNS.LINK_PRETAG + "*",
       COUNT: 1000,
     });
 
@@ -314,9 +340,9 @@ async function getAllShortLinkData(session: SessionWithEmail) {
     const keys: string[] = results.keys;
 
     keys.forEach((key) => {
+      key = key.substring(REDIS_NAME_PATTERNS.LINK_PRETAG.length);
       // Check if the key contains another colon after 'link:'
-      if (!key.includes(":", 5)) {
-        // Skip the first 5 characters 'link:'
+      if (!key.includes(":")) {
         shortLinks.push(key);
       }
     });
