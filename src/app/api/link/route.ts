@@ -50,7 +50,7 @@ import { sessionFromToken } from "@/lib/server/serverHelperFunctions";
  *                   type: boolean
  *                   example: false
  *       401:
- *         description: The
+ *         description: The session or the JWT expired
  *         content:
  *           application/json:
  *             schema:
