@@ -76,7 +76,7 @@ function NavBar() {
               <div className="flex space-x-4">
                 {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
                 {NAV_BAR_LINKS.map((item) => {
-                  if (item.requiredRole && !session.data?.user.role.includes(item.requiredRole)) return null;
+                  if (item.requiredRole && !session.data?.user.role?.includes(item.requiredRole)) return null;
 
                   return (
                     <Link
@@ -127,7 +127,7 @@ function NavBar() {
       <div className={cn("sm:hidden", { hidden: !mobileMenuOpened })} id="mobile-menu">
         <div className="space-y-1 px-2 pb-3 pt-2">
           {NAV_BAR_LINKS.map((item) => {
-            if (item.requiredRole && !session.data?.user.role.includes(item.requiredRole)) return null;
+            if (item.requiredRole && !session.data?.user.role?.includes(item.requiredRole)) return null;
 
             return (
               <Link
