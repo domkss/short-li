@@ -7,21 +7,84 @@ import authOptions from "../auth/[...nextauth]/authOptions";
 import { shortURLSchema, longURLSchema } from "@/lib/client/dataValidations";
 import { StatusCodes as HTTPStatusCode } from "http-status-codes";
 import { isSessionWithEmail } from "@/lib/client/dataValidations";
+import { getToken } from "next-auth/jwt";
+import { Session } from "next-auth";
+import { sessionFromToken } from "@/lib/server/serverHelperFunctions";
 
-//Create Short URL
+/**
+ * @swagger
+ * /api/link:
+ *   post:
+ *     description: Creates Short URL pointing to the target address
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               url:
+ *                 type: string
+ *                 example: https://google.com
+ *     responses:
+ *       200:
+ *         description: A JSON response containing the shortened link
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 url:
+ *                   type: string
+ *       400:
+ *         description: Incorrect request body param url is missing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *       401:
+ *         description: The
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ */
+
 export async function POST(req: NextRequest) {
   const content = await req.json();
   const parsedContent = longURLSchema.safeParse(content);
   if (!parsedContent.success) return Response.json({ success: false }, { status: HTTPStatusCode.BAD_REQUEST });
 
-  const session = await getServerSession(authOptions);
+  // Get Session from cookies if the user is authenticated
+  let session = await getServerSession(authOptions);
+
+  // Retrieve session data from the Authorization header, which contains a Bearer JWT token from a third-party application.
+  const token = await getToken({ req });
+  if (!session && token) {
+    session = sessionFromToken(token);
+  }
 
   if (!session || isSessionWithEmail(session)) {
-    let shortURL = await createShortURL(parsedContent.data.url, { session: session }).catch(
-      (error: REDIS_ERRORS) => error,
-    );
+    let success = true;
+
+    let shortURL = await createShortURL(parsedContent.data.url, { session: session }).catch((error) => {
+      success = false;
+      return error.message;
+    });
+
     return Response.json({
-      success: true,
+      success: success,
       url: shortURL,
     });
   } else {

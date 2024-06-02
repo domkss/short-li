@@ -7,7 +7,7 @@ export const NAV_BAR_LINKS: { title: string; path: string; requiredRole?: Role }
   { title: "Link-in-bio", path: "/user/links/link-in-bio", requiredRole: Role.User },
 ];
 
-export const PATHS_WITH_HIDDEN_NAVBAR = ["/s/"];
+export const PATHS_WITH_HIDDEN_NAVBAR = ["/s/", "/api"];
 
 export const COLOR_PICKER_SUGGESTED_COLORS = [
   "#90cdf4",

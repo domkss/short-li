@@ -12,7 +12,7 @@ import { SessionWithEmail } from "../common/Types";
 //#region Link related CRUD functions
 export async function createShortURL(longURL: string, options: CreateShortURLOptions) {
   if (longURL.length < 5 || longURL.length > 2048 || !isValidHttpURL(longURL))
-    return REDIS_ERRORS.DATA_VALIDATION_ERROR;
+    throw Error(REDIS_ERRORS.DATA_VALIDATION_ERROR);
 
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);

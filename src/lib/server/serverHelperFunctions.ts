@@ -2,6 +2,9 @@ import "server-only";
 import { randomBytes } from "crypto";
 import base58 from "bs58";
 import { RECAPTCHA_ACTIONS } from "./serverConstants";
+import { JWT } from "next-auth/jwt";
+import { Session } from "next-auth";
+import { formatISO } from "date-fns";
 
 export function getRandomBase58String(length: number) {
   const BUFFER_SIZE = 512;
@@ -46,3 +49,20 @@ export const verifyRecaptcha = async (token: string, action: RECAPTCHA_ACTIONS) 
   }
   return false;
 };
+
+export function sessionFromToken(token: JWT): Session | null {
+  const isExpired = token.exp && (token.exp as number) < Math.floor(Date.now() / 1000);
+
+  if (!isExpired) {
+    return {
+      user: {
+        name: undefined,
+        image: undefined,
+        email: token.email,
+        role: token.role,
+      },
+      expires: formatISO(new Date(token.exp as number), { representation: "complete" }),
+    };
+  }
+  return null;
+}

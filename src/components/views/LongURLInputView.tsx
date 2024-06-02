@@ -42,7 +42,7 @@ export default function LongURLInput() {
 
     if (result.ok) {
       const data = await result.json();
-      if (data.success && data.url) {
+      if (data.url) {
         setUrlInputContent(data.url);
       } else {
         setUrlInputContent("Unable to construct the short URL. Please try again later.");
