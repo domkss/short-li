@@ -8,7 +8,6 @@ import { shortURLSchema, longURLSchema } from "@/lib/client/dataValidations";
 import { StatusCodes as HTTPStatusCode } from "http-status-codes";
 import { isSessionWithEmail } from "@/lib/client/dataValidations";
 import { getToken } from "next-auth/jwt";
-import { Session } from "next-auth";
 import { sessionFromToken } from "@/lib/server/serverHelperFunctions";
 
 /**
@@ -39,6 +38,7 @@ import { sessionFromToken } from "@/lib/server/serverHelperFunctions";
  *                   example: true
  *                 url:
  *                   type: string
+ *                   example: sli.ink/xYGe
  *       400:
  *         description: Incorrect request body param url is missing
  *         content:
