@@ -275,12 +275,12 @@ export async function getLinkInBioAvatar(pageId: string): Promise<string | undef
   return redisClient.HGET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.AVATAR);
 }
 
-export async function setLinkInBioAvatar(base58EncodedImage: string, session: SessionWithEmail) {
+export async function setLinkInBioAvatar(base64EncodedImage: string, session: SessionWithEmail) {
   let pageId = await getCurrentUserLinkInBioPageId(session);
 
   const redisClient = await RedisDB.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
-  await redisClient.HSET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.AVATAR, base58EncodedImage);
+  await redisClient.HSET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.AVATAR, base64EncodedImage);
 
   return true;
 }

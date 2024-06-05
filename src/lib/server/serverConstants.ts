@@ -31,7 +31,7 @@ export enum REDIS_BIO_FIELDS {
   BUTTON = "button:",
   BUTTON_ID_LIST = "button_id_list_ordered",
   IN_USE = "in_use",
-  AVATAR = "avatar_base85",
+  AVATAR = "avatar_base64",
 }
 
 export enum REDIS_ERRORS {

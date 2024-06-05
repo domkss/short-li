@@ -83,7 +83,6 @@ const AdminPage: React.FC = () => {
             redirectCount: link_data.redirect_count,
           })),
         );
-        console.log(listItems);
 
         setItems(listItems);
       } else {

@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const file = formData.get("file") as File;
     const data = await file.arrayBuffer();
-    const base85EncodedImage = await avatarImageToBase64(data);
-    let status = await setLinkInBioAvatar(base85EncodedImage, session);
+    const base64EncodedImage = await avatarImageToBase64(data);
+    let status = await setLinkInBioAvatar(base64EncodedImage, session);
     return Response.json({ success: status });
   } else {
     return Response.json({ success: false }, { status: HTTPStatusCode.UNAUTHORIZED });

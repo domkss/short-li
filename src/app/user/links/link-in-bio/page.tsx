@@ -59,7 +59,7 @@ export default function CustomBioDashboard() {
 
   async function getUserAvatar(pageUrl: string) {
     let pageId = pageUrl.split("/").pop();
-    let avatar_response = await fetch("/api/link-in-bio/avatar?id=" + pageId);
+    let avatar_response = await fetch("/api/link-in-bio/avatar?id=" + pageId, { cache: "no-cache" });
     if (avatar_response.ok) {
       if (avatarImage) {
         URL.revokeObjectURL(avatarImage);
