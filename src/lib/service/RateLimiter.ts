@@ -37,7 +37,7 @@ class RateLimiter {
   }
 }
 
-export type NextApiHandler = (req: NextRequest) => Promise<Response>;
+type NextApiHandler = (req: NextRequest) => Promise<Response>;
 
 export function rateLimitedEndpoint(handler: NextApiHandler, rateLimiter: RateLimiter): NextApiHandler {
   return async (req: NextRequest) => {
