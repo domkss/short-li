@@ -9,6 +9,9 @@ import { StatusCodes as HTTPStatusCode } from "http-status-codes";
 import { isSessionWithEmail } from "@/lib/client/dataValidations";
 import { getToken } from "next-auth/jwt";
 import { sessionFromToken } from "@/lib/server/serverHelperFunctions";
+import { RateLimiter, rateLimitedEndpoint } from "@/lib/service/RateLimiter";
+
+const rateLimiter = new RateLimiter({ windowSizeSec: 900, maxRequests: 50 });
 
 /**
  * @swagger
@@ -61,7 +64,7 @@ import { sessionFromToken } from "@/lib/server/serverHelperFunctions";
  *                   example: false
  */
 
-export async function POST(req: NextRequest) {
+export const POST = rateLimitedEndpoint(async (req: NextRequest) => {
   const content = await req.json();
   const parsedContent = longURLSchema.safeParse(content);
   if (!parsedContent.success) return Response.json({ success: false }, { status: HTTPStatusCode.BAD_REQUEST });
@@ -90,7 +93,7 @@ export async function POST(req: NextRequest) {
   } else {
     return Response.json({ success: false }, { status: HTTPStatusCode.UNAUTHORIZED });
   }
-}
+}, rateLimiter);
 
 //Get User Links
 export async function GET(req: NextRequest) {
