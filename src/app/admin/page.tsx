@@ -105,25 +105,25 @@ const AdminPage: React.FC = () => {
     <main className="container mx-auto p-4">
       {/* Statistics */}
       <div className="mb-8 flex justify-center">
-        <div className="grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="transform rounded-xl bg-gradient-to-r from-blue-100 to-blue-300 p-6 text-center shadow-md">
+        <div className="grid w-full max-w-2xl grid-cols-1 gap-1 md:grid-cols-2">
+          <div className="p-6 text-center">
             <div className="text-5xl font-bold text-blue-700">{numberOfUsers}</div>
             <div className="mt-2 text-lg text-gray-700">Number of Users</div>
           </div>
-          <div className="transform rounded-xl bg-gradient-to-r from-blue-100 to-blue-300 p-6 text-center shadow-md">
+          <div className="p-6 text-center">
             <div className="text-5xl font-bold text-blue-700">{numberOfShortenedLinks}</div>
             <div className="mt-2 text-lg text-gray-700">Number of Shortened Links</div>
           </div>
         </div>
       </div>
       {/* Filter Input */}
-      <div className="mb-4">
+      <div className="mb-6 flex justify-center">
         <input
           type="text"
           value={filter}
           onChange={handleFilterChange}
           placeholder="Filter"
-          className="w-full rounded-lg border border-gray-300 p-3 shadow"
+          className="min-w-[50%] rounded-lg border border-gray-300 p-3 shadow"
         />
       </div>
       {/* Scrollable List */}
