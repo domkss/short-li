@@ -182,7 +182,11 @@ export async function updateUserPasswordWithRecoveryToken(
 export async function checkLoginProvider(email: string, account_provider: string): Promise<LoginUserResult> {
   try {
     const redisClient = await RedisDB.getClient();
+    //User deleted
+    let userExists = await redisClient.EXISTS(REDIS_NAME_PATTERNS.USER_PRETAG + email);
+    if (!userExists && account_provider === AUTH_PROVIDERS.CREDENTIALS) return LoginUserResult.Failed;
 
+    //User login restricted
     let restricted = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.RESTRICTED);
     if (restricted) return LoginUserResult.Restricted;
 
@@ -204,6 +208,21 @@ export async function checkLoginProvider(email: string, account_provider: string
 
   return LoginUserResult.Success;
 }
+
+export async function restrictedOrDeleted(email: string) {
+  const redisClient = await RedisDB.getClient();
+
+  //User deleted
+  let userExists = await redisClient.EXISTS(REDIS_NAME_PATTERNS.USER_PRETAG + email);
+  if (!userExists) return LoginUserResult.Failed;
+
+  //User login restricted
+  let restricted = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.RESTRICTED);
+  if (restricted) return LoginUserResult.Restricted;
+
+  return LoginUserResult.Success;
+}
+
 //#endregion
 
 //#region User Role Handling

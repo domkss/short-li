@@ -66,6 +66,15 @@ export const linkInBioPatchSchema = z.object({
   newDescription: z.string().optional(),
 });
 
+export const deleteReuqestSchema = z.object({
+  user: emailSchema.optional(),
+  url: z
+    .string()
+    .min(1)
+    .transform((string) => string.split("/").pop())
+    .optional(),
+});
+
 export function isSessionWithEmail(session: Session | null): session is SessionWithEmail {
   if (!session || !session.user || !session.user.email) return false;
 

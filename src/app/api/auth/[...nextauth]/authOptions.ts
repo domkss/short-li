@@ -1,12 +1,13 @@
 import "server-only";
 import { loginUserSchema, emailSchema } from "@/lib/client/dataValidations";
-import { checkLoginProvider, getUserRoles, loginUser } from "@/lib/server/authentication";
+import { checkLoginProvider, getUserRoles, loginUser, restrictedOrDeleted } from "@/lib/server/authentication";
 import Credentials from "next-auth/providers/credentials";
 import { AuthOptions } from "next-auth";
 import { AUTH_PROVIDERS, LoginUserResult } from "@/lib/server/serverConstants";
 import GoogleProvider from "next-auth/providers/google";
 import { Role } from "@/lib/common/Types";
 import { AdapterUser } from "next-auth/adapters";
+import { th } from "date-fns/locale";
 
 const authOptions: AuthOptions = {
   providers: [
@@ -62,7 +63,16 @@ const authOptions: AuthOptions = {
       return token;
     },
     session: async ({ session, token }) => {
+      //Add the user role to the session
       session.user.role = token.role;
+
+      //Check if the user is restricted or deleted
+      let email = session.user.email || token.email;
+      if (!email || (await restrictedOrDeleted(email)) !== LoginUserResult.Success) {
+        session.user.email = null;
+        session.user.role = [];
+      }
+
       return session;
     },
   },

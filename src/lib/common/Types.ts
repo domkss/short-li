@@ -8,6 +8,7 @@ import {
   longURLSchema,
   passwordRecoverySchema,
   loginUserSchema,
+  deleteReuqestSchema,
 } from "../client/dataValidations";
 
 export const enum Role {
@@ -60,3 +61,5 @@ export type RegisterUserSchema = z.infer<typeof registerUserSchema>;
 export type PasswordRecoverySchema = z.infer<typeof passwordRecoverySchema>;
 
 export type LinkInBioPatchSchema = z.infer<typeof linkInBioPatchSchema>;
+
+export type DeleteRequestSchema = z.infer<typeof deleteReuqestSchema>;

@@ -1,5 +1,5 @@
 "use client";
-import { LinkListItemType, Role } from "@/lib/common/Types";
+import { DeleteRequestSchema, LinkListItemType, Role } from "@/lib/common/Types";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState, ChangeEvent, useEffect } from "react";
@@ -12,17 +12,6 @@ interface ListItem {
   targetUrl?: string;
   redirectCount?: string;
 }
-
-// Item Component
-const ItemComponent: React.FC<ListItem> = (item) => (
-  <div className="mb-2 rounded-lg bg-white p-4 shadow">
-    {item.email && <div className="font-semibold">User: {item.email}</div>}
-    {item.linkName && <div className="font-semibold">Name: {item.linkName}</div>}
-    {item.shortLink && <div className="font-semibold">Short Link: {item.shortLink}</div>}
-    {item.targetUrl && <div className="font-semibold">Link Target: {item.targetUrl}</div>}
-    {item.shortLink && <div className="font-semibold">Click Count: {item.redirectCount ? item.redirectCount : 0}</div>}
-  </div>
-);
 
 // Main Component
 const AdminPage: React.FC = () => {
@@ -95,6 +84,43 @@ const AdminPage: React.FC = () => {
       //Todo: Display Status Text or error message
     }
   }
+
+  async function deleteItem(item: { email?: string; shortLink?: string }) {
+    let requestBody: DeleteRequestSchema = { user: item.email, url: item.shortLink };
+
+    let response = await fetch("/api/admin", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (response.ok) {
+      getPageData();
+    } else {
+      //Todo: Display Status Text or error message
+    }
+  }
+
+  // Item Component
+  const ItemComponent: React.FC<ListItem> = (item) => (
+    <div className="mb-2 rounded-lg bg-white p-4 shadow">
+      {item.email && <div className="font-semibold">User: {item.email}</div>}
+      {item.linkName && <div className="font-semibold">Name: {item.linkName}</div>}
+      {item.shortLink && <div className="font-semibold">Short Link: {item.shortLink}</div>}
+      {item.targetUrl && <div className="font-semibold">Link Target: {item.targetUrl}</div>}
+      {item.shortLink && (
+        <div className="font-semibold">Click Count: {item.redirectCount ? item.redirectCount : 0}</div>
+      )}
+      <button
+        onClick={() => deleteItem({ email: item.email, shortLink: item.shortLink })}
+        className="mt-2 rounded-lg bg-red-500 p-2 text-white shadow hover:bg-red-600"
+      >
+        Delete
+      </button>
+    </div>
+  );
 
   useEffect(() => {
     getPageData();

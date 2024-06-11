@@ -100,7 +100,20 @@ export async function getAllUserLinks(session: SessionWithEmail) {
       return resolvedObject;
     }),
   );
-  return (await Promise.all(arrayOfPromises)) as LinkListItemType[];
+
+  let result = (await Promise.all(arrayOfPromises)) as LinkListItemType[];
+
+  //Remove the links that have no target URL (In case it was deleted by an Admin)
+
+  let itemsToRemove = result
+    .filter((item) => item.shortURL && item.target_url === null && item.name === null)
+    .map((item) => item.shortURL.split("/").pop()?.trim());
+
+  itemsToRemove.forEach(async (shortURL) => {
+    if (shortURL) await redisClient.SREM(REDIS_NAME_PATTERNS.USER_LINKS + session.user?.email, shortURL);
+  });
+
+  return result.filter((item) => !itemsToRemove.includes(item.shortURL));
 }
 
 export async function deleteShortURL(shortURL: string, session: SessionWithEmail) {
@@ -377,6 +390,41 @@ export async function getAllShortLinkData(session: SessionWithEmail) {
     }),
   );
   return (await Promise.all(arrayOfPromises)) as LinkListItemType[];
+}
+
+export async function deleteUser(userEmail: string, session: SessionWithEmail) {
+  //Throw error if the user is not an Admin
+  if (!session.user.role.includes(Role.Admin)) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
+
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  //Delete all the user's links
+  let userShortURLs = await redisClient.SMEMBERS(REDIS_NAME_PATTERNS.USER_LINKS + userEmail);
+  await redisClient.DEL(REDIS_NAME_PATTERNS.USER_LINKS + userEmail);
+  for (const shortURL of userShortURLs) {
+    await redisClient.DEL(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL);
+    await redisClient.DEL(REDIS_NAME_PATTERNS.STATISTIC_COUNTRY_CODE + shortURL);
+  }
+
+  //Delete user link in bio page
+  let pageId = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + userEmail, REDIS_USER_FIELDS.BIO_PAGE_ID);
+  if (pageId) {
+    await redisClient.DEL(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId);
+  }
+  //Delete user
+  await redisClient.DEL(REDIS_NAME_PATTERNS.USER_PRETAG + userEmail);
+}
+
+export async function deleteShortLinkByAdmin(shortURL: string, session: SessionWithEmail) {
+  //Throw error if the user is not an Admin
+  if (!session.user.role.includes(Role.Admin)) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
+
+  const redisClient = await RedisDB.getClient();
+  if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
+
+  await redisClient.DEL(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL);
+  await redisClient.DEL(REDIS_NAME_PATTERNS.STATISTIC_COUNTRY_CODE + shortURL);
 }
 
 //#endregion
