@@ -239,7 +239,7 @@ export default function Dashboard() {
         {/*Link List */}
         <div className="flex min-h-full basis-1/3 flex-col">
           {/*Link list header */}
-          <div className="flex-0 flex flex-col rounded-b-lg border-b-2 border-blue-200 bg-indigo-100 p-3 text-center shadow-md">
+          <div className="flex-0 flex flex-col border-b border-blue-200 bg-indigo-100 p-3 text-center shadow-sm">
             <div className="flex flex-row justify-between">
               <div className="flex flex-row">
                 <Image className="m-3" src="/icons/links_undraw.svg" width={38} height={38} alt="My Links icon" />
@@ -301,7 +301,7 @@ export default function Dashboard() {
           </div>
 
           {/*Link list */}
-          <ul className="mt-1 flex-grow basis-full">
+          <ul className="mt-0.5 flex-grow basis-full">
             {linkListItems.map((item, key) => {
               const listItem = (key: number) => {
                 return (
