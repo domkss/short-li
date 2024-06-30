@@ -96,6 +96,7 @@ export default function TermsOfService() {
             </li>
             <li>
               <strong>9. Third-Party Services</strong>
+              <br />
               The Service may include links to third-party websites or services that are not owned or controlled by
               ShortLi. ShortLi has no control over, and assumes no responsibility for, the content, privacy policies, or
               practices of any third-party websites or services. You acknowledge and agree that ShortLi shall not be
