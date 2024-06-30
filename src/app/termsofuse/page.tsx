@@ -94,17 +94,24 @@ export default function TermsOfService() {
               </a>
               .
             </li>
-
             <li>
-              <strong>9. Changes to Terms</strong>
+              <strong>9. Third-Party Services</strong>
+              The Service may include links to third-party websites or services that are not owned or controlled by
+              ShortLi. ShortLi has no control over, and assumes no responsibility for, the content, privacy policies, or
+              practices of any third-party websites or services. You acknowledge and agree that ShortLi shall not be
+              responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or
+              in connection with use of or reliance on any such content, goods, or services available on or through any
+              such websites or services.
+            </li>
+            <li>
+              <strong>10. Changes to Terms</strong>
               <br />
               Users are responsible for regularly reviewing these Terms of Use. The Owner reserves the right to modify
               or replace these terms at any time without prior notice. Continued use of the Service after modifications
               constitutes acceptance of the updated terms.
             </li>
-
             <li>
-              <strong>10. Contact Information</strong>
+              <strong>11. Contact Information</strong>
               <br />
               For any questions or concerns regarding these Terms of Use, please contact us at
               <a className="mx-1 text-blue-600" href="mailto:contact@sli.ink">
@@ -184,26 +191,15 @@ export default function TermsOfService() {
               </a>
               .
             </li>
-
             <li>
-              <strong>8. Third-Party Services</strong>
-              The Service may include links to third-party websites or services that are not owned or controlled by
-              ShortLi. ShortLi has no control over, and assumes no responsibility for, the content, privacy policies, or
-              practices of any third-party websites or services. You acknowledge and agree that ShortLi shall not be
-              responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or
-              in connection with use of or reliance on any such content, goods, or services available on or through any
-              such websites or services.
-            </li>
-
-            <li>
-              <strong>9. Changes to Privacy Policy</strong>
+              <strong>8. Changes to Privacy Policy</strong>
               <br />
               a. Any changes to this Privacy Policy will be posted on this page. Users are encouraged to review this
               Privacy Policy regularly for any updates.
             </li>
 
             <li>
-              <strong>10. Contact Information</strong>
+              <strong>9. Contact Information</strong>
               <br />
               For any questions or concerns regarding this Privacy Policy, please contact us at
               <a className="mx-1 text-blue-600" href="mailto:contact@sli.ink">
