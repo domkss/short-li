@@ -4,6 +4,15 @@ Welcome to Short-Li!
 
 Short-Li is a web application that provides URL shortening functionality, aimed at simplifying the process of sharing links. Developed with modern web technologies, Short-Li empowers users to create concise and shareable links, making them ideal for various online platforms such as social media, messaging apps, and more.
 
+<div align="center">
+<table>
+  <tr>
+    <td><img src="https://github.com/domkss/short-li/assets/65664844/75a273a2-fd15-47e3-85db-abaa2dbf9310" alt="Image 1" width="500"/></td>
+    <td><img src="https://github.com/domkss/short-li/assets/65664844/87df15b6-f19e-489a-9ded-d06ac2290a3c" alt="Image 2" width="500"/></td>
+  </tr>
+</table>
+</div>
+
 ## Features
 
 - **URL Shortening:** Short-Li allows users to condense lengthy URLs into shorter, more manageable links. This feature is implemented using algorithms that generate unique identifiers for each shortened link.
