@@ -5,7 +5,7 @@ export default function TermsOfService() {
         <div>
           <h1 className="text-3xl">Terms of Use for Sli.ink Link Shortener Service</h1>
 
-          <p className="font-bold">Last Updated: 2024.01.01</p>
+          <p className="font-bold">Last Updated: 2024.06.30</p>
 
           <p className="mb-6 mt-2">
             Welcome to Sli.ink! Please read these terms of use carefully before using our link shortener service. By
@@ -186,14 +186,24 @@ export default function TermsOfService() {
             </li>
 
             <li>
-              <strong>8. Changes to Privacy Policy</strong>
+              <strong>8. Third-Party Services</strong>
+              The Service may include links to third-party websites or services that are not owned or controlled by
+              ShortLi. ShortLi has no control over, and assumes no responsibility for, the content, privacy policies, or
+              practices of any third-party websites or services. You acknowledge and agree that ShortLi shall not be
+              responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or
+              in connection with use of or reliance on any such content, goods, or services available on or through any
+              such websites or services.
+            </li>
+
+            <li>
+              <strong>9. Changes to Privacy Policy</strong>
               <br />
               a. Any changes to this Privacy Policy will be posted on this page. Users are encouraged to review this
               Privacy Policy regularly for any updates.
             </li>
 
             <li>
-              <strong>9. Contact Information</strong>
+              <strong>10. Contact Information</strong>
               <br />
               For any questions or concerns regarding this Privacy Policy, please contact us at
               <a className="mx-1 text-blue-600" href="mailto:contact@sli.ink">
