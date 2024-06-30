@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { StatusCodes as HTTPStatusCode } from "http-status-codes";
-import { th } from "date-fns/locale";
 
 class RateLimiter {
   windowSizeMs: number;
