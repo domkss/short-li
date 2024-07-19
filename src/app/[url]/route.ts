@@ -22,9 +22,10 @@ function encodeQueryParams(url: string) {
   }
 
   const encodedParams = queryString
-    .split("&")
+    .split(/[&;]/) // Split by either '&' or ';'
     .map((param) => {
-      const [key, value] = param.split("=");
+      const [key, ...valueParts] = param.split("=");
+      const value = valueParts.join("=");
       return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
     })
     .join("&");
