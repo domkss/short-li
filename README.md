@@ -1,6 +1,8 @@
 # Short-Li
 
-Welcome to Short-Li!
+Welcome to [Short-Li](https://sli.ink)!
+
+
 
 Short-Li is a web application that provides URL shortening functionality, aimed at simplifying the process of sharing links. Developed with modern web technologies, Short-Li empowers users to create concise and shareable links, making them ideal for various online platforms such as social media, messaging apps, and more.
 
