@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  shortli-redis:
+    build:
+      context: .
+      dockerfile: Dockerfile-redis
+      args:
+        - ENVKEY=${ENVKEY}
+    restart: always
+    expose:
+      - "6379"
+    volumes:
+      - shortli_redis:/data
+    networks:
+      sli-network:
+        ipv4_address: 172.20.0.11
+
+  shortli-app:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+      args:
+        - ENVKEY=${ENVKEY}
+    image: shortli-app:shortli
+    restart: always
+    depends_on:
+      shortli-redis:
+        condition: service_healthy
+    links:
+      - "shortli-redis:172.20.0.11"
+    ports:
+      - "3131:3000"
+    networks:
+      sli-network:
+        ipv4_address: 172.20.0.10
+
+volumes:
+  shortli_redis:
+    driver: local
+
+networks:
+  sli-network:
+    driver: bridge
+    name: sli-network
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1

@@ -10,8 +10,8 @@ ARG ENVKEY
 ENV ENVKEY=$ENVKEY
 
 # Set the default command
-ENTRYPOINT ["/bin/sh", "-c", "eval $(envkey-source) && redis-server --port 6380 --save 20 1 --loglevel warning --requirepass $REDIS_PW"]
+ENTRYPOINT ["/bin/sh", "-c", "eval $(envkey-source) && redis-server --port 6379 --save 20 1 --loglevel warning --requirepass $REDIS_PW"]
 
 # Set up health check
 HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
-    CMD eval $(envkey-source) && redis-cli -p 6380 -a $REDIS_PW ping
+    CMD eval $(envkey-source) && redis-cli -p 6379 -a $REDIS_PW ping
