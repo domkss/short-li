@@ -22,6 +22,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Init envkey variable
+ARG ENVKEY
+ENV ENVKEY=$ENVKEY
+
 
 RUN npm run build
 
@@ -55,11 +59,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/resources ./resources
 
-# Copy the .env file into the container
-COPY .env ./
-
-# Set environment variables from .env file
-ENV $(cat .env | grep -v ^# | xargs)
+# Init envkey variable
+ARG ENVKEY
+ENV ENVKEY=$ENVKEY
 
 USER nextjs
 

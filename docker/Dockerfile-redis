@@ -1,0 +1,17 @@
+# Use the official Redis image as a base image
+FROM redis:6.2-alpine
+
+# Install envkey-source
+RUN apk --no-cache add curl bash && \
+    VERSION=$(curl https://envkey-releases.s3.amazonaws.com/latest/envkeysource-version.txt) && \
+    curl -s https://envkey-releases.s3.amazonaws.com/envkeysource/release_artifacts/$VERSION/install.sh | bash
+
+ARG ENVKEY
+ENV ENVKEY=$ENVKEY
+
+# Set the default command
+ENTRYPOINT ["/bin/sh", "-c", "eval $(envkey-source) && redis-server --port 6380 --save 20 1 --loglevel warning --requirepass $REDIS_PW"]
+
+# Set up health check
+HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
+    CMD eval $(envkey-source) && redis-cli -p 6380 -a $REDIS_PW ping
