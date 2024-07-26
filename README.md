@@ -30,8 +30,15 @@ To set up Short-Li locally, follow these steps:
 
 1. Clone the repository to your local machine.
 2. Install the necessary dependencies using npm or yarn.
-3. Set up your database and configure the connection settings and other configurations in the `.env` file.
-4. Start the app with `npm run dev`.
+3. Set up your database and configure the connection settings and other configurations in your EnvKey project. <br> The project uses the EnvKey tool to load environment variables at run/build time. <br> To make it work, follow these steps:
+    - Modify the `.envkey` file content with your specific project ID.
+    - Add the `ENVKEY=YourKey` to the `.env` file.
+    - ------------------------------
+    - Or remove the envkey dependency from the next.config.js file and define the environment variables in the .env file based on the .example.env file.
+
+5. Start the app with `npm run dev`.
+
+
 
 ## Contributing
 
