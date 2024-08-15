@@ -5,7 +5,7 @@ import { LinkInBioButtonItem } from "@/lib/common/Types";
 import LoadingSpinner from "@/components/atomic/LoadingSpinner";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import Logo from "/public/icons/shortli_logo.svg";
+import Logo from "/public/icons/favicon.svg";
 
 export default function LinkTreePage() {
   const [btnList, setBtnList] = useState<LinkInBioButtonItem[]>([]);

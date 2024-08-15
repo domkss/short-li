@@ -64,8 +64,8 @@ function NavBar() {
             <div className="flex flex-shrink-0 items-center">
               <Link href="/">
                 <Image
-                  className="h-8 w-auto cursor-pointer pl-8"
-                  src="/icons/shortli_logo.svg"
+                  className="h-8 w-auto cursor-pointer"
+                  src="/icons/favicon.svg"
                   alt="ShortLi logo"
                   width={84}
                   height={32}

@@ -204,13 +204,13 @@ export default function LoginPage() {
         {/*Page Logo and Title */}
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <Image
-            className="mx-auto h-14 w-auto rounded-lg pl-8"
-            src="/icons/shortli_logo.svg"
+            className="mx-auto h-20 w-auto rounded-lg"
+            src="/icons/favicon.svg"
             alt="ShortLi logo"
-            width={56}
-            height={56}
+            width={80}
+            height={80}
           />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             {viewType === ViewType.RegisterView
               ? "Create your account"
               : viewType === ViewType.LoginView
@@ -234,7 +234,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={(e) => handleSubmit(e, viewType)}>
             {/*Email Input */}
             <div
