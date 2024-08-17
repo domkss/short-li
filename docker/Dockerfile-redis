@@ -1,17 +1,22 @@
 # Use the official Redis image as a base image
 FROM redis:6.2-alpine
 
-# Install envkey-source
-RUN apk --no-cache add curl bash && \
-    VERSION=$(curl https://envkey-releases.s3.amazonaws.com/latest/envkeysource-version.txt) && \
-    curl -s https://envkey-releases.s3.amazonaws.com/envkeysource/release_artifacts/$VERSION/install.sh | bash
+# Install curl and infisical
+RUN apk add --no-cache bash curl && curl -1sLf \
+    'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.alpine.sh' | bash \
+    && apk add infisical
 
-ARG ENVKEY
-ENV ENVKEY=$ENVKEY
+ARG ENV
+ARG PROJECT_ID
+ARG INFISICAL_TOKEN
+ENV INFISICAL_TOKEN=$INFISICAL_TOKEN
+ENV ENV=${ENV:-prod}
+ENV PROJECT_ID=${PROJECT_ID:-project_id}
 
 # Set the default command
-ENTRYPOINT ["/bin/sh", "-c", "eval $(envkey-source) && redis-server --port 6379 --save 20 1 --loglevel warning --requirepass $REDIS_PW"]
+ENTRYPOINT ["/bin/sh", "-c", "infisical run --env=${ENV} --projectId ${PROJECT_ID} -- sh -c 'redis-server --port 6379 --save 20 1 --loglevel warning --requirepass $REDIS_PW'"]
+
 
 # Set up health check
 HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
-    CMD eval $(envkey-source) && redis-cli -p 6379 -a $REDIS_PW ping
+    CMD infisical run --env=${ENV} --projectId ${PROJECT_ID} -- redis-cli -p 6379 -a $REDIS_PW ping

@@ -1,5 +1,4 @@
 /** @type {import('next').NextConfig} */
-require("envkey");
 const nextConfig = {
   serverRuntimeConfig: {
     PROJECT_ROOT: __dirname,

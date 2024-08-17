@@ -1,15 +1,22 @@
 version: "3.9"
 
 services:
-  redis:
-    image: redis:6.2-alpine
+  shortli-redis:
+    build:
+      context: .
+      dockerfile: Dockerfile-redis
+      args:
+        - INFISICAL_TOKEN=${INFISICAL_TOKEN}
+        - ENV=dev
+        - PROJECT_ID=6e57cafb-8fbb-4044-951a-0d517cf651a2
     restart: always
+    expose:
+      - "6379"
     ports:
       - "6379:6379"
-    command: redis-server --save 20 1 --loglevel warning --requirepass redisDeveloperPW
     volumes:
-      - redis:/data
+      - shortli_redis:/data
 
 volumes:
-  redis:
+  shortli_redis:
     driver: local

@@ -6,7 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile-redis
       args:
-        - ENVKEY=${ENVKEY}
+        - INFISICAL_TOKEN=${INFISICAL_TOKEN}
+        - ENV=prod
+        - PROJECT_ID=6e57cafb-8fbb-4044-951a-0d517cf651a2
     restart: always
     expose:
       - "6379"
@@ -21,7 +23,8 @@ services:
       context: ../
       dockerfile: Dockerfile
       args:
-        - ENVKEY=${ENVKEY}
+        - INFISICAL_TOKEN=${INFISICAL_TOKEN}
+        - PROJECT_ID=6e57cafb-8fbb-4044-951a-0d517cf651a2
     image: shortli-app:shortli
     restart: always
     depends_on:
