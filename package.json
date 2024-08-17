@@ -27,7 +27,7 @@
     "react-dom": "^18",
     "react-google-recaptcha-v3": "^1.10.1",
     "redis": "^4.6.11",
-    "session-country-map": "^0.1.4",
+    "session-country-map": "^0.1.5",
     "sharp": "^0.32.6",
     "swagger-ui-react": "^5.17.14",
     "tailwind-merge": "^2.1.0",
