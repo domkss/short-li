@@ -3,6 +3,7 @@ import NavBar from "@/components/views/NavBar";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import AuthProvider from "@/components/providers/AuthProvider";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 export const inter = Inter({ subsets: ["latin-ext"], variable: "--font-inter" });
 
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </AuthProvider>
       </body>
+      {process.env.NEXT_PUBLIC_GTM ? <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM} /> : null}
     </html>
   );
 }
