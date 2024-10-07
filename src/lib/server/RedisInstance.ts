@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient, RedisClientType } from "redis";
 
-class RedisDB {
+class RedisInstance {
   private static client: RedisClientType;
   private static errorCounter = 0;
   static async getClient() {
@@ -30,4 +30,4 @@ class RedisDB {
   }
 }
 
-export default RedisDB;
+export default RedisInstance;

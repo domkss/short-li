@@ -1,6 +1,6 @@
 import "server-only";
 import crypto from "crypto";
-import RedisDB from "./redisDB";
+import RedisInstance from "./RedisInstance";
 import {
   REDIS_NAME_PATTERNS,
   REDIS_USER_FIELDS,
@@ -19,7 +19,7 @@ import { AdapterUser } from "next-auth/adapters";
 //#region Credentials Auth Functions
 export async function loginUser(email: string, password: string): Promise<LoginUserResult> {
   try {
-    const redisClient = await RedisDB.getClient();
+    const redisClient = await RedisInstance.getClient();
     let salt = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.PASSWORD_SALT);
     let hash = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.PASSWORD_HASH);
     if (!salt || !hash) return LoginUserResult.Failed;
@@ -64,7 +64,7 @@ export async function registerNewUser(email: string, password: string, reCaptcha
 
   let status;
   try {
-    const redisClient = await RedisDB.getClient();
+    const redisClient = await RedisInstance.getClient();
     let passwordData = createPasswordHash(password);
 
     let userExists = await redisClient.EXISTS(REDIS_NAME_PATTERNS.USER_PRETAG + email);
@@ -89,7 +89,7 @@ export async function registerNewUser(email: string, password: string, reCaptcha
 
 export async function sendUserPasswordRecoveryToken(email: string, reCaptchaToken: string | undefined) {
   try {
-    const redisClient = await RedisDB.getClient();
+    const redisClient = await RedisInstance.getClient();
     let salt = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.PASSWORD_SALT);
     let hash = await redisClient.HGET(REDIS_NAME_PATTERNS.USER_PRETAG + email, REDIS_USER_FIELDS.PASSWORD_HASH);
     if (!salt || !hash) return;
@@ -122,7 +122,7 @@ export async function updateUserPasswordWithRecoveryToken(
   newPassword: string,
 ) {
   try {
-    const redisClient = await RedisDB.getClient();
+    const redisClient = await RedisInstance.getClient();
     let recoveryTokenExpiryTime = await redisClient.HGET(
       REDIS_NAME_PATTERNS.USER_PRETAG + email,
       REDIS_USER_FIELDS.RECOVERY_TOKEN_EXPIRY_TIME,
@@ -181,7 +181,7 @@ export async function updateUserPasswordWithRecoveryToken(
 //#region OAuth Functions
 export async function checkLoginProvider(email: string, account_provider: string): Promise<LoginUserResult> {
   try {
-    const redisClient = await RedisDB.getClient();
+    const redisClient = await RedisInstance.getClient();
     //User deleted
     let userExists = await redisClient.EXISTS(REDIS_NAME_PATTERNS.USER_PRETAG + email);
     if (!userExists && account_provider === AUTH_PROVIDERS.CREDENTIALS) return LoginUserResult.Failed;
@@ -210,7 +210,7 @@ export async function checkLoginProvider(email: string, account_provider: string
 }
 
 export async function restrictedOrDeleted(email: string) {
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
 
   //User deleted
   let userExists = await redisClient.EXISTS(REDIS_NAME_PATTERNS.USER_PRETAG + email);

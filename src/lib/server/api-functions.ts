@@ -1,5 +1,5 @@
 import "server-only";
-import RedisDB from "./redisDB";
+import RedisInstance from "./RedisInstance";
 import { REDIS_ERRORS, REDIS_NAME_PATTERNS, REDIS_LINK_FIELDS, REDIS_BIO_FIELDS } from "./serverConstants";
 import { isValidHttpURL } from "../client/dataValidations";
 import { RedisClientType } from "redis";
@@ -14,7 +14,7 @@ export async function createShortURL(longURL: string, options: CreateShortURLOpt
   if (longURL.length < 5 || longURL.length > 2048 || !isValidHttpURL(longURL))
     throw Error(REDIS_ERRORS.DATA_VALIDATION_ERROR);
 
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   let status = false;
@@ -51,7 +51,7 @@ export async function createShortURL(longURL: string, options: CreateShortURLOpt
 }
 
 export async function getDestinationURL(shortURL: string, ip?: string) {
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   try {
     let targetURL = await redisClient.HGET(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL, REDIS_LINK_FIELDS.TARGET);
@@ -68,7 +68,7 @@ export async function getDestinationURL(shortURL: string, ip?: string) {
 }
 
 export async function getAllUserLinks(session: SessionWithEmail) {
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   let userShortURLs = await redisClient.SMEMBERS(REDIS_NAME_PATTERNS.USER_LINKS + session.user?.email);
   let userLinkList: Promisify<LinkListItemType>[] = [];
@@ -117,7 +117,7 @@ export async function getAllUserLinks(session: SessionWithEmail) {
 }
 
 export async function deleteShortURL(shortURL: string, session: SessionWithEmail) {
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   let userShortURLs = await redisClient.SMEMBERS(REDIS_NAME_PATTERNS.USER_LINKS + session.user?.email);
@@ -134,7 +134,7 @@ export async function deleteShortURL(shortURL: string, session: SessionWithEmail
 }
 
 export async function setLinkCustomName(shortURL: string, newCustomName: string, session: SessionWithEmail) {
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   let userShortURLs = await redisClient.SMEMBERS(REDIS_NAME_PATTERNS.USER_LINKS + session.user?.email);
@@ -149,7 +149,7 @@ export async function setLinkCustomName(shortURL: string, newCustomName: string,
 
 //#region Link-in-Bio Page CRUD functions
 export async function getCurrentUserLinkInBioPageId(session: SessionWithEmail) {
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   let pageId = await redisClient.HGET(
@@ -184,7 +184,7 @@ export async function getCurrentUserLinkInBioPageId(session: SessionWithEmail) {
 }
 
 export async function isPageIdExists(pageId: string): Promise<boolean> {
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   let result = await redisClient.HGET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.IN_USE);
 
@@ -192,7 +192,7 @@ export async function isPageIdExists(pageId: string): Promise<boolean> {
 }
 
 export async function getLinkInBioDescription(pageId: string) {
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   return redisClient.HGET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.DESCRIPTION);
@@ -201,7 +201,7 @@ export async function getLinkInBioDescription(pageId: string) {
 export async function setLinkInBioDescription(newDescription: string, session: SessionWithEmail) {
   let pageId = await getCurrentUserLinkInBioPageId(session);
 
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   await redisClient.HSET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.DESCRIPTION, newDescription);
@@ -210,7 +210,7 @@ export async function setLinkInBioDescription(newDescription: string, session: S
 }
 
 export async function getLinkInBioLinkButtons(pageId: string) {
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   let linkButtonList: LinkInBioButtonItem[] = [];
@@ -244,7 +244,7 @@ export async function setLinkInBioLinkButtons(
 ): Promise<boolean> {
   let pageId = await getCurrentUserLinkInBioPageId(session);
 
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   for (let button of linkInBioButtonList) {
@@ -282,7 +282,7 @@ export async function setLinkInBioLinkButtons(
 }
 
 export async function getLinkInBioAvatar(pageId: string): Promise<string | undefined> {
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   return redisClient.HGET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.AVATAR);
@@ -291,7 +291,7 @@ export async function getLinkInBioAvatar(pageId: string): Promise<string | undef
 export async function setLinkInBioAvatar(base64EncodedImage: string, session: SessionWithEmail) {
   let pageId = await getCurrentUserLinkInBioPageId(session);
 
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
   await redisClient.HSET(REDIS_NAME_PATTERNS.BIO_PRETAG + pageId, REDIS_BIO_FIELDS.AVATAR, base64EncodedImage);
 
@@ -306,7 +306,7 @@ export async function getAllUserEmail(session: SessionWithEmail) {
   //Throw error if the user is not an Admin
   if (!session.user.role.includes(Role.Admin)) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
 
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   let cursor = 0;
@@ -337,7 +337,7 @@ export async function getAllShortLinkData(session: SessionWithEmail) {
   //Throw error if the user is not an Admin
   if (!session.user.role.includes(Role.Admin)) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
 
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   let cursor = 0;
@@ -396,7 +396,7 @@ export async function deleteUser(userEmail: string, session: SessionWithEmail) {
   //Throw error if the user is not an Admin
   if (!session.user.role.includes(Role.Admin)) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
 
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   //Delete all the user's links
@@ -420,7 +420,7 @@ export async function deleteShortLinkByAdmin(shortURL: string, session: SessionW
   //Throw error if the user is not an Admin
   if (!session.user.role.includes(Role.Admin)) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
 
-  const redisClient = await RedisDB.getClient();
+  const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);
 
   await redisClient.DEL(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL);

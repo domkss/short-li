@@ -37,7 +37,7 @@ export default function QRCodeSelectorView(props: QRCodeSelectorViewProps) {
             <div className="flex justify-center p-2">
               <span className="font-semibold text-gray-700">{props.shortURL}</span>
             </div>
-            <div className="lg:px-10 lg:py-6">
+            <div className="min-h-[380px] min-w-[360px] lg:px-10 lg:py-6">
               <QrCodeComponentWithNoSSR shortURL={props.shortURL} />
             </div>
           </div>
