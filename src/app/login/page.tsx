@@ -251,6 +251,7 @@ export default function LoginPage() {
                   name="email"
                   type="email"
                   autoComplete="email"
+                  placeholder="you@example.com"
                   required={viewType !== ViewType.SetNewPasswordView}
                   onChange={(input) => setEmail(input.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -272,6 +273,7 @@ export default function LoginPage() {
                   id="resetToken"
                   name="reset token"
                   type="text"
+                  placeholder="Reset Token"
                   required={viewType === ViewType.SetNewPasswordView}
                   onChange={(input) => setPasswRecoveryToken(input.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -306,6 +308,7 @@ export default function LoginPage() {
                   id="password"
                   name="password"
                   type="password"
+                  placeholder="••••••••••••"
                   autoComplete={viewType === ViewType.LoginView ? "current-password" : "new-password"}
                   required={viewType !== ViewType.PasswordRecoveryView}
                   onChange={(input) => setPassword(input.target.value)}
@@ -327,6 +330,7 @@ export default function LoginPage() {
                   name="confirm-password"
                   type="password"
                   autoComplete="new-password"
+                  placeholder="••••••••••••"
                   required={viewType === ViewType.RegisterView}
                   onChange={(input) => {
                     setConfirmPassword(input.target.value);
