@@ -395,6 +395,8 @@ export async function getAllShortLinkData(session: SessionWithEmail) {
 export async function deleteUser(userEmail: string, session: SessionWithEmail) {
   //Throw error if the user is not an Admin
   if (!session.user.role.includes(Role.Admin)) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
+  //The admin user should not be able to delete its own account
+  if (session.user.email === userEmail) throw Error(REDIS_ERRORS.ACCESS_DENIED_ERROR);
 
   const redisClient = await RedisInstance.getClient();
   if (!(redisClient && redisClient.isOpen)) throw Error(REDIS_ERRORS.REDIS_CLIENT_ERROR);

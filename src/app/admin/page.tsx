@@ -2,26 +2,20 @@
 import { DeleteRequestSchema, LinkListItemType, Role } from "@/lib/common/Types";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useState, ChangeEvent, useEffect } from "react";
-
-// Combined Item Type (optional fields)
-interface ListItem {
-  email?: string;
-  linkName?: string;
-  shortLink?: string;
-  targetUrl?: string;
-  redirectCount?: string;
-}
+import React, { useState, useEffect } from "react";
+import SideBar from "@/components/atomic/SideBar";
+import AdminDashboardPaginationView from "@/components/atomic/AdminDashboardPaginationView";
+import { FiUsers, FiLink } from "react-icons/fi";
 
 // Main Component
 const AdminPage: React.FC = () => {
-  const [items, setItems] = useState<ListItem[]>([]);
+  const [selectedView, setSelectedView] = useState("Analytics");
+
+  const [shortLinkItems, setShortLinkItems] = useState<ShortLinkItem[]>([]);
+  const [userItems, setUserItems] = useState<UserItem[]>([]);
+
   const [numberOfUsers, setNumberOfUsers] = useState(0);
   const [numberOfShortenedLinks, setNumberOfShortenedLinks] = useState(0);
-
-  const [filter, setFilter] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 10;
 
   //#region Authentication check and redirect
   const reactRouter = useRouter();
@@ -37,20 +31,6 @@ const AdminPage: React.FC = () => {
     reactRouter.replace("/login");
   //#endregion
 
-  // Handle filter change
-  const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFilter(e.target.value);
-  };
-
-  // Filtered and paginated items
-  const filteredItems = items.filter(
-    (item) => (item.email && item.email.includes(filter)) || (item.shortLink && item.shortLink.includes(filter)),
-  );
-
-  const paginatedItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-
   async function getPageData() {
     let response = await fetch("/api/admin");
     if (response.ok) {
@@ -62,10 +42,8 @@ const AdminPage: React.FC = () => {
         setNumberOfShortenedLinks(shortLinks.length);
         setNumberOfUsers(userEmails.length);
 
-        let listItems: ListItem[] = [];
-        listItems.push(...userEmails.map((email) => ({ email: email })));
-        listItems.push(
-          ...shortLinks.map((link_data) => ({
+        setShortLinkItems(
+          shortLinks.map((link_data) => ({
             linkName: link_data.name,
             shortLink: link_data.shortURL,
             targetUrl: link_data.target_url,
@@ -73,10 +51,10 @@ const AdminPage: React.FC = () => {
           })),
         );
 
-        setItems(listItems);
+        setUserItems(userEmails.map((email) => ({ email: email })));
       } else {
         //Todo: Display Status Text or error message
-        setItems([]);
+        setShortLinkItems([]);
         setNumberOfShortenedLinks(0);
         setNumberOfUsers(0);
       }
@@ -87,6 +65,9 @@ const AdminPage: React.FC = () => {
 
   async function deleteItem(item: { email?: string; shortLink?: string }) {
     let requestBody: DeleteRequestSchema = { user: item.email, url: item.shortLink };
+
+    const userConfirmed = window.confirm("Are you sure you want to continue?");
+    if (!userConfirmed) return;
 
     let response = await fetch("/api/admin", {
       method: "DELETE",
@@ -103,24 +84,83 @@ const AdminPage: React.FC = () => {
     }
   }
 
-  // Item Component
-  const ItemComponent: React.FC<ListItem> = (item) => (
+  interface ShortLinkItem {
+    linkName: string;
+    shortLink: string;
+    targetUrl: string;
+    redirectCount: string;
+  }
+
+  const ShortLinkItemComponent: React.FC<ShortLinkItem> = (item) => (
     <div className="mb-2 rounded-lg bg-white p-4 shadow">
-      {item.email && <div className="font-semibold">User: {item.email}</div>}
-      {item.linkName && <div className="font-semibold">Name: {item.linkName}</div>}
-      {item.shortLink && <div className="font-semibold">Short Link: {item.shortLink}</div>}
-      {item.targetUrl && <div className="font-semibold">Link Target: {item.targetUrl}</div>}
+      {item.linkName && <div className=" text-center font-semibold">Name: {item.linkName}</div>}
+      {item.shortLink && (
+        <div className="mb-2 mt-1 border-b pb-2 text-center font-semibold text-blue-500">{item.shortLink}</div>
+      )}
+
       {item.shortLink && (
         <div className="font-semibold">Click Count: {item.redirectCount ? item.redirectCount : 0}</div>
       )}
-      <button
-        onClick={() => deleteItem({ email: item.email, shortLink: item.shortLink })}
-        className="mt-2 rounded-lg bg-red-500 p-2 text-white shadow hover:bg-red-600"
-      >
-        Delete
-      </button>
+      {item.targetUrl && (
+        <div className="mt-1">
+          <span>Redirect Target:</span>
+          <textarea className="w-full" rows={2} readOnly={true} value={item.targetUrl} />
+        </div>
+      )}
+
+      <div className="text-center">
+        <button
+          onClick={() => deleteItem({ shortLink: item.shortLink })}
+          className="mt-2 rounded-lg bg-red-500 p-2 text-white shadow hover:bg-red-600"
+        >
+          Delete
+        </button>
+      </div>
     </div>
   );
+
+  interface UserItem {
+    email: string;
+  }
+  const UserItemComponent: React.FC<UserItem> = (item) => (
+    <div className="mb-2 rounded-lg bg-white p-4 shadow">
+      {item.email && <div className="mb-2 border-b pb-2 text-center font-semibold">Email: {item.email}</div>}
+      <div className="text-center">
+        <button
+          onClick={() => deleteItem({ email: item.email })}
+          className="mt-2 rounded-lg bg-red-500 p-2 text-white shadow hover:bg-red-600"
+        >
+          Delete
+        </button>
+        <button
+          disabled
+          onClick={() => deleteItem({ email: item.email })}
+          className="ml-2 mt-2 rounded-lg bg-purple-500 p-2 text-white shadow hover:bg-red-600 disabled:bg-slate-500"
+        >
+          Disable
+        </button>
+      </div>
+    </div>
+  );
+
+  interface AnalyticsCardProps {
+    title: string;
+    value: number;
+    icon: JSX.Element;
+    onClick?: () => void;
+  }
+  const AnalyticsCard: React.FC<AnalyticsCardProps> = ({ title, value, icon, onClick }) => {
+    return (
+      <div
+        className="min-w-56 rounded-lg border border-blue-300 bg-white p-7 text-center shadow-lg transition duration-300 hover:bg-blue-50"
+        onClick={onClick}
+      >
+        <div className="mb-2 flex justify-center">{icon}</div>
+        <div className="text-5xl font-bold text-blue-700">{value}</div>
+        <div className="mt-2 text-lg text-gray-700">{title}</div>
+      </div>
+    );
+  };
 
   useEffect(() => {
     getPageData();
@@ -128,56 +168,37 @@ const AdminPage: React.FC = () => {
   }, []);
 
   return (
-    <main className="container mx-auto p-4">
-      {/* Statistics */}
-      <div className="mb-8 flex justify-center">
-        <div className="grid w-full max-w-2xl grid-cols-1 gap-1 md:grid-cols-2">
-          <div className="p-6 text-center">
-            <div className="text-5xl font-bold text-blue-700">{numberOfUsers}</div>
-            <div className="mt-2 text-lg text-gray-700">Number of Users</div>
-          </div>
-          <div className="p-6 text-center">
-            <div className="text-5xl font-bold text-blue-700">{numberOfShortenedLinks}</div>
-            <div className="mt-2 text-lg text-gray-700">Number of Shortened Links</div>
+    <main className="flex flex-grow overflow-x-scroll bg-indigo-50">
+      <SideBar selected={selectedView} setSelected={setSelectedView} />
+
+      {/* Analytics View */}
+      {selectedView === "Analytics" ? (
+        <div className="container mx-auto h-full min-w-fit p-4">
+          <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
+            <AnalyticsCard
+              title="Number of Users"
+              value={numberOfUsers}
+              icon={<FiUsers size={32} color="#1d4ed8" />}
+              onClick={() => setSelectedView("Users")}
+            />
+            <AnalyticsCard
+              title="Number of Shortened Links"
+              value={numberOfShortenedLinks}
+              icon={<FiLink size={32} color="#1d4ed8" />}
+              onClick={() => setSelectedView("Links")}
+            />
           </div>
         </div>
-      </div>
-      {/* Filter Input */}
-      <div className="mb-6 flex justify-center">
-        <input
-          type="text"
-          value={filter}
-          onChange={handleFilterChange}
-          placeholder="Filter"
-          className="min-w-[50%] rounded-lg border border-gray-300 p-3 shadow"
-        />
-      </div>
-      {/* Scrollable List */}
-      <div className="mb-4 h-64 overflow-y-scroll">
-        {paginatedItems.map((item, index) => (
-          <ItemComponent key={index} {...item} />
-        ))}
-      </div>
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-between">
-        <button
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
-          className="rounded-lg bg-blue-500 px-4 py-2 text-white shadow disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <div className="text-gray-700">
-          Page {currentPage} of {totalPages}
-        </div>
-        <button
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage(currentPage + 1)}
-          className="rounded-lg bg-blue-500 px-4 py-2 text-white shadow disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+      ) : null}
+
+      {/* Links View */}
+      {selectedView === "Links" ? (
+        <AdminDashboardPaginationView items={shortLinkItems} ItemComponent={ShortLinkItemComponent} />
+      ) : null}
+      {/* Users View */}
+      {selectedView === "Users" ? (
+        <AdminDashboardPaginationView items={userItems} ItemComponent={UserItemComponent} />
+      ) : null}
     </main>
   );
 };

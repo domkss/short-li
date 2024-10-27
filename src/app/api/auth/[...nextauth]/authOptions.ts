@@ -5,14 +5,11 @@ import Credentials from "next-auth/providers/credentials";
 import { AuthOptions } from "next-auth";
 import { AUTH_PROVIDERS, LoginUserResult } from "@/lib/server/serverConstants";
 import GoogleProvider from "next-auth/providers/google";
-import { Role } from "@/lib/common/Types";
 import { AdapterUser } from "next-auth/adapters";
-import { th } from "date-fns/locale";
 
 const authOptions: AuthOptions = {
   providers: [
     Credentials({
-      id: AUTH_PROVIDERS.CREDENTIALS,
       credentials: {
         email: { type: "text" },
         password: { type: "password" },
