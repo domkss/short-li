@@ -22,6 +22,7 @@ export type LinkListItemType = {
   shortURL: string;
   redirect_count: string;
   click_by_country: { score: number; value: string }[];
+  link_ttl: number;
 };
 
 export type Promisify<T> = {

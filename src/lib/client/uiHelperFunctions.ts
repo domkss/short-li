@@ -100,3 +100,17 @@ export function countryBgColor(value: number): string {
 export function range(size: number, startAt: number = 0): Array<number> {
   return [...Array(size).keys()].map((i) => i + startAt);
 }
+
+export function formatTTLTime(seconds: number) {
+  const minutes = Math.ceil(seconds / 60);
+  if (seconds < 3600) {
+    return `${minutes} minute`; // Less than an hour
+  }
+  const hours = Math.floor(seconds / 3600);
+  const days = Math.floor(hours / 24);
+  if (hours < 100) {
+    return `${hours} hour`; // Less than 100 hours
+  } else {
+    return `${days} day`; // 100 hours or more
+  }
+}

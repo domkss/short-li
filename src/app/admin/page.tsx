@@ -6,6 +6,8 @@ import React, { useState, useEffect } from "react";
 import SideBar from "@/components/atomic/SideBar";
 import AdminDashboardPaginationView from "@/components/atomic/AdminDashboardPaginationView";
 import { FiUsers, FiLink } from "react-icons/fi";
+import { formatTTLTime } from "@/lib/client/uiHelperFunctions";
+import { cn } from "@/lib/client/uiHelperFunctions";
 
 // Main Component
 const AdminPage: React.FC = () => {
@@ -48,6 +50,7 @@ const AdminPage: React.FC = () => {
             shortLink: link_data.shortURL,
             targetUrl: link_data.target_url,
             redirectCount: link_data.redirect_count,
+            link_ttl: link_data.link_ttl,
           })),
         );
 
@@ -89,17 +92,21 @@ const AdminPage: React.FC = () => {
     shortLink: string;
     targetUrl: string;
     redirectCount: string;
+    link_ttl: number;
   }
 
   const ShortLinkItemComponent: React.FC<ShortLinkItem> = (item) => (
     <div className="mb-2 rounded-lg bg-white p-4 shadow">
-      {item.linkName && <div className=" text-center font-semibold">Name: {item.linkName}</div>}
+      <div className={cn("text-center font-semibold", { invisible: !item.linkName })}>Name: {item.linkName}</div>
       {item.shortLink && (
         <div className="mb-2 mt-1 border-b pb-2 text-center font-semibold text-blue-500">{item.shortLink}</div>
       )}
 
-      {item.shortLink && (
-        <div className="font-semibold">Click Count: {item.redirectCount ? item.redirectCount : 0}</div>
+      {item.shortLink && item.link_ttl == -1 && (
+        <div className="font-semibold text-emerald-600">{item.redirectCount ? item.redirectCount : 0} Click</div>
+      )}
+      {item.shortLink && item.link_ttl > -1 && (
+        <div className="font-semibold text-purple-600">TTL: {formatTTLTime(item.link_ttl)}</div>
       )}
       {item.targetUrl && (
         <div className="mt-1">

@@ -88,6 +88,7 @@ export async function getAllUserLinks(session: SessionWithEmail) {
       target_url: target_url,
       redirect_count: redirect_count,
       click_by_country: click_by_country,
+      link_ttl: Promise.resolve(-1),
     });
   }
 
@@ -370,6 +371,7 @@ export async function getAllShortLinkData(session: SessionWithEmail) {
       REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL,
       REDIS_LINK_FIELDS.REDIRECT_COUNTER,
     );
+    let link_ttl = redisClient.TTL(REDIS_NAME_PATTERNS.LINK_PRETAG + shortURL);
 
     linkList.push({
       shortURL: Promise.resolve(formatShortLink(shortURL)),
@@ -377,6 +379,7 @@ export async function getAllShortLinkData(session: SessionWithEmail) {
       target_url: target_url,
       redirect_count: redirect_count,
       click_by_country: Promise.resolve([]),
+      link_ttl: link_ttl,
     });
   }
 
