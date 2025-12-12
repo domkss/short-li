@@ -1,0 +1,19 @@
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps"
+    versioning-strategy: increase
+    open-pull-requests-limit: 10
+
+    # Ensure Dependabot uses the same Node/npm version as your CI
+    system:
+      os: "ubuntu-latest"
+      node-version: "24"
+
+    allow:
+      - dependency-type: "all"
